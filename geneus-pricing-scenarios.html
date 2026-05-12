@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geneus DNA — Event Pricing</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0f1e;
+  --card: #111827;
+  --card2: #1a2235;
+  --border: #2a3a55;
+  --accent: #00c9a7;
+  --accent2: #4f8fff;
+  --gold: #f5c842;
+  --hero: #ff8c42;
+  --text: #e8edf5;
+  --muted: #6b7fa3;
+  --tag-dog-bg: #1a2d3a; --tag-dog: #4fc3f7;
+  --tag-std-bg: #1a2b1a; --tag-std: #81c784;
+  --tag-prem-bg: #2a1f3a; --tag-prem: #ce93d8;
+  --tag-premex-bg: #2a2510; --tag-premex: #ffcc80;
+  --tag-plus-bg: #2a1510; --tag-plus: #ff8c42;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-serif; font-size: 14px; padding: 28px 16px 60px; }
+
+.header { text-align: center; margin-bottom: 28px; }
+.header h1 { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+.header p { color: var(--muted); margin-top: 4px; font-size: 12px; }
+
+/* CALCULATOR */
+.calc-box {
+  background: var(--card2); border: 1px solid var(--accent);
+  border-radius: 14px; padding: 20px; margin-bottom: 24px;
+  box-shadow: 0 0 28px rgba(0,201,167,0.07);
+}
+.calc-box h2 { font-size: 13px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+
+.pkg-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.pkg-btn {
+  border-radius: 8px; padding: 8px 14px; cursor: pointer;
+  font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 700;
+  border: 2px solid; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; transition: all 0.15s; min-width: 88px; position: relative; background: transparent;
+}
+.pkg-btn .btn-name { font-size: 11px; }
+.pkg-btn .btn-price { font-size: 13px; }
+.pkg-btn .btn-qty {
+  position: absolute; top: -8px; right: -8px;
+  background: var(--accent); color: #000;
+  font-size: 11px; font-weight: 900;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.pkg-btn[data-id="dog"]    { color: var(--tag-dog);    border-color: var(--tag-dog);    background: var(--tag-dog-bg); }
+.pkg-btn[data-id="std"]    { color: var(--tag-std);    border-color: var(--tag-std);    background: var(--tag-std-bg); }
+.pkg-btn[data-id="prem"]   { color: var(--tag-prem);   border-color: var(--tag-prem);   background: var(--tag-prem-bg); }
+.pkg-btn[data-id="premex"] { color: var(--tag-premex); border-color: var(--tag-premex); background: var(--tag-premex-bg); }
+.pkg-btn[data-id="plus"]   { color: var(--tag-plus);   border-color: var(--tag-plus);   background: var(--tag-plus-bg); }
+.pkg-btn.selected { filter: brightness(1.3); box-shadow: 0 0 10px rgba(0,201,167,0.25); }
+
+.calc-result { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; min-height: 56px; }
+.calc-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 10px 0; }
+
+.result-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+.result-top .total-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+.result-top .total-val { font-size: 22px; font-weight: 800; color: var(--accent); }
+.disc-badge { background: rgba(245,200,66,0.15); border: 1px solid var(--gold); color: var(--gold); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; align-self: center; }
+
+.per-pkg-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.per-pkg-card { border-radius: 8px; padding: 9px 12px; border: 1px solid; display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 110px; }
+.per-pkg-card .ppk-name  { font-size: 10px; font-weight: 800; }
+.per-pkg-card .ppk-orig  { font-size: 10px; text-decoration: line-through; opacity: 0.55; }
+.per-pkg-card .ppk-final { font-size: 17px; font-weight: 800; }
+.per-pkg-card .ppk-save  { font-size: 10px; color: var(--gold); }
+
+.hint-bar { margin-top: 12px; font-size: 11px; color: var(--muted); padding: 7px 12px; background: rgba(245,200,66,0.06); border: 1px solid rgba(245,200,66,0.2); border-radius: 6px; }
+
+.calc-actions { display: flex; gap: 8px; margin-top: 12px; }
+.btn-clear { background: rgba(255,92,92,0.1); border: 1px solid rgba(255,92,92,0.4); color: #ff5c5c; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 700; transition: all 0.15s; }
+.btn-clear:hover { background: rgba(255,92,92,0.2); }
+
+/* PROMO */
+.promo-note { background: linear-gradient(135deg,#1a2e20,#0f2a3a); border: 1px solid var(--accent); border-radius: 10px; padding: 10px 18px; text-align: center; margin-bottom: 18px; font-size: 12px; color: var(--accent); font-weight: 600; }
+.promo-note span { color: var(--text); font-weight: 400; }
+
+/* FILTER */
+.filter-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; justify-content: center; }
+.filter-btn { background: var(--card2); border: 1px solid var(--border); color: var(--muted); padding: 5px 12px; border-radius: 20px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 12px; transition: all 0.15s; }
+.filter-btn.active, .filter-btn:hover { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
+
+/* TABLE */
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead tr { background: #0d1929; }
+th { padding: 10px 12px; text-align: center; color: var(--muted); font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th:first-child { text-align: left; }
+tbody tr { border-bottom: 1px solid rgba(42,58,85,0.4); transition: background 0.1s; }
+tbody tr:hover { background: rgba(0,201,167,0.04); }
+td { padding: 9px 12px; text-align: center; vertical-align: top; }
+td:first-child { text-align: left; }
+
+.combo { display: flex; flex-wrap: wrap; gap: 3px; min-width: 130px; }
+.pkg-tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap; border: 1px solid; }
+.tag-dog    { background: var(--tag-dog-bg);    color: var(--tag-dog);    border-color: var(--tag-dog);    }
+.tag-std    { background: var(--tag-std-bg);    color: var(--tag-std);    border-color: var(--tag-std);    }
+.tag-prem   { background: var(--tag-prem-bg);   color: var(--tag-prem);   border-color: var(--tag-prem);   }
+.tag-premex { background: var(--tag-premex-bg); color: var(--tag-premex); border-color: var(--tag-premex); }
+.tag-plus   { background: var(--tag-plus-bg);   color: var(--tag-plus);   border-color: var(--tag-plus);   }
+
+.qty-cell { font-weight: 700; font-size: 14px; }
+.price-original { color: var(--muted); text-decoration: line-through; font-size: 11px; }
+.price-final { font-weight: 700; font-size: 14px; color: var(--accent); }
+.discount-badge { display: inline-block; background: rgba(245,200,66,0.12); border: 1px solid var(--gold); color: var(--gold); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.no-disc { color: var(--muted); font-size: 11px; }
+.saving-cell { color: var(--gold); font-weight: 700; }
+.saving-zero { color: var(--muted); font-size: 11px; }
+
+.ppk-table { display: flex; flex-direction: column; gap: 4px; min-width: 150px; }
+.ppk-row { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.ppk-row .ppk-tag { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; border: 1px solid; white-space: nowrap; flex-shrink: 0; }
+.ppk-row .ppk-orig-s { color: var(--muted); text-decoration: line-through; font-size: 10px; }
+.ppk-row .ppk-net { font-weight: 800; color: var(--accent2); margin-left: auto; }
+
+.section-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; padding: 7px 12px; background: #0d1929; border-bottom: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Geneus DNA — Event Pricing</h1>
+  <p>Live Calculator + ตารางทุก Scenario | คละแพ็กเกจได้ | สูงสุด 6 ชุด</p>
+</div>
+
+<div class="calc-box">
+  <h2>🧮 คำนวณราคาหน้างาน</h2>
+  <div class="pkg-buttons" id="pkgButtons"></div>
+  <div class="calc-result" id="calcResult">
+    <div class="calc-empty">กดเลือกแพ็กเกจด้านบนได้เลยครับ (กดซ้ำ = เพิ่มจำนวน)</div>
+  </div>
+  <div class="calc-actions">
+    <button class="btn-clear" onclick="clearCalc()">✕ ล้างทั้งหมด</button>
+  </div>
+</div>
+
+<div class="promo-note">
+  🎯 <strong>ลดเพิ่มทันที 1,000.- ทุกยอดครบ 15,000.-</strong>
+  <span>&nbsp;|&nbsp; สะสมทุก 15k → ลดสะสม | ส่วนลดหารเท่ากันทุกชุด</span>
+</div>
+
+<div class="filter-row">
+  <button class="filter-btn active" onclick="filterTable('all',this)">ทั้งหมด</button>
+  <button class="filter-btn" onclick="filterTable('1',this)">1 ชุด</button>
+  <button class="filter-btn" onclick="filterTable('2',this)">2 ชุด</button>
+  <button class="filter-btn" onclick="filterTable('3',this)">3 ชุด</button>
+  <button class="filter-btn" onclick="filterTable('4',this)">4 ชุด</button>
+  <button class="filter-btn" onclick="filterTable('5',this)">5 ชุด</button>
+  <button class="filter-btn" onclick="filterTable('6',this)">6 ชุด</button>
+  <button class="filter-btn" onclick="filterTable('disc',this)">🏷️ มีส่วนลด</button>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>แพ็กเกจที่ซื้อ</th>
+        <th>จำนวน</th>
+        <th>ก่อนลด</th>
+        <th>ส่วนลด</th>
+        <th>ราคาสุทธิ</th>
+        <th>สุทธิแยกต่อแพ็กเกจ</th>
+        <th>ประหยัด</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+const PACKAGES = [
+  { id:'dog',    label:'Dog DNA',      price:5500, cls:'tag-dog'    },
+  { id:'std',    label:'Standard',     price:4500, cls:'tag-std'    },
+  { id:'prem',   label:'Premium',      price:6900, cls:'tag-prem'   },
+  { id:'premex', label:'Premium Ex',   price:8900, cls:'tag-premex' },
+  { id:'plus',   label:'Premium Plus', price:9500, cls:'tag-plus'   },
+];
+const CLR = {
+  dog:    ['var(--tag-dog-bg)',    'var(--tag-dog)'   ],
+  std:    ['var(--tag-std-bg)',    'var(--tag-std)'   ],
+  prem:   ['var(--tag-prem-bg)',   'var(--tag-prem)'  ],
+  premex: ['var(--tag-premex-bg)', 'var(--tag-premex)'],
+  plus:   ['var(--tag-plus-bg)',   'var(--tag-plus)'  ],
+};
+const getDisc = t => Math.floor(t/15000)*1000;
+const fmt = n => Math.round(n).toLocaleString('th-TH');
+
+// ── CALCULATOR ──
+let cart = {};
+
+function buildButtons() {
+  const wrap = document.getElementById('pkgButtons');
+  PACKAGES.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'pkg-btn'; b.dataset.id = p.id;
+    b.innerHTML = `<span class="btn-name">${p.label}</span><span class="btn-price">฿${fmt(p.price)}</span>`;
+    b.addEventListener('click', () => { addItem(p.id); });
+    wrap.appendChild(b);
+  });
+}
+
+function addItem(id) {
+  const qty = Object.values(cart).reduce((a,b)=>a+b,0);
+  if (qty >= 6) return;
+  cart[id] = (cart[id]||0)+1;
+  renderCalc();
+}
+
+function clearCalc() {
+  cart = {};
+  renderCalc();
+}
+
+function renderCalc() {
+  const qty = Object.values(cart).reduce((a,b)=>a+b,0);
+
+  // update badges on buttons
+  PACKAGES.forEach(p => {
+    const btn = document.querySelector(`.pkg-btn[data-id="${p.id}"]`);
+    const old = btn.querySelector('.btn-qty');
+    if (old) old.remove();
+    const cnt = cart[p.id]||0;
+    if (cnt > 0) {
+      btn.classList.add('selected');
+      const badge = document.createElement('span');
+      badge.className='btn-qty'; badge.textContent=cnt;
+      btn.appendChild(badge);
+    } else {
+      btn.classList.remove('selected');
+    }
+  });
+
+  const res = document.getElementById('calcResult');
+  if (qty === 0) {
+    res.innerHTML = '<div class="calc-empty">กดเลือกแพ็กเกจด้านบนได้เลยครับ (กดซ้ำ = เพิ่มจำนวน)</div>';
+    return;
+  }
+
+  const total = Object.entries(cart).reduce((s,[id,cnt])=>s+PACKAGES.find(x=>x.id===id).price*cnt,0);
+  const disc = getDisc(total);
+  const finalAmt = total - disc;
+  const discPerUnit = disc / qty; // หารเท่ากัน
+
+  // per-package cards
+  const cards = Object.entries(cart).map(([id,cnt]) => {
+    const p = PACKAGES.find(x=>x.id===id);
+    const [bg,fg] = CLR[id];
+    const net = Math.round(p.price - discPerUnit);
+    const save = p.price - net;
+    return `<div class="per-pkg-card" style="background:${bg};border-color:${fg}">
+      <div class="ppk-name" style="color:${fg}">${p.label}${cnt>1?' ×'+cnt:''}</div>
+      ${disc>0?`<div class="ppk-orig" style="color:${fg}">฿${fmt(p.price)} /ชุด</div>`:''}
+      <div class="ppk-final" style="color:${fg}">฿${fmt(net)} /ชุด</div>
+      ${disc>0?`<div class="ppk-save">ลด ฿${fmt(save)}/ชุด</div>`:''}
+    </div>`;
+  }).join('');
+
+  // hint
+  const rem = 15000 - (total % 15000);
+  const hintPkg = PACKAGES.find(p => p.price >= rem);
+  const hint = rem < 15000 && qty < 6
+    ? `<div class="hint-bar">💡 เพิ่มอีก <strong style="color:var(--gold)">฿${fmt(rem)}</strong> จะได้ส่วนลดเพิ่ม ฿1,000${hintPkg ? ` (เช่น เพิ่ม ${hintPkg.label})` : ''}</div>`
+    : '';
+
+  res.innerHTML = `
+    <div class="result-top">
+      <div>
+        <div class="total-label">ราคาสุทธิรวม — ${qty} ชุด</div>
+        <div class="total-val">฿${fmt(finalAmt)}</div>
+      </div>
+      ${disc>0?`<div class="disc-badge">ลด ฿${fmt(disc)}</div>`:''}
+    </div>
+    <div class="per-pkg-grid">${cards}</div>
+    ${hint}
+  `;
+}
+
+// ── TABLE ──
+function genScenarios() {
+  const rows=[], seen=new Set();
+  function comb(k,start,cur) {
+    if (cur.length===k) {
+      const key=[...cur].map(x=>x.id).sort().join('-');
+      if (seen.has(key)) return; seen.add(key);
+      const total=cur.reduce((s,p)=>s+p.price,0);
+      const disc=getDisc(total);
+      rows.push({combo:[...cur],qty:k,total,disc,final:total-disc});
+      return;
+    }
+    for (let i=start;i<PACKAGES.length;i++) comb(k,i,[...cur,PACKAGES[i]]);
+  }
+  for (let k=1;k<=6;k++) comb(k,0,[]);
+  rows.sort((a,b)=>a.qty-b.qty||a.total-b.total);
+  return rows;
+}
+
+function renderTable(rows) {
+  const tbody=document.getElementById('tableBody');
+  let lastQty=null;
+  rows.forEach(row=>{
+    if (row.qty!==lastQty) {
+      const sep=document.createElement('tr');
+      sep.innerHTML=`<td colspan="7" class="section-label">📦 ซื้อ ${row.qty} ชุด</td>`;
+      sep.dataset.qty=row.qty; sep.dataset.disc='0';
+      tbody.appendChild(sep); lastQty=row.qty;
+    }
+    const discPerUnit = row.disc / row.qty;
+    const counts={};
+    row.combo.forEach(p=>{counts[p.id]=(counts[p.id]||0)+1;});
+
+    const tags = row.combo
+      .filter((p,i,a)=>a.findIndex(x=>x.id===p.id)===i)
+      .map(p=>`<span class="pkg-tag ${p.cls}">${p.label}${counts[p.id]>1?' ×'+counts[p.id]:''}</span>`)
+      .join('');
+
+    const ppkRows = row.combo
+      .filter((p,i,a)=>a.findIndex(x=>x.id===p.id)===i)
+      .map(p=>{
+        const [bg,fg]=CLR[p.id];
+        const net=Math.round(p.price-discPerUnit);
+        return `<div class="ppk-row">
+          <span class="ppk-tag" style="background:${bg};color:${fg};border-color:${fg}">${p.label}</span>
+          ${row.disc>0?`<span class="ppk-orig-s">฿${fmt(p.price)}</span>`:''}
+          <span class="ppk-net">฿${fmt(net)}</span>
+        </div>`;
+      }).join('');
+
+    const tr=document.createElement('tr');
+    tr.dataset.qty=row.qty; tr.dataset.disc=row.disc>0?'1':'0';
+    tr.innerHTML=`
+      <td><div class="combo">${tags}</div></td>
+      <td><span class="qty-cell">${row.qty}</span></td>
+      <td>${row.disc>0?`<div class="price-original">฿${fmt(row.total)}</div>`:`<div style="color:var(--text);font-weight:600">฿${fmt(row.total)}</div>`}</td>
+      <td>${row.disc>0?`<span class="discount-badge">-฿${fmt(row.disc)}</span>`:`<span class="no-disc">—</span>`}</td>
+      <td><span class="price-final">฿${fmt(row.final)}</span></td>
+      <td><div class="ppk-table">${ppkRows}</div></td>
+      <td>${row.disc>0?`<span class="saving-cell">฿${fmt(row.disc)}</span>`:`<span class="saving-zero">—</span>`}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterTable(val,btn) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#tableBody tr').forEach(tr=>{
+    const q=tr.dataset.qty, d=tr.dataset.disc;
+    tr.style.display = val==='all'?'' : val==='disc'?(d==='1'?'':'none') : (q===val?'':'none');
+  });
+}
+
+buildButtons();
+renderTable(genScenarios());
+</script>
+</body>
+</html>
