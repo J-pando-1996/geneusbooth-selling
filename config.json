@@ -1,17 +1,17 @@
 {
-  "googleSheetUrl": "",
+  "googleSheetUrl": "https://script.google.com/macros/s/AKfycbylY_15VINeVXHhbh87edbGJ8MOdIQ6uKRA1gdP1vJbOwi2cajeo6H9Hgt6umYnx9qJ/exec",
   "event": {
     "name": "Pet Expo 2026",
     "prefix": "PET"
   },
   "promo": {
-    "amtActive": false,
+    "amtActive": true,
     "amtStepReq": 15000,
     "amtStepDisc": 1000,
-    "qtyActive": true,
+    "qtyActive": false,
     "qtyStepReq": 3,
     "qtyStepDisc": 500,
-    "giftActive": true,
+    "giftActive": false,
     "giftReq": 4,
     "giftName": "กระเป๋า Geneus"
   },
