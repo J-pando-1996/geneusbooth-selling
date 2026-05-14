@@ -203,8 +203,6 @@ td { padding: 12px; vertical-align: middle; }
     <!-- Container for dynamic payer blocks -->
     <div id="payersContainer"></div>
 
-    <div class="calc-result" id="calcResult" style="margin-bottom: 16px;"></div>
-
     <button class="btn-checkout" onclick="processCheckout()">✅ ยืนยันออเดอร์ (Checkout)</button>
     <button class="btn-clear" onclick="clearCalc()">✕ ยกเลิกออเดอร์นี้ (เริ่มใหม่)</button>
   </div>
@@ -239,19 +237,13 @@ td { padding: 12px; vertical-align: middle; }
 <div id="tab-settings" class="content">
   
   <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
-    <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">🔗 เชื่อมต่อ Google Sheets & Cloud</h3>
+    <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">🔗 เชื่อมต่อ Google Sheets (บันทึกออเดอร์)</h3>
     <div>
       <label style="font-size:12px; color:var(--muted); font-weight:700;">Google Apps Script Web App URL</label>
       <input type="text" id="cfg-sheet-url" class="form-input" placeholder="https://script.google.com/macros/s/..." style="font-size:12px;">
     </div>
-    <div style="display: flex; gap: 10px; margin-top: 12px;">
-      <button class="btn-checkout" onclick="uploadSettingsToCloud()" style="background: #0ea5e9; flex: 1; margin-top:0; padding:10px; font-size:14px;">☁️ อัปโหลดตั้งค่าขึ้น Cloud</button>
-      <button class="btn-checkout" onclick="downloadSettingsFromCloud()" style="background: #10b981; flex: 1; margin-top:0; padding:10px; font-size:14px;">🔄 ดึงการตั้งค่าจาก Cloud</button>
-    </div>
     <p style="font-size:11px; color:var(--muted); margin-top:8px; line-height:1.4;">
-      * ระบุ URL ข้อมูลจะถูกบันทึกลง Sheet ทันทีที่รับออเดอร์<br>
-      * <b>อัปโหลด:</b> เซฟโปรโมชัน/ราคาของเครื่องนี้ไปเก็บในคลาวด์<br>
-      * <b>ดึงการตั้งค่า:</b> โหลดการตั้งค่าล่าสุดจากคลาวด์มาใช้ในเครื่องนี้ (หากใช้ config.json ผ่าน Github ไม่จำเป็นต้องใช้อันนี้)
+      * ระบุ URL ข้อมูลการขายจะถูกส่งไปบันทึกลง Sheet ทันทีที่กดยืนยันรับออเดอร์
     </p>
   </div>
 
@@ -310,7 +302,7 @@ td { padding: 12px; vertical-align: middle; }
     <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">ราคาแพ็กเกจ</h3>
     <div id="settings-packages"></div>
   </div>
-  <button class="btn-checkout" onclick="saveSettings(false)">💾 บันทึกการตั้งค่า (ในเครื่อง)</button>
+  <button class="btn-checkout" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
 </div>
 
 <!-- SLIP MODAL (View Multiple Slips) -->
@@ -471,11 +463,6 @@ async function init() {
   buildPOSUI(); 
   applyConfig();
   renderHistory();
-
-  // 3. หากมี Google Sheet URL ลองให้มัน Sync Cloud อีกครั้ง (เป็นทางเลือกเสริมหากต้องการ)
-  if(CONFIG.googleSheetUrl && CONFIG.googleSheetUrl !== "") {
-     downloadSettingsFromCloud(true);
-  }
 }
 
 function loadLocalConfig() {
@@ -767,21 +754,6 @@ function updateGlobalTotals() {
     });
     const subLabel = document.getElementById('payerSubtotal_'+i);
     if(subLabel) subLabel.innerText = fmt(payerSubtotals[i]) + ' ฿';
-  }
-
-  const promo = calculatePromo(totalEventPrice, totalQty);
-  const finalAmt = totalEventPrice - promo.disc;
-
-  const res = document.getElementById('calcResult');
-  if (totalQty === 0) {
-    res.innerHTML = '<div class="calc-empty">👆 กรุณาเลือกจำนวนผู้ชำระเงิน และเลือกแพ็กเกจด้านบนครับ</div>';
-  } else {
-    res.innerHTML = `
-      <div class="summary-row event"><span>รวมราคาชุดตรวจทั้งหมด (${totalQty} ชุด):</span><span>${fmt(totalEventPrice)} ฿</span></div>
-      ${promo.disc > 0 ? `<div class="summary-row discount"><span>ส่วนลด On-Top รวม:</span><span>-${fmt(promo.disc)} ฿</span></div>` : ''}
-      ${promo.gifts > 0 ? `<div class="summary-row gift"><span>🎉 ได้รับของแถม:</span><span>${promo.giftText}</span></div>` : ''}
-      <div class="summary-row final"><span>ยอดรวมสุทธิทั้งบิล:</span><span>${fmt(finalAmt)} ฿</span></div>
-    `;
   }
 }
 
@@ -1464,69 +1436,6 @@ async function saveEditedOrder() {
   } finally {
     btn.innerHTML = origText;
     btn.disabled = false;
-  }
-}
-
-// ── CLOUD SYNC ──
-async function uploadSettingsToCloud() {
-  if (!CONFIG.googleSheetUrl) { alert('กรุณาระบุ URL ของ Google Sheets ในช่องด้านบนก่อนครับ'); return; }
-  saveSettings(true); 
-  
-  const btn = event.target;
-  const origText = btn.innerHTML;
-  btn.innerHTML = 'กำลังอัปโหลด... ⏳';
-  btn.disabled = true;
-
-  try {
-    const payload = { action: 'save_config', config: CONFIG };
-    await fetch(CONFIG.googleSheetUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    });
-    alert('✅ อัปโหลดการตั้งค่าขึ้น Cloud สำเร็จ!\nอุปกรณ์เครื่องอื่นจะได้รับอัปเดตนี้เมื่อเปิดแอปใหม่');
-  } catch(e) {
-    alert('❌ ไม่สามารถเชื่อมต่อ Cloud ได้');
-  } finally {
-    btn.innerHTML = origText;
-    btn.disabled = false;
-  }
-}
-
-async function downloadSettingsFromCloud(silent = false) {
-  if (!CONFIG.googleSheetUrl) {
-     if(!silent) alert('กรุณาระบุ URL ของ Google Sheets ก่อนครับ');
-     return;
-  }
-
-  let btn = null, origText = '';
-  if (!silent && event && event.target) {
-    btn = event.target;
-    origText = btn.innerHTML;
-    btn.innerHTML = 'กำลังดึงข้อมูล... ⏳';
-    btn.disabled = true;
-  }
-
-  try {
-    const res = await fetch(CONFIG.googleSheetUrl + '?action=get_config');
-    const cloudConfig = await res.json();
-    
-    if (cloudConfig && !cloudConfig.status) { 
-       const localUrl = CONFIG.googleSheetUrl;
-       CONFIG = cloudConfig;
-       CONFIG.googleSheetUrl = localUrl; 
-       localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
-       populateSettingsUI();
-       applyConfig();
-       if(!silent) alert('✅ ดึงการตั้งค่าจาก Cloud สำเร็จ!');
-    } else {
-       if(!silent) alert('⚠️ ยังไม่มีการตั้งค่าบน Cloud (โปรดใช้เครื่องหลักกดอัปโหลดขึ้นไปก่อนครับ)');
-    }
-  } catch(e) {
-    if(!silent) alert('❌ ไม่สามารถดึงข้อมูลจาก Cloud ได้');
-  } finally {
-    if(btn) { btn.innerHTML = origText; btn.disabled = false; }
   }
 }
 
