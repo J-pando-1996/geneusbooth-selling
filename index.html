@@ -108,6 +108,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 .file-upload-text { font-size: 13px; font-weight: 600; color: var(--muted); pointer-events: none; }
 
 .btn-checkout { width: 100%; background: var(--accent); color: #ffffff; padding: 14px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 16px; font-weight: 900; border: none; box-shadow: 0 4px 15px rgba(5,150,105,0.25); transition: 0.2s; margin-top: 16px; }
+.btn-checkout:disabled { background: var(--muted); cursor: not-allowed; box-shadow: none; }
 .btn-checkout:active { transform: scale(0.98); }
 .btn-clear { width: 100%; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 700; margin-top: 10px; }
 
@@ -129,10 +130,15 @@ td { padding: 12px; vertical-align: middle; }
 /* MODAL */
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); overflow-y: auto; }
 .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 400px; width: 100%; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
-.btn-close-modal { background: var(--danger); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; }
+.btn-close-modal { background: var(--danger); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 12px; }
 
 #reader { width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
 #reader video { max-width: 100%; border-radius: 8px; }
+
+/* LOADER OVERLAY */
+#globalLoader { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; flex-direction:column; align-items:center; justify-content:center; }
+.spinner { border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom:12px; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* PRESENTATION MODE (CUSTOMER VIEW) */
 .pres-container { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 16px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.06); margin-top: 16px; }
@@ -170,9 +176,14 @@ td { padding: 12px; vertical-align: middle; }
 </head>
 <body>
 
+<div id="globalLoader">
+   <div class="spinner"></div>
+   <div style="font-weight:700; color:var(--accent);" id="loaderText">กำลังประมวลผลข้อมูล...</div>
+</div>
+
 <div class="header">
   <h1>Geneus POS</h1>
-  <p>Point of Sale (Local Storage)</p>
+  <p>Cloud Synchronized System</p>
 </div>
 
 <div class="tab-container">
@@ -212,13 +223,13 @@ td { padding: 12px; vertical-align: middle; }
 
 <div id="tab-history" class="content">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-    <h3 style="color:var(--accent);">ประวัติการขายในเครื่อง</h3>
+    <h3 style="color:var(--accent);">ประวัติการขายล่าสุด (Cloud)</h3>
     <div>
-      <button onclick="exportCSV()" style="background:var(--accent2); border:none; color:#fff; font-size:12px; font-family:'Sarabun'; padding:6px 12px; border-radius:6px; cursor:pointer; margin-right: 8px;">📥 Export CSV</button>
-      <button onclick="clearHistory()" style="background:transparent; border:none; color:var(--danger); font-size:12px; cursor:pointer;">🗑 ล้างประวัติ</button>
+      <button onclick="fetchHistoryFromCloud()" style="background:#10b981; border:none; color:#fff; font-size:12px; font-family:'Sarabun'; padding:6px 12px; border-radius:6px; cursor:pointer; margin-right: 8px;">🔄 โหลดข้อมูลใหม่</button>
+      <button onclick="exportCSV()" style="background:var(--accent2); border:none; color:#fff; font-size:12px; font-family:'Sarabun'; padding:6px 12px; border-radius:6px; cursor:pointer;">📥 Export CSV</button>
     </div>
   </div>
-  <p style="font-size: 11px; color: var(--muted); margin-bottom: 12px;">หมายเหตุ: ข้อมูลทั้งหมดถูกจัดเก็บไว้ในอุปกรณ์นี้เท่านั้น</p>
+  <p style="font-size: 11px; color: var(--muted); margin-bottom: 12px;">หมายเหตุ: ดึงข้อมูลจากฐานข้อมูลส่วนกลางผ่าน Google Sheets</p>
   <div class="table-wrap">
     <table>
       <thead>
@@ -230,7 +241,7 @@ td { padding: 12px; vertical-align: middle; }
         </tr>
       </thead>
       <tbody id="historyBody">
-        <tr><td colspan="4" style="text-align:center; color:var(--muted); padding:20px;">ยังไม่มีประวัติการขาย</td></tr>
+        <tr><td colspan="4" style="text-align:center; color:var(--muted); padding:20px;">กำลังโหลดประวัติ...</td></tr>
       </tbody>
     </table>
   </div>
@@ -305,10 +316,10 @@ td { padding: 12px; vertical-align: middle; }
     <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">ราคาแพ็กเกจ</h3>
     <div id="settings-packages"></div>
   </div>
-  <button class="btn-checkout" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
+  <button class="btn-checkout" onclick="saveSettings(false)">💾 บันทึกการตั้งค่า (ทดสอบเฉพาะเครื่อง)</button>
 </div>
 
-<!-- SLIP MODAL (View Multiple Slips) -->
+<!-- SLIP MODAL -->
 <div id="slipModal" class="modal">
   <div class="modal-content" style="text-align:center;">
     <h3 style="margin-bottom: 10px; color:var(--accent);">หลักฐานการโอนเงิน</h3>
@@ -327,18 +338,14 @@ td { padding: 12px; vertical-align: middle; }
   </div>
 </div>
 
-<!-- EDIT MODAL -->
+<!-- EDIT MODAL (Full Edit Mode) -->
 <div id="editModal" class="modal">
   <div class="modal-content" style="text-align: left; max-height: 90vh; overflow-y: auto;">
     <h3 style="margin-bottom: 16px; color:var(--accent); text-align: center;">✏️ แก้ไขข้อมูลออเดอร์</h3>
-    <p style="font-size:12px; color:var(--muted); text-align:center; margin-bottom:16px;">(อนุญาตให้แก้ไขเฉพาะบาร์โค้ด)</p>
     
-    <div class="form-group" style="margin-top:16px;">
-      <label>📸 บาร์โค้ด (แก้ทีละกล่อง)</label>
-      <div id="editBarcodesContainer"></div>
-    </div>
+    <div id="editFormContainer"></div>
     
-    <button class="btn-checkout" onclick="saveEditedOrder()" id="btn-save-edit" style="margin-top: 16px;">💾 บันทึกการแก้ไข</button>
+    <button class="btn-checkout" onclick="saveEditedOrder()" id="btn-save-edit" style="margin-top: 16px;">💾 บันทึกการแก้ไข (อัปเดต Cloud)</button>
     <button class="btn-clear" onclick="closeEditModal()">✕ ยกเลิก</button>
   </div>
 </div>
@@ -347,7 +354,6 @@ td { padding: 12px; vertical-align: middle; }
 <div id="receiptModal" class="modal">
   <div class="modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
     
-    <!-- Payer Selector for Split Bill -->
     <div id="rcptPayerSelectorWrap" class="print-hide" style="background:#fff; padding:12px; border-radius:12px; margin-bottom:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:none;">
       <label style="font-size:12px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">🧾 เลือกใบเสร็จของผู้ชำระเงิน:</label>
       <select id="rcptPayerSelector" class="form-input" onchange="renderReceiptForPayer(this.value)"></select>
@@ -439,18 +445,41 @@ let currentScanTarget = null;
 
 const fmt = n => Math.round(n).toLocaleString('th-TH');
 
+function showLoader(text) {
+  document.getElementById('loaderText').innerText = text || 'กำลังประมวลผล...';
+  document.getElementById('globalLoader').style.display = 'flex';
+}
+function hideLoader() {
+  document.getElementById('globalLoader').style.display = 'none';
+}
+
 // ── INITIALIZE ──
 async function init() {
-  loadLocalConfig();
-
-  // โหลดประวัติการขาย
-  const savedHistory = localStorage.getItem('geneus_pos_history');
-  if (savedHistory) { try { salesHistory = JSON.parse(savedHistory); } catch(e){} }
+  // 1. โหลด config.json 
+  try {
+    const res = await fetch('config.json?v=' + new Date().getTime());
+    if (res.ok) {
+      const fetchedConfig = await res.json();
+      CONFIG = { ...DEFAULT_CONFIG, ...fetchedConfig };
+      localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
+    } else { loadLocalConfig(); }
+  } catch (err) { loadLocalConfig(); }
 
   populateSettingsUI();
   buildPOSUI(); 
   applyConfig();
-  renderHistory();
+
+  // 2. ดึงประวัติการขายจาก Cloud แทน localStorage ทันที (ถ้ามี URL)
+  if(CONFIG.googleSheetUrl && CONFIG.googleSheetUrl !== "") {
+     fetchHistoryFromCloud();
+  } else {
+     // หากไม่ได้ใส่ URL ให้ดึงจาก Local ไปพลางๆ
+     const savedHistory = localStorage.getItem('geneus_pos_history');
+     if (savedHistory) { 
+        try { salesHistory = JSON.parse(savedHistory); } catch(e){} 
+     }
+     renderHistory();
+  }
 }
 
 function loadLocalConfig() {
@@ -478,7 +507,35 @@ function switchTab(tabId) {
   document.getElementById(`btn-${tabId}`).classList.add('active');
   if(tabId === 'presentation') {
       renderPresentation();
+  } else if(tabId === 'history' && CONFIG.googleSheetUrl) {
+      // สามารถคอมเมนต์บรรทัดนี้ได้ถ้าไม่ต้องการให้โหลดใหม่ทุกครั้งที่กดเข้าหน้าประวัติ
+      // fetchHistoryFromCloud(true); 
   }
+}
+
+// ── CLOUD SYNC: HISTORY ──
+async function fetchHistoryFromCloud(silent = false) {
+   if (!CONFIG.googleSheetUrl) return;
+   
+   if(!silent) showLoader('กำลังดึงประวัติออเดอร์จาก Cloud...');
+   try {
+      const res = await fetch(CONFIG.googleSheetUrl + '?action=get_history');
+      if(res.ok) {
+         const data = await res.json();
+         if(Array.isArray(data)) {
+            salesHistory = data;
+            localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
+            renderHistory();
+         }
+      }
+   } catch(e) {
+      console.error(e);
+      if(!silent) alert('ไม่สามารถดึงข้อมูลประวัติจาก Cloud ได้ จะใช้ข้อมูลล่าสุดในเครื่องแทน');
+      const savedHistory = localStorage.getItem('geneus_pos_history');
+      if (savedHistory) { try { salesHistory = JSON.parse(savedHistory); renderHistory(); } catch(err){} }
+   } finally {
+      if(!silent) hideLoader();
+   }
 }
 
 // ── SCANNER LOGIC ──
@@ -506,9 +563,7 @@ function openScanner(targetKey) {
           if(input) { input.value = decodedText; }
           closeScanner();
       },
-      (errorMessage) => {
-          // parse error, ignore securely
-      }
+      (errorMessage) => { }
   ).catch((err) => {
       alert("ไม่สามารถเข้าถึงกล้องได้ กรุณาตรวจสอบสิทธิ์การใช้งานกล้องในเบราว์เซอร์: " + err);
       closeScanner();
@@ -587,7 +642,7 @@ function changeItemQty(payerIdx, id, delta, e) {
 function clearCalc() {
   cartByPayer = [{}, {}, {}, {}, {}, {}];
   currentSlips = {};
-  setSplitCount(1); // Reset to 1 payer
+  setSplitCount(1);
 
   const now = new Date();
   const defaultDate = now.toLocaleDateString('en-CA');
@@ -675,7 +730,6 @@ function updatePayerCartUI(payerIdx) {
   wrap.innerHTML = '';
   wrap.style.gap = '16px 8px';
 
-  // 1. Render Buttons
   CONFIG.packages.forEach(p => {
     const cnt = cart[p.id] || 0;
     const b = document.createElement('div');
@@ -694,7 +748,6 @@ function updatePayerCartUI(payerIdx) {
     wrap.appendChild(b);
   });
 
-  // 2. Render Barcodes (Save existing values first)
   const bcWrap = document.getElementById('barcodesContainer_'+payerIdx);
   let saved = {};
   bcWrap.querySelectorAll('.barcode-row').forEach(row => {
@@ -722,7 +775,6 @@ function updatePayerCartUI(payerIdx) {
   if(Object.keys(cart).length === 0) {
       bcHtml = `<div style="text-align:center; color:var(--muted); font-size:12px; padding:10px;">โปรดเลือกแพ็กเกจด้านบนเพื่อแสดงช่องสแกนบาร์โค้ด</div>`;
   }
-  
   bcWrap.innerHTML = bcHtml;
 }
 
@@ -762,8 +814,6 @@ function updateGlobalTotals() {
 
 function setSplitCount(val) {
    currentSplitCount = parseInt(val);
-   
-   // Handle merging carts if shrinking from 6 down to 2, etc.
    for(let i=0; i<6; i++) {
       if(i >= currentSplitCount) {
           let hasItems = false;
@@ -775,13 +825,11 @@ function setSplitCount(val) {
       }
    }
    
-   // update UI dropdowns
    const pSel = document.getElementById('presSplitCount');
    if(pSel) pSel.value = currentSplitCount;
    const posSel = document.getElementById('splitCount');
    if(posSel) posSel.value = currentSplitCount;
 
-   // Toggle visibility in POS
    for(let i=0; i<6; i++) {
       const block = document.getElementById('payerBlock_'+i);
       if(block) block.style.display = i < currentSplitCount ? 'block' : 'none';
@@ -832,29 +880,69 @@ function renderPresentation() {
   const presWrap = document.getElementById('presentationWrap');
   if(!presWrap) return;
   
-  // คำนวณยอดรวมทั้งหมดของทั้งบิล
-  let totalQty = 0;
-  let totalEventPrice = 0;
-  let totalRegPrice = 0;
-  for(let i=0; i<currentSplitCount; i++) {
+  let mergedCart = {};
+  let qty = 0;
+  for(let i=0; i<6; i++) {
     Object.entries(cartByPayer[i]).forEach(([id, cnt]) => {
-      const p = CONFIG.packages.find(x => x.id === id);
-      if(p) {
-          totalQty += cnt;
-          totalEventPrice += p.price * cnt;
-          totalRegPrice += p.regPrice * cnt;
-      }
+      mergedCart[id] = (mergedCart[id] || 0) + cnt;
+      qty += cnt;
     });
   }
-
-  const promo = calculatePromo(totalEventPrice, totalQty);
-  const finalAmt = totalEventPrice - promo.disc;
-  const exactDiscPerItem = totalQty > 0 ? (promo.disc / totalQty) : 0;
   
-  const totalSaved = totalRegPrice - finalAmt;
-  const savedPerc = totalRegPrice > 0 ? Math.round((totalSaved / totalRegPrice) * 100) : 0;
+  let buttonsHtml = '';
+  CONFIG.packages.forEach(p => {
+    const cnt = mergedCart[p.id] || 0;
+    const selectedCls = cnt > 0 ? 'selected' : '';
+    let badge = '';
+    if (cnt > 0) {
+      badge = `
+        <div class="pkg-qty-ctrl">
+          <div class="ctrl-minus" onclick="changeItemQtyGlobal('${p.id}', -1, event)">−</div>
+          <div class="ctrl-val">${cnt}</div>
+          <div class="ctrl-plus" onclick="changeItemQtyGlobal('${p.id}', 1, event)">+</div>
+        </div>
+      `;
+    }
+    
+    let clickAttr = cnt === 0 ? `onclick="changeItemQtyGlobal('${p.id}', 1, event)"` : '';
+    
+    buttonsHtml += `
+      <div class="pkg-btn ${selectedCls}" data-id="${p.id}" ${clickAttr} style="min-height: 100px; margin-bottom: 8px;">
+        <span class="btn-name">${p.label}</span>
+        <span class="btn-reg">${fmt(p.regPrice)} ฿</span>
+        <span class="btn-price" style="font-size: clamp(14px, 2.5vw, 18px);">${fmt(p.price)} ฿</span>
+        ${badge}
+      </div>
+    `;
+  });
 
-  // 1. Dropdown เลือกคน
+  const selectionGridHtml = `
+    <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 24px;">
+      <div style="text-align: center; margin-bottom: 12px;">
+          <h2 style="color: var(--accent); font-size: clamp(18px, 3vw, 22px); margin-bottom: 4px;">💡 เลือกลองจัดแพ็กเกจด้วยตัวคุณเอง</h2>
+          <p style="color: var(--muted); font-size: 13px;">(สามารถรวมบิลกันได้เพื่อรับโปรโมชัน)</p>
+      </div>
+      <div class="pkg-grid" style="margin-bottom: 0;">${buttonsHtml}</div>
+    </div>
+  `;
+
+  if (qty === 0) {
+    presWrap.innerHTML = `
+      ${selectionGridHtml}
+      <div class="calc-empty" style="margin-top: 40px; font-size: 16px;">👆 แตะเลือกแพ็กเกจด้านบนเพื่อดูสรุปความคุ้มค่าครับ</div>
+    `;
+    return;
+  }
+
+  const totalReg = Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).regPrice*cnt,0);
+  const totalEvent = Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).price*cnt,0);
+  const promo = calculatePromo(totalEvent, qty);
+  const finalAmt = totalEvent - promo.disc;
+
+  const totalSaved = totalReg - finalAmt;
+  const savedPerc = totalRegPrice > 0 ? Math.round((totalSaved / totalRegPrice) * 100) : 0;
+  const exactDiscPerItem = totalQty > 0 ? (promo.disc / totalQty) : 0;
+
   let html = `
     <div class="form-group" style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align:center;">
       <label style="color:var(--accent); font-size:16px; font-weight:900; margin-bottom:12px; display:block;">👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label>
@@ -869,7 +957,6 @@ function renderPresentation() {
     </div>
   `;
 
-  // 2. Loop สร้างตะกร้าของแต่ละคน
   for(let i=0; i<currentSplitCount; i++) {
      let payerTotal = 0;
      let payerQty = 0;
@@ -895,7 +982,6 @@ function renderPresentation() {
 
      let payerDisc = exactDiscPerItem * payerQty;
      let payerNet = payerTotal - payerDisc;
-     
      let showPayerNet = payerNet % 1 === 0 ? fmt(payerNet) : payerNet.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
      html += `
@@ -916,7 +1002,6 @@ function renderPresentation() {
      `;
   }
 
-  // 3. Grand Summary & QR Code
   if (totalQty > 0) {
       let giftHtml = '';
       if (promo.gifts > 0 || promo.giftText) {
@@ -989,11 +1074,6 @@ function normalizeOrder(order) {
              if (itemsData[idx]) {
                 const colIdx = bc.indexOf(':');
                 let rest = colIdx > -1 ? bc.substring(colIdx+1).trim() : bc;
-                let rec = '';
-                if(rest.includes('[') && rest.endsWith(']')) {
-                  const match = rest.match(/\[(.*?)\]$/);
-                  if(match) { rec = match[1].trim(); rest = rest.replace(/\[.*?\]$/, '').trim(); }
-                }
                 itemsData[idx].barcode = rest;
              }
           });
@@ -1022,12 +1102,10 @@ function normalizeOrder(order) {
    return { ...order, payers, itemsData };
 }
 
-// ── ROW BUILDER (FOR BOTH CSV & SHEET) ──
 function buildExportRows(order) {
   const rows = [];
   const saleChannel = order.eventName ? `Event POS - ${order.eventName}` : "Event POS";
 
-  // รวมรายการแพ็กเกจชนิดเดียวกันของผู้ชำระเงินรายเดียวกันเข้าด้วยกัน
   const groupedItems = {};
 
   order.itemsData.forEach((item) => {
@@ -1044,7 +1122,6 @@ function buildExportRows(order) {
         };
      }
      groupedItems[key].qty += 1;
-     // ป้องกันเศษทศนิยมเกินจากการบวก
      groupedItems[key].totalPrice = Math.round((groupedItems[key].totalPrice + item.price) * 100) / 100;
      groupedItems[key].totalDiscount = Math.round((groupedItems[key].totalDiscount + item.discount) * 100) / 100;
      groupedItems[key].totalNet = Math.round((groupedItems[key].totalNet + item.net) * 100) / 100;
@@ -1082,7 +1159,7 @@ function buildExportRows(order) {
        "รับหน้างาน", "", 
        payer.contact, 
        dateOnly, "รับหน้างาน", 
-       gItem.barcodes.join(", ") // ใช้ลูกน้ำและช่องว่างในการคั่น
+       gItem.barcodes.join(", ")
      ];
      rows.push(row);
   });
@@ -1090,7 +1167,7 @@ function buildExportRows(order) {
   return rows;
 }
 
-// ── CHECKOUT & HISTORY ──
+// ── CHECKOUT & CLOUD SYNC ──
 async function processCheckout() {
   let splitCount = parseInt(document.getElementById('splitCount').value);
   let payers = [];
@@ -1175,7 +1252,6 @@ async function processCheckout() {
   });
 
   const payload = {
-    action: 'insert',
     id: orderId,
     date: globalDateStr,
     payerCount: splitCount,
@@ -1188,23 +1264,26 @@ async function processCheckout() {
   };
 
   try {
-    // Save to Local Storage
     salesHistory.unshift(payload); 
     localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
     
-    // Sync to Google Sheets if configured
+    // Sync Cloud Database
     if (CONFIG.googleSheetUrl) {
        try {
-         const rowsToSync = buildExportRows(payload);
-         fetch(CONFIG.googleSheetUrl, {
+         const syncData = {
+            action: 'insert_order',
+            id: orderId,
+            orderData: payload,
+            exportRows: buildExportRows(payload)
+         };
+         
+         await fetch(CONFIG.googleSheetUrl, {
            method: 'POST',
            mode: 'no-cors',
            headers: { 'Content-Type': 'text/plain' },
-           body: JSON.stringify(rowsToSync)
-         }).catch(e => console.log('Sheet Sync Error', e));
-       } catch (e) {
-         console.log(e);
-       }
+           body: JSON.stringify(syncData)
+         });
+       } catch (e) { console.log(e); }
     }
 
     alert(`✅ บันทึกออเดอร์สำเร็จ!`);
@@ -1221,7 +1300,7 @@ async function processCheckout() {
 function renderHistory() {
   const tbody = document.getElementById('historyBody');
   if (salesHistory.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:20px;">ยังไม่มีประวัติการขาย</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:20px;">กำลังโหลด... หรือยังไม่มีประวัติการขาย</td></tr>';
     return;
   }
 
@@ -1260,7 +1339,7 @@ function renderHistory() {
 }
 
 function clearHistory() {
-  if(confirm('🚨 คำเตือน: ประวัติการขายทั้งหมดในอุปกรณ์นี้จะถูกลบถาวร ต้องการล้างจริงหรือไม่?')) {
+  if(confirm('🚨 คำเตือน: ข้อมูลในหน้านี้จะหายไป แต่ใน Cloud จะยังอยู่หากเคยอัปโหลดไว้ ต้องการดำเนินการหรือไม่?')) {
     salesHistory = [];
     localStorage.removeItem('geneus_pos_history');
     renderHistory();
@@ -1410,7 +1489,7 @@ function exportCSV() {
   document.body.removeChild(link);
 }
 
-// ── EDIT MODAL ──
+// ── EDIT MODAL (Full Control) ──
 let editingOrderId = null;
 function openEditModal(orderId) {
   const rawOrder = salesHistory.find(o => o.id === orderId);
@@ -1418,13 +1497,52 @@ function openEditModal(orderId) {
   const order = normalizeOrder(rawOrder);
   editingOrderId = order.id;
 
-  const bcContainer = document.getElementById('editBarcodesContainer');
-  bcContainer.innerHTML = '';
+  let html = '';
+  
+  // 1. ฟอร์มสำหรับลูกค้าแต่ละคน (ผู้ชำระ)
+  order.payers.forEach((payer, pIdx) => {
+      let dateVal = '', timeVal = '';
+      if(payer.date) {
+          const parts = payer.date.split(' ');
+          const dmy = parts[0].split('/'); 
+          if(dmy.length === 3) dateVal = `${dmy[2]}-${dmy[1]}-${dmy[0]}`;
+          timeVal = parts[1] || '';
+      }
+      
+      html += `
+      <div style="background:var(--card2); padding:12px; border-radius:8px; margin-bottom:16px; border:1px solid var(--border);">
+         <h4 style="font-size:14px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">👤 ข้อมูลลูกค้าท่านที่ ${pIdx+1}</h4>
+         
+         <div class="form-row-2">
+           <div class="form-group"><label>ชื่อลูกค้า</label><input type="text" class="form-input edit-p-name" data-pidx="${pIdx}" value="${payer.name}"></div>
+           <div class="form-group"><label>เบอร์โทร</label><input type="text" class="form-input edit-p-contact" data-pidx="${pIdx}" value="${payer.contact}"></div>
+         </div>
+         
+         <div class="form-row-2">
+           <div class="form-group"><label>วันที่ชำระ</label><input type="date" class="form-input edit-p-date" data-pidx="${pIdx}" value="${dateVal}"></div>
+           <div class="form-group"><label>เวลา</label><input type="time" class="form-input edit-p-time" data-pidx="${pIdx}" value="${timeVal}"></div>
+         </div>
+         
+         <div class="form-group">
+           <label>วิธีชำระเงิน</label>
+           <select class="form-input edit-p-method" data-pidx="${pIdx}">
+             <option value="Bank Transfer" ${payer.method==='Bank Transfer'?'selected':''}>โอนเงิน</option>
+             <option value="Credit Card" ${payer.method==='Credit Card'?'selected':''}>บัตรเครดิต</option>
+             <option value="Cash" ${payer.method==='Cash'?'selected':''}>เงินสด</option>
+             <option value="Installment" ${payer.method==='Installment'?'selected':''}>ผ่อนชำระ</option>
+           </select>
+         </div>
+      </div>
+      `;
+  });
+
+  // 2. ฟอร์มสำหรับบาร์โค้ดแต่ละกล่อง
+  html += `<h4 style="font-size:14px; color:var(--text); margin-bottom:8px;">📸 แก้ไขบาร์โค้ดชุดตรวจ</h4>`;
   order.itemsData.forEach((item, idx) => {
     const key = `edit_${idx}`;
-    bcContainer.innerHTML += `
+    html += `
       <div class="barcode-row" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px dashed var(--border);">
-        <div class="b-label" style="width:100%; color:var(--accent2); font-size:13px;">${item.label}</div>
+        <div class="b-label" style="width:100%; color:var(--accent2); font-size:13px;">${item.label} <span style="color:var(--muted); font-weight:normal;">(กล่องของท่านที่ ${item.payerIdx+1})</span></div>
         <div style="display:flex; gap:8px; width:100%;">
           <input type="text" class="form-input edit-barcode" style="flex:1;" value="${item.barcode}" data-key="${key}" data-idx="${idx}">
           <button type="button" class="btn-scan" onclick="openScanner('${key}')">📷 สแกน</button>
@@ -1432,6 +1550,8 @@ function openEditModal(orderId) {
       </div>
     `;
   });
+
+  document.getElementById('editFormContainer').innerHTML = html;
   document.getElementById('editModal').style.display = 'flex';
 }
 
@@ -1442,23 +1562,56 @@ async function saveEditedOrder() {
   if (idxOrder === -1) return;
   
   let order = normalizeOrder(salesHistory[idxOrder]);
-  document.querySelectorAll('#editBarcodesContainer .barcode-row').forEach(row => {
-    const codeInput = row.querySelector('.edit-barcode');
-    if(!codeInput) return;
-    const i = parseInt(codeInput.dataset.idx);
-    order.itemsData[i].barcode = codeInput.value.trim();
+  
+  // 1. รับค่าที่แก้ไขสำหรับ Payers
+  document.querySelectorAll('.edit-p-name').forEach(input => { order.payers[input.dataset.pidx].name = input.value.trim(); });
+  document.querySelectorAll('.edit-p-contact').forEach(input => { order.payers[input.dataset.pidx].contact = input.value.trim(); });
+  document.querySelectorAll('.edit-p-method').forEach(input => { order.payers[input.dataset.pidx].method = input.value; });
+  
+  const dates = {}, times = {};
+  document.querySelectorAll('.edit-p-date').forEach(input => { dates[input.dataset.pidx] = input.value; });
+  document.querySelectorAll('.edit-p-time').forEach(input => { times[input.dataset.pidx] = input.value; });
+  
+  order.payers.forEach((payer, pIdx) => {
+      if(dates[pIdx] && times[pIdx]) {
+          const [y, m, d] = dates[pIdx].split('-');
+          payer.date = `${d}/${m}/${y} ${times[pIdx]}`;
+      }
+  });
+
+  // 2. รับค่าที่แก้ไขสำหรับ Barcodes
+  document.querySelectorAll('.edit-barcode').forEach(input => {
+    order.itemsData[input.dataset.idx].barcode = input.value.trim();
   });
 
   const btn = document.getElementById('btn-save-edit');
   const origText = btn.innerHTML;
-  btn.innerHTML = 'กำลังบันทึกข้อมูล... ⏳';
+  btn.innerHTML = 'กำลังบันทึกข้อมูลและอัปเดต Cloud... ⏳';
   btn.disabled = true;
 
   try {
-    await new Promise(r => setTimeout(r, 300));
     salesHistory[idxOrder] = order; 
     localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
-    alert('✅ บันทึกบาร์โค้ดเรียบร้อย ข้อมูลถูกอัปเดตในเครื่องแล้ว');
+    
+    // Sync Cloud Database (Update)
+    if (CONFIG.googleSheetUrl) {
+       try {
+         const syncData = {
+            action: 'update_order',
+            id: order.id,
+            orderData: order,
+            exportRows: buildExportRows(order)
+         };
+         await fetch(CONFIG.googleSheetUrl, {
+           method: 'POST',
+           mode: 'no-cors',
+           headers: { 'Content-Type': 'text/plain' },
+           body: JSON.stringify(syncData)
+         });
+       } catch (e) { console.log(e); }
+    }
+
+    alert('✅ บันทึกการแก้ไขเรียบร้อย ระบบได้อัปเดตข้อมูลบน Cloud แล้ว');
     closeEditModal();
     renderHistory();
   } catch(e) {
@@ -1536,7 +1689,7 @@ function saveSettings(silent = false) {
 
   localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
   if(!silent) {
-     alert('บันทึกการตั้งค่าเรียบร้อย!');
+     alert('บันทึกการตั้งค่าลงอุปกรณ์เรียบร้อย!');
      clearCalc(); applyConfig(); switchTab('presentation');
   }
 }
