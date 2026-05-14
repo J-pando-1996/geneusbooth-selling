@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Geneus DNA — Event POS</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+<!-- ไลบรารีสำหรับแปลง HTML เป็นรูปภาพ และ สแกนบาร์โค้ดผ่านกล้อง -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
@@ -201,16 +202,15 @@ td { padding: 12px; vertical-align: middle; }
     <div class="form-group" style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
       <label style="color:var(--accent); font-size:15px; margin-bottom:10px;">👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label>
       <select id="splitCount" class="form-input" style="border-color:var(--accent); font-weight:bold; font-size:16px;" onchange="setSplitCount(this.value)">
-        <option value="1">1 ท่าน</option>
-        <option value="2">2 ท่าน</option>
-        <option value="3">3 ท่าน</option>
-        <option value="4">4 ท่าน</option>
-        <option value="5">5 ท่าน</option>
-        <option value="6">6 ท่าน</option>
+        <option value="1">1 ท่าน (จ่ายก้อนเดียว)</option>
+        <option value="2">2 ท่าน (แยกจ่าย)</option>
+        <option value="3">3 ท่าน (แยกจ่าย)</option>
+        <option value="4">4 ท่าน (แยกจ่าย)</option>
+        <option value="5">5 ท่าน (แยกจ่าย)</option>
+        <option value="6">6 ท่าน (แยกจ่าย)</option>
       </select>
     </div>
 
-    <!-- Container for dynamic payer blocks -->
     <div id="payersContainer"></div>
 
     <div class="calc-result" id="calcResult" style="margin-bottom: 16px;"></div>
@@ -584,6 +584,24 @@ function applyConfig() {
   renderPresentation();
 }
 
+function changeItemQtyGlobal(id, delta, e) {
+  if (e) e.stopPropagation();
+  let totalQty = 0;
+  for(let i=0; i<6; i++) Object.values(cartByPayer[i]).forEach(c => totalQty += c);
+  if (delta > 0 && totalQty >= 6) { alert('จำกัดสูงสุด 6 ชุดต่อ 1 บิลครับ'); return; }
+
+  if (delta > 0) {
+    changeItemQty(0, id, 1, null);
+  } else {
+    for(let i=5; i>=0; i--) {
+      if (cartByPayer[i][id] > 0) {
+        changeItemQty(i, id, -1, null);
+        break;
+      }
+    }
+  }
+}
+
 function changeItemQty(payerIdx, id, delta, e) {
   if (e) e.stopPropagation();
   let totalQty = 0;
@@ -899,12 +917,12 @@ function renderPresentation() {
     <div class="form-group" style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align:center;">
       <label style="color:var(--accent); font-size:16px; font-weight:900; margin-bottom:12px; display:block;">👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label>
       <select id="presSplitCount" class="form-input" style="border-color:var(--accent); font-weight:bold; font-size:16px; text-align:center;" onchange="setSplitCount(this.value)">
-        <option value="1" ${currentSplitCount===1?'selected':''}>1 ท่าน</option>
-        <option value="2" ${currentSplitCount===2?'selected':''}>2 ท่าน</option>
-        <option value="3" ${currentSplitCount===3?'selected':''}>3 ท่าน</option>
-        <option value="4" ${currentSplitCount===4?'selected':''}>4 ท่าน</option>
-        <option value="5" ${currentSplitCount===5?'selected':''}>5 ท่าน</option>
-        <option value="6" ${currentSplitCount===6?'selected':''}>6 ท่าน</option>
+        <option value="1" ${currentSplitCount===1?'selected':''}>1 ท่าน (จ่ายก้อนเดียว)</option>
+        <option value="2" ${currentSplitCount===2?'selected':''}>2 ท่าน (แยกจ่าย)</option>
+        <option value="3" ${currentSplitCount===3?'selected':''}>3 ท่าน (แยกจ่าย)</option>
+        <option value="4" ${currentSplitCount===4?'selected':''}>4 ท่าน (แยกจ่าย)</option>
+        <option value="5" ${currentSplitCount===5?'selected':''}>5 ท่าน (แยกจ่าย)</option>
+        <option value="6" ${currentSplitCount===6?'selected':''}>6 ท่าน (แยกจ่าย)</option>
       </select>
     </div>
   `;
@@ -1396,63 +1414,131 @@ function openReceiptModal(orderId) {
   const sel = document.getElementById('rcptPayerSelector');
   if(currentReceiptOrder.payers.length > 1) {
      selWrap.style.display = 'block';
-     sel.innerHTML = currentReceiptOrder.payers.map((p, i) => `<option value="${i}">บิลของ: ${p.name}</option>`).join('');
+     // เพิ่มตัวเลือก "รวมทุกบิล" 
+     let opts = `<option value="all">รวมทุกบิล (Combined Bill)</option>`;
+     opts += currentReceiptOrder.payers.map((p, i) => `<option value="${i}">บิลของ: ${p.name}</option>`).join('');
+     sel.innerHTML = opts;
+     renderReceiptForPayer('all');
   } else {
      selWrap.style.display = 'none';
      sel.innerHTML = `<option value="0"></option>`;
+     renderReceiptForPayer(0);
   }
 
-  renderReceiptForPayer(0);
   document.getElementById('receiptModal').style.display = 'flex';
 }
 
 function renderReceiptForPayer(payerIdx) {
   const order = currentReceiptOrder;
-  const payer = order.payers[payerIdx];
-
-  document.getElementById('rcptId').innerText = order.id;
-  document.getElementById('rcptDate').innerText = payer.date;
-  document.getElementById('rcptName').innerText = payer.name;
-
-  if (order.eventName) {
-    document.getElementById('rcptEventName').innerText = order.eventName;
-    document.getElementById('rcptEventWrap').style.display = 'block';
-  } else {
-    document.getElementById('rcptEventWrap').style.display = 'none';
-  }
-
-  if (order.billNumber) {
-    let bNo = order.billNumber;
-    if (order.payers.length > 1) bNo += `-${parseInt(payerIdx)+1}`;
-    document.getElementById('rcptBill').innerText = bNo;
-    document.getElementById('rcptBillWrap').style.display = 'block';
-  } else {
-    document.getElementById('rcptBillWrap').style.display = 'none';
-  }
-
-  let itemsHtml = '';
   
-  order.itemsData.forEach(item => {
-    if(item.payerIdx == payerIdx) {
+  if (payerIdx === 'all') {
+    // --- Render ใบเสร็จแบบรวม (Combined) ---
+    document.getElementById('rcptId').innerText = order.id;
+    document.getElementById('rcptDate').innerText = order.date || order.payers[0].date;
+    document.getElementById('rcptName').innerText = order.payers.map(p => p.name).join(', ') || 'ลูกค้าหลายท่าน';
+
+    if (order.eventName) {
+      document.getElementById('rcptEventName').innerText = order.eventName;
+      document.getElementById('rcptEventWrap').style.display = 'block';
+    } else {
+      document.getElementById('rcptEventWrap').style.display = 'none';
+    }
+
+    if (order.billNumber) {
+      document.getElementById('rcptBill').innerText = order.billNumber;
+      document.getElementById('rcptBillWrap').style.display = 'block';
+    } else {
+      document.getElementById('rcptBillWrap').style.display = 'none';
+    }
+
+    // จัดกลุ่มรายการแพ็กเกจ
+    let grouped = {};
+    order.itemsData.forEach(item => {
+       if(!grouped[item.pkgId]) {
+          grouped[item.pkgId] = { label: item.label, price: item.price, cnt: 0, sum: 0 };
+       }
+       grouped[item.pkgId].cnt++;
+       grouped[item.pkgId].sum += item.price;
+    });
+
+    let itemsHtml = '';
+    Object.values(grouped).forEach(g => {
       itemsHtml += `
         <tr style="border-bottom: 1px dashed #cccccc; background: transparent;">
-          <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${item.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(item.price)} ฿)</span></td>
-          <td style="text-align:center; padding: 6px 0; color:#000000;">1</td>
-          <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(item.price)} ฿</td>
+          <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${g.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(g.price)} ฿)</span></td>
+          <td style="text-align:center; padding: 6px 0; color:#000000;">${g.cnt}</td>
+          <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(g.sum)} ฿</td>
         </tr>`;
+    });
+    
+    let tSub = 0, tDisc = 0, tNet = 0;
+    order.payers.forEach(p => { tSub += p.total; tDisc += p.discount; tNet += p.net; });
+
+    document.getElementById('rcptItems').innerHTML = itemsHtml;
+    document.getElementById('rcptTotal').innerHTML = `ยอดรวม (Subtotal): <strong>${fmt(tSub)} ฿</strong>`;
+    
+    if (tDisc > 0) {
+      document.getElementById('rcptDiscount').innerHTML = `ส่วนลดรวมทั้งหมด (Discount): <strong>-${fmt(tDisc)} ฿</strong>`;
+    } else {
+      document.getElementById('rcptDiscount').innerHTML = '';
     }
-  });
-  
-  document.getElementById('rcptItems').innerHTML = itemsHtml;
-  document.getElementById('rcptTotal').innerHTML = `ยอดรวม (Subtotal): <strong>${fmt(payer.total)} ฿</strong>`;
+    document.getElementById('rcptNet').innerHTML = `ยอดชำระสุทธิรวม (Net): <strong style="font-size: 16px;">${fmt(tNet)} ฿</strong>`;
 
-  if (payer.discount > 0) {
-    document.getElementById('rcptDiscount').innerHTML = `ส่วนลดงานเฉลี่ย (Discount): <strong>-${fmt(payer.discount)} ฿</strong>`;
   } else {
-    document.getElementById('rcptDiscount').innerHTML = '';
-  }
+    // --- Render ใบเสร็จแบบแยกคน (Single) ---
+    const payer = order.payers[payerIdx];
+    document.getElementById('rcptId').innerText = order.id;
+    document.getElementById('rcptDate').innerText = payer.date;
+    document.getElementById('rcptName').innerText = payer.name;
 
-  document.getElementById('rcptNet').innerHTML = `ยอดชำระสุทธิ (Net): <strong style="font-size: 16px;">${fmt(payer.net)} ฿</strong>`;
+    if (order.eventName) {
+      document.getElementById('rcptEventName').innerText = order.eventName;
+      document.getElementById('rcptEventWrap').style.display = 'block';
+    } else {
+      document.getElementById('rcptEventWrap').style.display = 'none';
+    }
+
+    if (order.billNumber) {
+      let bNo = order.billNumber;
+      if (order.payers.length > 1) bNo += `-${parseInt(payerIdx)+1}`;
+      document.getElementById('rcptBill').innerText = bNo;
+      document.getElementById('rcptBillWrap').style.display = 'block';
+    } else {
+      document.getElementById('rcptBillWrap').style.display = 'none';
+    }
+
+    // จัดกลุ่มรายการแพ็กเกจ (ของลูกค้ารายนี้)
+    let grouped = {};
+    order.itemsData.forEach(item => {
+      if(item.payerIdx == payerIdx) {
+         if(!grouped[item.pkgId]) {
+            grouped[item.pkgId] = { label: item.label, price: item.price, cnt: 0, sum: 0 };
+         }
+         grouped[item.pkgId].cnt++;
+         grouped[item.pkgId].sum += item.price;
+      }
+    });
+
+    let itemsHtml = '';
+    Object.values(grouped).forEach(g => {
+      itemsHtml += `
+        <tr style="border-bottom: 1px dashed #cccccc; background: transparent;">
+          <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${g.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(g.price)} ฿)</span></td>
+          <td style="text-align:center; padding: 6px 0; color:#000000;">${g.cnt}</td>
+          <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(g.sum)} ฿</td>
+        </tr>`;
+    });
+    
+    document.getElementById('rcptItems').innerHTML = itemsHtml;
+    document.getElementById('rcptTotal').innerHTML = `ยอดรวม (Subtotal): <strong>${fmt(payer.total)} ฿</strong>`;
+
+    if (payer.discount > 0) {
+      document.getElementById('rcptDiscount').innerHTML = `ส่วนลดงาน (Discount): <strong>-${fmt(payer.discount)} ฿</strong>`;
+    } else {
+      document.getElementById('rcptDiscount').innerHTML = '';
+    }
+    document.getElementById('rcptNet').innerHTML = `ยอดชำระสุทธิ (Net): <strong style="font-size: 16px;">${fmt(payer.net)} ฿</strong>`;
+  }
 }
 
 function closeReceiptModal() { document.getElementById('receiptModal').style.display = 'none'; }
