@@ -3,345 +3,1387 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Geneus DNA — Event Pricing</title>
+<title>Geneus DNA — Event POS</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+<!-- เพิ่มไลบรารีสำหรับแปลง HTML เป็นรูปภาพ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
-  --bg: #0a0f1e;
-  --card: #111827;
-  --card2: #1a2235;
-  --border: #2a3a55;
-  --accent: #00c9a7;
-  --accent2: #4f8fff;
-  --gold: #f5c842;
-  --danger: #ff5c5c;
-  --text: #e8edf5;
-  --muted: #8b9ebf;
-  --tag-dog-bg: #1a2d3a; --tag-dog: #4fc3f7;
-  --tag-std-bg: #1a2b1a; --tag-std: #81c784;
-  --tag-prem-bg: #2a1f3a; --tag-prem: #ce93d8;
-  --tag-premex-bg: #2a2510; --tag-premex: #ffcc80;
-  --tag-plus-bg: #2a1510; --tag-plus: #ff8c42;
+  --bg: #f4f7f6;
+  --card: #ffffff;
+  --card2: #f8fafc;
+  --border: #e2e8f0;
+  --accent: #059669;
+  --accent2: #2563eb;
+  --gold: #d97706;
+  --danger: #dc2626;
+  --text: #1e293b;
+  --muted: #64748b;
+  --tag-dog-bg: #e0f2fe; --tag-dog: #0284c7;
+  --tag-std-bg: #dcfce7; --tag-std: #15803d;
+  --tag-prem-bg: #fae8ff; --tag-prem: #a21caf;
+  --tag-premex-bg: #fef3c7; --tag-premex: #b45309;
+  --tag-plus-bg: #ffedd5; --tag-plus: #c2410c;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-serif; font-size: clamp(14px, 2vw, 16px); padding-bottom: 80px; }
 
 /* HEADER */
-.header { text-align: center; padding: 20px 16px 16px; background: var(--bg); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); }
-.header h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(20px, 4vw, 28px); font-weight: 900; letter-spacing: 1px; color: var(--accent); text-transform: uppercase; }
-.header p { color: var(--muted); margin-top: 4px; font-size: clamp(12px, 1.5vw, 15px); }
+.header { text-align: center; padding: 16px; background: var(--card); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+.header h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(20px, 4vw, 24px); font-weight: 900; letter-spacing: 1px; color: var(--accent); text-transform: uppercase; }
+.header p { color: var(--muted); margin-top: 4px; font-size: 12px; }
 
 /* TABS */
-.tab-container { display: flex; background: var(--card); border-bottom: 1px solid var(--border); }
-.tab-btn { flex: 1; padding: 14px 0; background: transparent; border: none; color: var(--muted); font-family: 'Sarabun', sans-serif; font-size: clamp(14px, 2.5vw, 18px); font-weight: 700; cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; }
-.tab-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); background: rgba(0, 201, 167, 0.05); }
+.tab-container { display: flex; background: var(--card); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.tab-container::-webkit-scrollbar { display: none; }
+.tab-btn { flex: 1; min-width: 100px; padding: 14px 8px; background: transparent; border: none; color: var(--muted); font-family: 'Sarabun', sans-serif; font-size: clamp(13px, 2.5vw, 15px); font-weight: 700; cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; }
+.tab-btn.active { color: var(--accent); border-bottom: 3px solid var(--accent); background: rgba(5, 150, 105, 0.05); }
 
 /* CONTENT WRAPPER */
-.content { padding: 20px 16px; display: none; }
+.content { padding: 16px; display: none; }
 .content.active { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-/* PROMO */
-.promo-note { background: linear-gradient(135deg,#1a2e20,#0f2a3a); border: 1px solid var(--accent); border-radius: 12px; padding: clamp(12px, 2vw, 18px); text-align: center; margin-bottom: 20px; font-size: clamp(13px, 2vw, 18px); color: var(--accent); font-weight: 700; box-shadow: 0 4px 12px rgba(0,201,167,0.1); }
-.promo-note span { color: var(--text); font-weight: 400; display: block; margin-top: 4px; font-size: clamp(11px, 1.5vw, 15px); }
+/* PROMO NOTE */
+.promo-note { background: linear-gradient(135deg, #ecfdf5, #dcfce7); border: 1px solid #a7f3d0; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 16px; font-size: clamp(13px, 2vw, 15px); color: #065f46; font-weight: 700; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.08); }
+.promo-note span { color: #047857; font-weight: 400; display: block; margin-top: 4px; font-size: 11px; }
 
-/* CALCULATOR (MOBILE FIRST TO TABLET) */
-.calc-box { margin-bottom: 20px; }
-.pkg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: clamp(10px, 2vw, 16px); margin-bottom: 20px; }
-.pkg-btn { border-radius: 12px; padding: clamp(12px, 2vw, 16px) clamp(10px, 1.5vw, 14px); cursor: pointer; font-family: 'Sarabun', sans-serif; border: 2px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: all 0.1s; position: relative; background: var(--card2); text-align: center; min-height: clamp(80px, 10vw, 110px); }
+/* PKG GRID */
+.pkg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.pkg-btn { border-radius: 12px; padding: 12px 8px; cursor: pointer; font-family: 'Sarabun', sans-serif; border: 2px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: all 0.1s; position: relative; background: var(--card); text-align: center; min-height: 90px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
 .pkg-btn:active { transform: scale(0.97); }
-.pkg-btn .btn-name { font-size: clamp(13px, 2vw, 18px); font-weight: 800; }
-.pkg-btn .btn-reg { font-size: clamp(10px, 1.5vw, 14px); text-decoration: line-through; opacity: 0.7; }
-.pkg-btn .btn-price { font-size: clamp(15px, 2.5vw, 22px); font-weight: 800; }
-.pkg-btn .btn-qty { position: absolute; top: -8px; right: -8px; background: var(--accent); color: #000; font-size: clamp(13px, 2vw, 16px); font-weight: 900; width: clamp(24px, 3.5vw, 32px); height: clamp(24px, 3.5vw, 32px); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+.pkg-btn .btn-name { font-size: clamp(13px, 2vw, 16px); font-weight: 800; }
+.pkg-btn .btn-reg { font-size: 11px; text-decoration: line-through; opacity: 0.6; }
+.pkg-btn .btn-price { font-size: clamp(15px, 2.5vw, 18px); font-weight: 800; }
+.pkg-qty-ctrl { position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; background: var(--card); border: 1px solid var(--accent); border-radius: 20px; padding: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
+.pkg-qty-ctrl div { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border-radius: 50%; user-select: none; }
+.pkg-qty-ctrl .ctrl-minus { background: #fee2e2; color: var(--danger); font-size: 18px; }
+.pkg-qty-ctrl .ctrl-plus { background: var(--accent); color: #ffffff; font-size: 18px; }
+.pkg-qty-ctrl .ctrl-val { width: 32px; font-size: 15px; color: var(--text); cursor: default; }
 
-.pkg-btn[data-id="dog"]    { color: var(--tag-dog);    border-color: rgba(79, 195, 247, 0.3); }
-.pkg-btn[data-id="std"]    { color: var(--tag-std);    border-color: rgba(129, 199, 132, 0.3); }
-.pkg-btn[data-id="prem"]   { color: var(--tag-prem);   border-color: rgba(206, 147, 216, 0.3); }
-.pkg-btn[data-id="premex"] { color: var(--tag-premex); border-color: rgba(255, 204, 128, 0.3); }
-.pkg-btn[data-id="plus"]   { color: var(--tag-plus);   border-color: rgba(255, 140, 66, 0.3); }
+.pkg-btn[data-id="dog"]    { color: var(--tag-dog);    border-color: rgba(2, 132, 199, 0.2); }
+.pkg-btn[data-id="std"]    { color: var(--tag-std);    border-color: rgba(21, 128, 61, 0.2); }
+.pkg-btn[data-id="prem"]   { color: var(--tag-prem);   border-color: rgba(162, 28, 175, 0.2); }
+.pkg-btn[data-id="premex"] { color: var(--tag-premex); border-color: rgba(180, 83, 9, 0.2); }
+.pkg-btn[data-id="plus"]   { color: var(--tag-plus);   border-color: rgba(194, 65, 12, 0.2); }
 
 .pkg-btn.selected[data-id="dog"]    { background: var(--tag-dog-bg);    border-color: var(--tag-dog); }
 .pkg-btn.selected[data-id="std"]    { background: var(--tag-std-bg);    border-color: var(--tag-std); }
 .pkg-btn.selected[data-id="prem"]   { background: var(--tag-prem-bg);   border-color: var(--tag-prem); }
 .pkg-btn.selected[data-id="premex"] { background: var(--tag-premex-bg); border-color: var(--tag-premex); }
 .pkg-btn.selected[data-id="plus"]   { background: var(--tag-plus-bg);   border-color: var(--tag-plus); }
-.pkg-btn.selected { box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
-/* RESULT CARD */
-.calc-result { background: var(--card); border: 1px solid var(--accent); border-radius: 14px; padding: clamp(18px, 3vw, 24px); box-shadow: 0 0 20px rgba(0,201,167,0.08); position: relative; }
-.calc-empty { color: var(--muted); font-size: clamp(14px, 2vw, 18px); text-align: center; padding: 20px 0; }
+/* TOGGLE SWITCH */
+.switch { position: relative; display: inline-block; width: 36px; height: 20px; margin-right: 8px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
+.slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(16px); }
 
-.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: clamp(13px, 2vw, 18px); }
+/* RESULT & POS FORM */
+.calc-result { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; }
+.calc-empty { color: var(--muted); font-size: 14px; text-align: center; padding: 20px 0; }
+
+.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; }
 .summary-row.reg { color: var(--muted); }
 .summary-row.reg .val { text-decoration: line-through; }
 .summary-row.event { color: var(--text); font-weight: 600; }
-.summary-row.discount { color: var(--gold); font-weight: 700; background: rgba(245,200,66,0.1); padding: 6px 10px; border-radius: 8px; margin: 10px 0; }
-.summary-row.final { border-top: 1px dashed var(--border); padding-top: 14px; margin-top: 6px; font-size: clamp(18px, 3vw, 28px); color: var(--accent); font-weight: 900; }
-.summary-row.saving { color: var(--gold); font-size: clamp(14px, 2.5vw, 22px); font-weight: 800; justify-content: center; background: rgba(245,200,66,0.15); padding: 10px; border-radius: 8px; margin-top: 16px; border: 1px solid rgba(245,200,66,0.3); }
+.summary-row.discount { color: var(--gold); font-weight: 700; background: #fffbeb; padding: 6px 10px; border-radius: 8px; margin: 10px 0; }
+.summary-row.gift { color: var(--accent); font-weight: 700; background: #ecfdf5; padding: 8px 10px; border-radius: 8px; margin: 10px 0; border: 1px solid #a7f3d0; }
+.summary-row.final { border-top: 1px dashed var(--border); padding-top: 14px; margin-top: 6px; font-size: 20px; color: var(--accent); font-weight: 900; }
 
-.hint-bar { margin-top: 16px; font-size: clamp(12px, 1.8vw, 16px); color: var(--text); padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center; }
-.btn-clear { width: 100%; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: clamp(12px, 2vw, 16px); border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: clamp(14px, 2vw, 18px); font-weight: 700; margin-top: 16px; }
+.checkout-form { border-top: 2px solid var(--border); margin-top: 16px; padding-top: 16px; }
+.form-group { margin-bottom: 12px; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+.form-input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-serif; font-size: 14px; outline: none; transition: 0.2s; color-scheme: light; }
+.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(5,150,105,0.2); }
 
-/* TABLE SCENARIO */
-.filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; justify-content: center; }
-.filter-btn { background: var(--card2); border: 1px solid var(--border); color: var(--muted); padding: clamp(8px, 1.5vw, 12px) clamp(14px, 2vw, 20px); border-radius: 20px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: clamp(12px, 1.8vw, 16px); font-weight: 600; }
-.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 800; }
+.file-upload-wrapper { position: relative; width: 100%; height: 50px; border: 2px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f8fafc; cursor: pointer; overflow: hidden; }
+.file-upload-wrapper:hover { border-color: var(--accent); background: #ecfdf5; }
+.file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.file-upload-text { font-size: 13px; font-weight: 600; color: var(--muted); pointer-events: none; }
 
-.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: var(--card); }
-table { width: 100%; border-collapse: collapse; font-size: clamp(12px, 1.8vw, 16px); min-width: 600px; }
-thead tr { background: #0d1929; }
-th { padding: clamp(12px, 2vw, 16px); text-align: center; color: var(--muted); font-weight: 700; font-size: clamp(11px, 1.5vw, 15px); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-th:first-child { text-align: left; }
+.btn-checkout { width: 100%; background: var(--accent); color: #ffffff; padding: 14px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 16px; font-weight: 900; border: none; box-shadow: 0 4px 15px rgba(5,150,105,0.25); transition: 0.2s; margin-top: 16px; }
+.btn-checkout:active { transform: scale(0.98); }
+.btn-clear { width: 100%; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 700; margin-top: 10px; }
+
+/* HISTORY TABLE */
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: var(--card); margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
+thead tr { background: #f1f5f9; }
+th { padding: 12px; text-align: left; color: var(--muted); font-weight: 700; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); white-space: nowrap; }
 tbody tr { border-bottom: 1px solid var(--border); }
-td { padding: clamp(12px, 2vw, 16px); text-align: center; vertical-align: middle; }
-td:first-child { text-align: left; }
+td { padding: 12px; vertical-align: middle; }
+.h-date { font-size: 11px; color: var(--muted); }
+.h-name { font-weight: 700; color: var(--text); }
+.h-price { font-weight: 800; color: var(--accent); }
+.btn-view-slip { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; display: block; width: 100%; margin-bottom: 4px; }
 
-.combo { display: flex; flex-wrap: wrap; gap: 4px; }
-.pkg-tag { font-size: clamp(11px, 1.5vw, 15px); font-weight: 700; padding: 4px 8px; border-radius: 6px; border: 1px solid; }
+/* MODAL */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); overflow-y: auto; }
+.modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 400px; width: 100%; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
+.btn-close-modal { background: var(--danger); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; }
+
+/* PRESENTATION MODE (CUSTOMER VIEW) */
+.pres-container { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 16px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.06); }
+.pres-title { color: var(--text); font-size: clamp(20px, 3.5vw, 26px); font-weight: 900; margin-bottom: 24px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+.pres-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 24px; }
+.pres-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: clamp(15px, 2.5vw, 18px); color: var(--muted); }
+.pres-row.net { font-size: clamp(28px, 5vw, 40px); font-weight: 900; color: var(--accent); border-top: 2px dashed var(--border); padding-top: 20px; margin-top: 16px; }
+.pres-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+.pres-stat-box { background: #f8fafc; border-radius: 14px; padding: 16px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: center; }
+.pres-stat-box.highlight { background: #fffbeb; border-color: #fde68a; box-shadow: 0 4px 10px rgba(217,119,6,0.05); }
+.pres-stat-label { font-size: clamp(13px, 2vw, 15px); color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+.pres-stat-val { font-size: clamp(22px, 4vw, 28px); font-weight: 900; color: var(--text); line-height: 1.1; }
+.pres-stat-box.highlight .pres-stat-val { color: var(--gold); }
+.pres-stat-val.avg { color: var(--accent2); }
+.pres-badge { background: var(--danger); color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 800; vertical-align: middle; margin-left: 8px; }
+
+/* UTILS */
+.pkg-tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; border: 1px solid; display: inline-block; margin: 2px; }
 .tag-dog    { background: var(--tag-dog-bg);    color: var(--tag-dog);    border-color: var(--tag-dog); }
 .tag-std    { background: var(--tag-std-bg);    color: var(--tag-std);    border-color: var(--tag-std); }
 .tag-prem   { background: var(--tag-prem-bg);   color: var(--tag-prem);   border-color: var(--tag-prem); }
 .tag-premex { background: var(--tag-premex-bg); color: var(--tag-premex); border-color: var(--tag-premex); }
 .tag-plus   { background: var(--tag-plus-bg);   color: var(--tag-plus);   border-color: var(--tag-plus); }
 
-.price-final { font-weight: 800; font-size: clamp(15px, 2vw, 20px); color: var(--accent); }
-.saving-cell { color: var(--gold); font-weight: 800; }
-.section-label { font-size: clamp(12px, 1.8vw, 16px); font-weight: 800; color: var(--muted); padding: 10px 12px; background: #0d1929; border-bottom: 1px solid var(--border); }
+/* PRINT STYLES */
+@media print {
+  body { background: #fff; margin: 0; padding: 0; }
+  .header, .tab-container, .content, #slipModal, #editModal { display: none !important; }
+  #receiptModal { position: absolute; left: 0; top: 0; display: block !important; background: transparent; width: 100%; height: auto; padding: 0; }
+  .modal-content { max-width: 100%; margin: 0; padding: 0; box-shadow: none; border: none; }
+  #receiptContent { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; box-shadow: none !important; }
+  .print-hide { display: none !important; }
+}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>Geneus DNA</h1>
-  <p>Live Event Calculator</p>
+  <h1>Geneus POS</h1>
+  <p>Point of Sale (Local Storage)</p>
 </div>
 
 <div class="tab-container">
-  <button class="tab-btn active" onclick="switchTab('calc')" id="btn-calc">🧮 จัดเซ็ตหน้างาน</button>
-  <button class="tab-btn" onclick="switchTab('table')" id="btn-table">📊 ตารางทุกกรณี</button>
+  <button class="tab-btn active" onclick="switchTab('presentation')" id="btn-presentation">💎 สรุปให้ลูกค้าดู</button>
+  <button class="tab-btn" onclick="switchTab('pos')" id="btn-pos">🛒 จัดออเดอร์</button>
+  <button class="tab-btn" onclick="switchTab('history')" id="btn-history">📋 ประวัติ</button>
+  <button class="tab-btn" onclick="switchTab('settings')" id="btn-settings">⚙️ ตั้งค่า</button>
 </div>
 
-<!-- TAB 1: CALCULATOR -->
-<div id="tab-calc" class="content active">
-  <div class="promo-note">
-    🎯 ลดเพิ่มทันที 1,000.- เมื่อซื้อครบ 15,000.-
-    <span>(สะสมทุก 15k รับส่วนลดเพิ่มทีละ 1,000.-)</span>
-  </div>
+<div id="tab-presentation" class="content active"></div>
 
-  <div class="pkg-grid" id="pkgButtons"></div>
+<div id="tab-pos" class="content">
+  <div class="checkout-form" style="border-top: none; margin-top: 0; padding-top: 0;">
+    <div class="form-group" style="margin-bottom: 20px;">
+      <label>👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label>
+      <select id="splitCount" class="form-input" style="border-color:var(--accent); font-weight:bold; font-size:16px;" onchange="toggleSplit()">
+        <option value="1">1 ท่าน (จ่ายก้อนเดียว)</option>
+        <option value="2">2 ท่าน (แยกจ่าย)</option>
+        <option value="3">3 ท่าน (แยกจ่าย)</option>
+        <option value="4">4 ท่าน (แยกจ่าย)</option>
+        <option value="5">5 ท่าน (แยกจ่าย)</option>
+        <option value="6">6 ท่าน (แยกจ่าย)</option>
+      </select>
+    </div>
 
-  <div class="calc-result" id="calcResult">
-    <div class="calc-empty">👆 แตะเลือกแพ็กเกจด้านบน<br><span style="font-size: clamp(11px, 1.5vw, 15px); opacity: 0.7; margin-top: 6px; display: block;">(แตะซ้ำเพื่อเพิ่มจำนวนชุด สูงสุด 6 ชุด)</span></div>
+    <!-- Container for dynamic payer blocks -->
+    <div id="payersContainer"></div>
+
+    <button class="btn-checkout" onclick="processCheckout()">✅ ยืนยันออเดอร์ (Checkout)</button>
+    <button class="btn-clear" onclick="clearCalc()">✕ ยกเลิกออเดอร์นี้</button>
   </div>
 </div>
 
-<!-- TAB 2: SCENARIOS -->
-<div id="tab-table" class="content">
-  <div class="filter-row">
-    <button class="filter-btn active" onclick="filterTable('all',this)">ทั้งหมด</button>
-    <button class="filter-btn" onclick="filterTable('1',this)">1 ชุด</button>
-    <button class="filter-btn" onclick="filterTable('2',this)">2 ชุด</button>
-    <button class="filter-btn" onclick="filterTable('3',this)">3 ชุด</button>
-    <button class="filter-btn" onclick="filterTable('4',this)">4 ชุด</button>
-    <button class="filter-btn" onclick="filterTable('5',this)">5 ชุด</button>
-    <button class="filter-btn" onclick="filterTable('6',this)">6 ชุด</button>
+<div id="tab-history" class="content">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <h3 style="color:var(--accent);">ประวัติการขายในเครื่อง</h3>
+    <div>
+      <button onclick="exportCSV()" style="background:var(--accent2); border:none; color:#fff; font-size:12px; font-family:'Sarabun'; padding:6px 12px; border-radius:6px; cursor:pointer; margin-right: 8px;">📥 Export CSV</button>
+      <button onclick="clearHistory()" style="background:transparent; border:none; color:var(--danger); font-size:12px; cursor:pointer;">🗑 ล้างประวัติ</button>
+    </div>
   </div>
-
+  <p style="font-size: 11px; color: var(--muted); margin-bottom: 12px;">หมายเหตุ: ข้อมูลทั้งหมดถูกจัดเก็บไว้ในอุปกรณ์นี้เท่านั้น</p>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>แพ็กเกจที่จัดเซ็ต</th>
-          <th>จำนวน</th>
-          <th>รวมราคาหน้างาน</th>
-          <th>ส่วนลด On-Top</th>
-          <th>สุทธิ (บาท)</th>
-          <th>ประหยัดไป</th>
+          <th>วันที่ / ลูกค้า</th>
+          <th>รายการ</th>
+          <th>ยอดสุทธิ / เลขบิล</th>
+          <th style="text-align:center;">จัดการ</th>
         </tr>
       </thead>
-      <tbody id="tableBody"></tbody>
+      <tbody id="historyBody">
+        <tr><td colspan="4" style="text-align:center; color:var(--muted); padding:20px;">ยังไม่มีประวัติการขาย</td></tr>
+      </tbody>
     </table>
   </div>
 </div>
 
-<script>
-const PACKAGES = [
-  { id:'dog',    label:'Dog DNA',      price:5500, regPrice:6500,  cls:'tag-dog' },
-  { id:'std',    label:'Standard',     price:4500, regPrice:5900,  cls:'tag-std' },
-  { id:'prem',   label:'Premium',      price:6900, regPrice:8900,  cls:'tag-prem' },
-  { id:'plus',   label:'Premium Plus', price:9500, regPrice:11900, cls:'tag-plus' },
-  { id:'premex', label:'Exclusive',    price:8900, regPrice:11900, cls:'tag-premex' }
-];
+<div id="tab-settings" class="content">
+  <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
+    <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">📝 ข้อมูลงานอีเวนต์</h3>
+    <div style="display:grid; gap:10px;">
+      <div>
+        <label style="font-size:12px; color:var(--muted); font-weight:700;">ชื่องาน (Event Name) *จะแสดงในใบเสร็จและ CSV</label>
+        <input type="text" id="cfg-event-name" class="form-input" placeholder="เช่น Pet Expo 2026">
+      </div>
+      <div>
+        <label style="font-size:12px; color:var(--muted); font-weight:700;">ตัวย่อรหัสบิล (Prefix) *อักษรภาษาอังกฤษ 3 ตัว</label>
+        <input type="text" id="cfg-event-prefix" class="form-input" placeholder="เช่น PET หรือ INV" maxlength="5">
+      </div>
+    </div>
+  </div>
 
-const getDisc = t => Math.floor(t/15000)*1000;
+  <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
+    <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">🎯 ตั้งค่าโปรโมชัน (เปิดใช้พร้อมกันได้)</h3>
+    
+    <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:12px;">
+      <label style="font-weight:700; color:var(--text); display:flex; align-items:center; margin-bottom:8px;">
+        <label class="switch"><input type="checkbox" id="cfg-amt-active" onchange="togglePromoFields('amt')"><span class="slider"></span></label>
+        1. ส่วนลด On-top ตามยอดซื้อ
+      </label>
+      <div id="cfg-amt-fields" style="display:none; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div><label style="font-size:12px; color:var(--muted);">ทุกๆ ยอดครบ (บาท)</label><input type="number" id="cfg-amt-req" class="form-input"></div>
+        <div><label style="font-size:12px; color:var(--muted);">ลดเพิ่ม (บาท)</label><input type="number" id="cfg-amt-disc" class="form-input"></div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:12px;">
+      <label style="font-weight:700; color:var(--text); display:flex; align-items:center; margin-bottom:8px;">
+        <label class="switch"><input type="checkbox" id="cfg-qty-active" onchange="togglePromoFields('qty')"><span class="slider"></span></label>
+        2. ส่วนลดตามจำนวนชุด (ซื้อหลายชุดลดเพิ่ม)
+      </label>
+      <div id="cfg-qty-fields" style="display:none; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div><label style="font-size:12px; color:var(--muted);">ทุกๆ จำนวน (ชุด)</label><input type="number" id="cfg-qty-req" class="form-input"></div>
+        <div><label style="font-size:12px; color:var(--muted);">ลดเพิ่ม (บาท)</label><input type="number" id="cfg-qty-disc" class="form-input"></div>
+      </div>
+    </div>
+
+    <div>
+      <label style="font-weight:700; color:var(--text); display:flex; align-items:center; margin-bottom:8px;">
+        <label class="switch"><input type="checkbox" id="cfg-gift-active" onchange="togglePromoFields('gift')"><span class="slider"></span></label>
+        3. โปรโมชันของแถม
+      </label>
+      <div id="cfg-gift-fields" style="display:none; grid-template-columns: 1fr 2fr; gap:10px;">
+        <div><label style="font-size:12px; color:var(--muted);">ซื้อครบ (ชุด)</label><input type="number" id="cfg-gift-req" class="form-input"></div>
+        <div><label style="font-size:12px; color:var(--muted);">ชื่อของแถม</label><input type="text" id="cfg-gift-name" class="form-input"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
+    <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">ราคาแพ็กเกจ</h3>
+    <div id="settings-packages"></div>
+  </div>
+  <button class="btn-checkout" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
+</div>
+
+<!-- SLIP MODAL (View Multiple Slips) -->
+<div id="slipModal" class="modal">
+  <div class="modal-content" style="text-align:center;">
+    <h3 style="margin-bottom: 10px; color:var(--accent);">หลักฐานการโอนเงิน</h3>
+    <div id="modalImageContainer" style="max-height:60vh; overflow-y:auto; margin-bottom:12px;"></div>
+    <button class="btn-close-modal" onclick="closeModal()">ปิดหน้าต่าง</button>
+  </div>
+</div>
+
+<!-- EDIT MODAL (Simplified for Barcodes only) -->
+<div id="editModal" class="modal">
+  <div class="modal-content" style="text-align: left; max-height: 90vh; overflow-y: auto;">
+    <h3 style="margin-bottom: 16px; color:var(--accent); text-align: center;">✏️ แก้ไขข้อมูลออเดอร์</h3>
+    <p style="font-size:12px; color:var(--muted); text-align:center; margin-bottom:16px;">(อนุญาตให้แก้ไขเฉพาะบาร์โค้ด)</p>
+    
+    <div class="form-group" style="margin-top:16px;">
+      <label>📸 บาร์โค้ด (แก้ทีละกล่อง)</label>
+      <div id="editBarcodesContainer"></div>
+    </div>
+    
+    <button class="btn-checkout" onclick="saveEditedOrder()" id="btn-save-edit" style="margin-top: 16px;">💾 บันทึกการแก้ไข</button>
+    <button class="btn-clear" onclick="closeEditModal()">✕ ยกเลิก</button>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div id="receiptModal" class="modal">
+  <div class="modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+    
+    <!-- Payer Selector for Split Bill -->
+    <div id="rcptPayerSelectorWrap" class="print-hide" style="background:#fff; padding:12px; border-radius:12px; margin-bottom:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:none;">
+      <label style="font-size:12px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">🧾 เลือกใบเสร็จของผู้ชำระเงิน:</label>
+      <select id="rcptPayerSelector" class="form-input" onchange="renderReceiptForPayer(this.value)"></select>
+    </div>
+
+    <!-- ส่วนที่จะถูกจับภาพ (แคปจอ) -->
+    <div id="receiptContent" style="background: #ffffff; padding: 16px; color: #000000; font-family: 'Sarabun', sans-serif; width: 80mm; margin: 0 auto; box-sizing: border-box; position: relative; overflow: hidden;">
+      <h2 style="text-align:center; color: #000000; font-family:'Montserrat', sans-serif; font-weight: 900; margin-bottom: 4px; font-size: 20px;">GENEUS DNA</h2>
+      
+      <div style="text-align:center; font-size: 10px; color: #333333; line-height: 1.4; margin-bottom: 12px;">
+        <strong>บริษัท จีเนียส เจเนติกส์ จำกัด (สำนักงานใหญ่)</strong><br>
+        เลขที่ 22/5 ชั้น 4 ซอยชิดลม แขวงลุมพินี<br>เขตปทุมวัน กรุงเทพมหานคร 10330<br>
+        ทะเบียนนิติบุคคล 0105561207945
+      </div>
+
+      <div style="text-align:center; font-size: 11px; color: #333333; border-bottom: 1px dashed #000000; padding-bottom: 8px; margin-bottom: 12px; font-weight: 600;">
+         ใบสรุปรายการสั่งซื้อ / Order Summary
+      </div>
+      
+      <div style="font-size: 12px; margin-bottom: 12px; line-height: 1.5; color: #000000;">
+         <div id="rcptEventWrap" style="display:none; color:#059669; font-weight:700; border-bottom:1px solid #f1f5f9; padding-bottom:4px; margin-bottom:4px;">
+            <span>ชื่องาน:</span> <span id="rcptEventName" style="float: right;"></span>
+         </div>
+         <div><span>รหัสออเดอร์:</span> <strong id="rcptId" style="float: right;"></strong></div>
+         <div id="rcptBillWrap" style="display:none;"><span>เลขที่ใบเสร็จ:</span> <strong id="rcptBill" style="float: right;"></strong></div>
+         <div><span>วันที่-เวลา:</span> <strong id="rcptDate" style="float: right;"></strong></div>
+         <div><span>ชื่อผู้ชำระ:</span> <strong id="rcptName" style="float: right;"></strong></div>
+      </div>
+      
+      <table style="width: 100%; min-width: 0; font-size: 12px; border-collapse: collapse; margin-bottom: 12px; color: #000000;">
+         <thead>
+           <tr style="border-bottom: 1px solid #000000; background: transparent;">
+             <th style="text-align:left; padding-bottom: 4px; width: 50%; color: #000000;">รายการ</th>
+             <th style="text-align:center; padding-bottom: 4px; width: 20%; color: #000000;">จำนวน</th>
+             <th style="text-align:right; padding-bottom: 4px; width: 30%; color: #000000;">รวม</th>
+           </tr>
+         </thead>
+         <tbody id="rcptItems"></tbody>
+      </table>
+      
+      <div style="font-size: 12px; text-align: right; border-top: 1px dashed #000000; padding-top: 8px; color: #000000;">
+         <div id="rcptTotal" style="margin-bottom: 4px;"></div>
+         <div id="rcptDiscount" style="margin-bottom: 4px; font-weight: 700;"></div>
+         <div id="rcptNet" style="font-size: 16px; font-weight: 900; margin-top: 8px;"></div>
+      </div>
+      
+      <div style="text-align:center; margin-top: 20px; font-size: 10px; color: #333333;">
+         ขอบคุณที่ไว้วางใจ Geneus DNA<br>
+         <span style="font-family:'Montserrat', sans-serif;">www.geneusdna.com</span>
+      </div>
+    </div>
+    
+    <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;" class="print-hide">
+      <button onclick="printReceipt()" style="flex: 1; min-width: 100px; background: #059669; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(5,150,105,0.3);">🖨️ พิมพ์ใบเสร็จ</button>
+      <button onclick="downloadReceipt()" style="flex: 1; min-width: 100px; background: #2563eb; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">📥 บันทึกรูป</button>
+      <button onclick="closeReceiptModal()" style="flex: 1; min-width: 100px; background: #dc2626; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer;">✕ ปิด</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_CONFIG = {
+  event: { name: '', prefix: 'INV' },
+  promo: { 
+    amtActive: false, amtStepReq: 15000, amtStepDisc: 1000, 
+    qtyActive: false, qtyStepReq: 0, qtyStepDisc: 0, 
+    giftActive: false, giftReq: 3, giftName: 'Standard 1 ชุด' 
+  },
+  packages: [
+    { id:'dog',    label:'Dog DNA',      price:5500, regPrice:6500,  cls:'tag-dog' },
+    { id:'std',    label:'Standard',     price:4500, regPrice:5900,  cls:'tag-std' },
+    { id:'prem',   label:'Premium',      price:6900, regPrice:8900,  cls:'tag-prem' },
+    { id:'plus',   label:'Premium Plus', price:9500, regPrice:11900, cls:'tag-plus' },
+    { id:'premex', label:'Exclusive',    price:8900, regPrice:11900, cls:'tag-premex' }
+  ]
+};
+
+let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+
+// รองรับการรวมบิลแยกจ่าย cartByPayer[0] ถึง cartByPayer[5]
+let cartByPayer = [{}, {}, {}, {}, {}, {}];
+let currentSlips = {}; 
+let salesHistory = [];
+let currentPaymentMethodPres = 'Bank Transfer'; // เก็บวิธีชำระเงินที่เลือกในหน้า Presentation
+
 const fmt = n => Math.round(n).toLocaleString('th-TH');
 
-// ── TABS ──
+// ── INITIALIZE ──
+function init() {
+  const savedConfig = localStorage.getItem('geneus_pos_config');
+  if (savedConfig) { 
+    try { 
+      const parsed = JSON.parse(savedConfig); 
+      CONFIG = { ...DEFAULT_CONFIG, ...parsed };
+      if(!parsed.event) CONFIG.event = DEFAULT_CONFIG.event;
+      
+      if (parsed.promo) {
+         if (typeof parsed.promo.amtActive === 'undefined') {
+            CONFIG.promo.amtActive = parsed.promo.amtStepReq > 0;
+         }
+         if (typeof parsed.promo.qtyActive === 'undefined') {
+            CONFIG.promo.qtyActive = parsed.promo.qtyStepReq > 0;
+         }
+         if (typeof parsed.promo.giftActive === 'undefined') {
+            CONFIG.promo.giftActive = parsed.promo.giftReq > 0;
+         }
+      }
+    } catch(e){} 
+  }
+  
+  const savedHistory = localStorage.getItem('geneus_pos_history');
+  if (savedHistory) { try { salesHistory = JSON.parse(savedHistory); } catch(e){} }
+
+  populateSettingsUI();
+  buildPOSUI(); 
+  applyConfig();
+  renderHistory();
+}
+
 function switchTab(tabId) {
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(`tab-${tabId}`).classList.add('active');
   document.getElementById(`btn-${tabId}`).classList.add('active');
 }
 
-// ── CALCULATOR ──
-let cart = {};
-
-function buildButtons() {
-  const wrap = document.getElementById('pkgButtons');
-  PACKAGES.forEach(p => {
-    const b = document.createElement('button');
-    b.className = 'pkg-btn'; b.dataset.id = p.id;
-    // Mobile optimized button
-    b.innerHTML = `
-      <span class="btn-name">${p.label}</span>
-      <span class="btn-reg">ปกติ ฿${fmt(p.regPrice)}</span>
-      <span class="btn-price">฿${fmt(p.price)}</span>
-    `;
-    b.addEventListener('click', () => { addItem(p.id); });
-    wrap.appendChild(b);
-  });
+// ── CORE LOGIC ──
+function calculatePromo(totalEvent, qty) {
+  let disc = 0, gifts = 0, giftText = '';
+  
+  if (CONFIG.promo.amtActive && CONFIG.promo.amtStepReq > 0) {
+    disc += Math.floor(totalEvent / CONFIG.promo.amtStepReq) * CONFIG.promo.amtStepDisc;
+  }
+  if (CONFIG.promo.qtyActive && CONFIG.promo.qtyStepReq > 0) {
+    disc += Math.floor(qty / CONFIG.promo.qtyStepReq) * CONFIG.promo.qtyStepDisc;
+  }
+  if (CONFIG.promo.giftActive && CONFIG.promo.giftReq > 0) {
+    gifts = Math.floor(qty / CONFIG.promo.giftReq);
+    if (gifts > 0) giftText = `แถม ${CONFIG.promo.giftName} ${gifts > 1 ? '(x'+gifts+')' : ''}`;
+  }
+  
+  return { disc, gifts, giftText };
 }
 
-function addItem(id) {
-  const qty = Object.values(cart).reduce((a,b)=>a+b,0);
-  if (qty >= 6) return;
-  cart[id] = (cart[id]||0)+1;
-  renderCalc();
+function applyConfig() {
+  // รีเซ็ตตะกร้า และ อัปเดตหน้าจอทั้งหมด
+  for(let i=0; i<6; i++) { updatePayerCartUI(i); }
+  updateGlobalTotals();
+  renderPresentation();
+}
+
+function changeItemQtyGlobal(id, delta, e) {
+  if (e) e.stopPropagation();
+  let totalQty = 0;
+  for(let i=0; i<6; i++) Object.values(cartByPayer[i]).forEach(c => totalQty += c);
+  
+  if (delta > 0 && totalQty >= 6) { alert('จำกัดสูงสุด 6 ชุดต่อ 1 บิลครับ'); return; }
+
+  if (delta > 0) {
+    changeItemQty(0, id, 1, null);
+  } else {
+    for(let i=5; i>=0; i--) {
+      if (cartByPayer[i][id] > 0) {
+        changeItemQty(i, id, -1, null);
+        break;
+      }
+    }
+  }
+}
+
+function changeItemQty(payerIdx, id, delta, e) {
+  if (e) e.stopPropagation();
+  
+  let totalQty = 0;
+  for(let i=0; i<6; i++) Object.values(cartByPayer[i]).forEach(c => totalQty += c);
+  if (delta > 0 && totalQty >= 6) { alert('จำกัดสูงสุด 6 ชุดต่อ 1 บิลครับ'); return; }
+
+  const current = cartByPayer[payerIdx][id] || 0;
+  const newVal = current + delta;
+  if (newVal <= 0) delete cartByPayer[payerIdx][id];
+  else cartByPayer[payerIdx][id] = newVal;
+  
+  updatePayerCartUI(payerIdx);
+  updateGlobalTotals();
+  renderPresentation();
 }
 
 function clearCalc() {
-  cart = {};
-  renderCalc();
+  cartByPayer = [{}, {}, {}, {}, {}, {}];
+  currentSlips = {};
+  document.getElementById('splitCount').value = "1";
+  toggleSplit(); 
+
+  const now = new Date();
+  const defaultDate = now.toLocaleDateString('en-CA');
+  const defaultTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+  for(let i=0; i<6; i++) {
+    if(document.getElementById(`payerName_${i}`)) document.getElementById(`payerName_${i}`).value = '';
+    if(document.getElementById(`payerContact_${i}`)) document.getElementById(`payerContact_${i}`).value = '';
+    if(document.getElementById(`payerDate_${i}`)) document.getElementById(`payerDate_${i}`).value = defaultDate;
+    if(document.getElementById(`payerTime_${i}`)) document.getElementById(`payerTime_${i}`).value = defaultTime;
+    if(document.getElementById(`payerMethod_${i}`)) {
+      document.getElementById(`payerMethod_${i}`).value = 'Bank Transfer';
+      togglePayerQR(i);
+    }
+    const preview = document.getElementById(`slipPreview_${i}`);
+    if (preview) { preview.src=''; preview.style.display='none'; }
+    updatePayerCartUI(i);
+  }
+  
+  currentPaymentMethodPres = 'Bank Transfer';
+  if(document.getElementById('paymentMethodPres')) document.getElementById('paymentMethodPres').value = 'Bank Transfer';
+  togglePaymentQRPres('Bank Transfer');
+  
+  updateGlobalTotals();
+  renderPresentation();
 }
 
-function renderCalc() {
-  const qty = Object.values(cart).reduce((a,b)=>a+b,0);
+// ── POS UI BUILDER ──
+function buildPOSUI() {
+   const container = document.getElementById('payersContainer');
+   let html = '';
+   const now = new Date();
+   const defaultDate = now.toLocaleDateString('en-CA');
+   const defaultTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  // Update button states
-  PACKAGES.forEach(p => {
-    const btn = document.querySelector(`.pkg-btn[data-id="${p.id}"]`);
-    const old = btn.querySelector('.btn-qty');
-    if (old) old.remove();
-    const cnt = cart[p.id]||0;
+   for(let i=0; i<6; i++) {
+     html += `
+       <div class="payer-block" id="payerBlock_${i}" style="display:${i===0?'block':'none'}; border:1px solid var(--border); padding:16px; border-radius:12px; margin-bottom:16px; background:var(--card2); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+         <h4 style="margin-bottom:16px; color:var(--accent); display:flex; justify-content:space-between; align-items:center;">
+           <span style="font-size:16px;">👤 ผู้ชำระเงินท่านที่ ${i+1}</span>
+           <span id="payerSubtotal_${i}" style="color:var(--text); font-size:14px; font-weight:800;">0 ฿</span>
+         </h4>
+
+         <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:16px;">
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:10px;">📦 เลือกแพ็กเกจชุดตรวจ</label>
+            <div class="pkg-grid" id="pkgButtons_${i}"></div>
+         </div>
+
+         <div class="form-row-2">
+           <div class="form-group"><label>📝 ชื่อลูกค้า (Customer Name)</label><input type="text" id="payerName_${i}" class="form-input" placeholder="ชื่อ-นามสกุล"></div>
+           <div class="form-group"><label>📞 เบอร์โทรศัพท์ (Phone No.)</label><input type="tel" id="payerContact_${i}" class="form-input" placeholder="08X-XXX-XXXX"></div>
+         </div>
+
+         <div class="form-row-2">
+           <div class="form-group"><label>📅 วันที่ชำระ</label><input type="date" id="payerDate_${i}" class="form-input" value="${defaultDate}"></div>
+           <div class="form-group"><label>⏰ เวลา</label><input type="time" id="payerTime_${i}" class="form-input" value="${defaultTime}"></div>
+         </div>
+
+         <div class="form-group" style="margin-top:8px;">
+           <label>💳 วิธีชำระเงิน</label>
+           <select id="payerMethod_${i}" class="form-input" onchange="togglePayerQR(${i})">
+             <option value="Bank Transfer">โอนเงิน (QR)</option>
+             <option value="Credit Card">บัตรเครดิต (Credit Card)</option>
+             <option value="Cash">เงินสด (Cash)</option>
+             <option value="Installment">ผ่อนชำระ (Installment)</option>
+           </select>
+         </div>
+         
+         <div id="qrPayer_${i}" style="margin-top:12px; text-align:center; display:block;">
+           <img src="6. QR payment.jpg" alt="QR Payment" style="max-width: 150px; border-radius: 8px; border: 1px solid var(--border);">
+         </div>
+
+         <div class="form-group" style="margin-top:8px;">
+           <label>🧾 อัปโหลดสลิป</label>
+           <input type="file" accept="image/*" class="form-input" onchange="handleMultiUpload(event, ${i})" style="padding:6px; font-size:12px;">
+           <img id="slipPreview_${i}" style="display:none; max-width:100px; margin-top:8px; border-radius:4px; border:1px solid var(--border);">
+         </div>
+
+         <div class="form-group" style="margin-top:16px;">
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px;">📸 สแกนบาร์โค้ด</label>
+            <div id="barcodesContainer_${i}"></div>
+         </div>
+       </div>
+     `;
+   }
+   container.innerHTML = html;
+}
+
+function updatePayerCartUI(payerIdx) {
+  const cart = cartByPayer[payerIdx];
+  const wrap = document.getElementById('pkgButtons_'+payerIdx);
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  wrap.style.gap = '16px 8px';
+
+  // 1. Render Buttons
+  CONFIG.packages.forEach(p => {
+    const cnt = cart[p.id] || 0;
+    const b = document.createElement('div');
+    b.className = 'pkg-btn' + (cnt > 0 ? ' selected' : '');
+    b.dataset.id = p.id;
+    let inner = `<span class="btn-name">${p.label}</span><span class="btn-reg">${fmt(p.regPrice)} ฿</span><span class="btn-price">${fmt(p.price)} ฿</span>`;
     if (cnt > 0) {
-      btn.classList.add('selected');
-      const badge = document.createElement('span');
-      badge.className='btn-qty'; badge.textContent=cnt;
-      btn.appendChild(badge);
-    } else {
-      btn.classList.remove('selected');
+       inner += `<div class="pkg-qty-ctrl">
+         <div class="ctrl-minus" onclick="changeItemQty(${payerIdx}, '${p.id}', -1, event)">−</div>
+         <div class="ctrl-val">${cnt}</div>
+         <div class="ctrl-plus" onclick="changeItemQty(${payerIdx}, '${p.id}', 1, event)">+</div>
+       </div>`;
     }
+    b.innerHTML = inner;
+    if(cnt === 0) b.addEventListener('click', (e) => changeItemQty(payerIdx, p.id, 1, e));
+    wrap.appendChild(b);
   });
 
-  const res = document.getElementById('calcResult');
+  // 2. Render Barcodes (Save existing values first)
+  const bcWrap = document.getElementById('barcodesContainer_'+payerIdx);
+  let saved = {};
+  bcWrap.querySelectorAll('.barcode-row').forEach(row => {
+     const input = row.querySelector('.pos-barcode');
+     if(input) saved[input.dataset.key] = input.value;
+  });
+
+  let bcHtml = '';
+  Object.entries(cart).forEach(([id, cnt]) => {
+     const p = CONFIG.packages.find(x => x.id === id);
+     for(let i=0; i<cnt; i++) {
+        const key = `${id}_${i}`;
+        const val = saved[key] || '';
+        bcHtml += `
+          <div class="barcode-row" style="background:#fff; padding:12px; border-radius:8px; margin-bottom:8px; border:1px dashed var(--border);">
+            <div style="font-weight:700; color:var(--accent2); margin-bottom:8px; font-size:13px;">${p.label} (กล่องที่ ${i+1})</div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+              <input type="text" class="form-input pos-barcode" style="flex:1; min-width:110px; font-size:12px; padding:8px;" placeholder="สแกนบาร์โค้ด" data-key="${key}" value="${val}">
+            </div>
+          </div>`;
+     }
+  });
+  bcWrap.innerHTML = bcHtml;
+}
+
+function updateGlobalTotals() {
+  let totalQty = 0;
+  let totalEventPrice = 0;
+  let payerSubtotals = [0,0,0,0,0,0];
+
+  for(let i=0; i<6; i++) {
+    Object.entries(cartByPayer[i]).forEach(([id, cnt]) => {
+      const p = CONFIG.packages.find(x => x.id === id);
+      if (p) {
+        totalQty += cnt;
+        totalEventPrice += p.price * cnt;
+        payerSubtotals[i] += p.price * cnt;
+      }
+    });
+    const subLabel = document.getElementById('payerSubtotal_'+i);
+    if(subLabel) subLabel.innerText = fmt(payerSubtotals[i]) + ' ฿';
+  }
+}
+
+function toggleSplit() {
+  const count = parseInt(document.getElementById('splitCount').value);
+  for(let i=0; i<6; i++) {
+    const block = document.getElementById('payerBlock_'+i);
+    if (i < count) {
+      if(block) block.style.display = 'block';
+    } else {
+      if(block) block.style.display = 'none';
+      let hasItems = false;
+      for(let pkgId in cartByPayer[i]) {
+        cartByPayer[0][pkgId] = (cartByPayer[0][pkgId] || 0) + cartByPayer[i][pkgId];
+        hasItems = true;
+      }
+      if (hasItems) {
+        cartByPayer[i] = {};
+        updatePayerCartUI(i);
+        updatePayerCartUI(0);
+      }
+    }
+  }
+  updateGlobalTotals();
+  renderPresentation();
+}
+
+function togglePayerQR(idx) {
+  const method = document.getElementById(`payerMethod_${idx}`).value;
+  const qr = document.getElementById(`qrPayer_${idx}`);
+  if (qr) qr.style.display = (method === 'Bank Transfer') ? 'block' : 'none';
+}
+
+function handleMultiUpload(e, idx) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      let width = img.width, height = img.height;
+      if (width > 800) { height *= 800 / width; width = 800; }
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      currentSlips[idx] = canvas.toDataURL('image/jpeg', 0.6);
+      const preview = document.getElementById('slipPreview_' + idx);
+      preview.src = currentSlips[idx];
+      preview.style.display = 'block';
+    }
+    img.src = event.target.result;
+  }
+  reader.readAsDataURL(file);
+}
+
+// ── CUSTOMER PRESENTATION (TAB 2) ──
+function togglePaymentQRPres(val) {
+  currentPaymentMethodPres = val;
+  const qrContainer = document.getElementById('qrPaymentContainer_pres');
+  if (qrContainer) {
+    qrContainer.style.display = (val === 'Bank Transfer') ? 'block' : 'none';
+  }
+  const p0 = document.getElementById('payerMethod_0');
+  if(p0) { p0.value = val; togglePayerQR(0); }
+}
+
+function renderPresentation() {
+  const presWrap = document.getElementById('tab-presentation');
+  
+  let mergedCart = {};
+  let qty = 0;
+  for(let i=0; i<6; i++) {
+    Object.entries(cartByPayer[i]).forEach(([id, cnt]) => {
+      mergedCart[id] = (mergedCart[id] || 0) + cnt;
+      qty += cnt;
+    });
+  }
+  
+  let buttonsHtml = '';
+  CONFIG.packages.forEach(p => {
+    const cnt = mergedCart[p.id] || 0;
+    const selectedCls = cnt > 0 ? 'selected' : '';
+    let badge = '';
+    if (cnt > 0) {
+      badge = `
+        <div class="pkg-qty-ctrl">
+          <div class="ctrl-minus" onclick="changeItemQtyGlobal('${p.id}', -1, event)">−</div>
+          <div class="ctrl-val">${cnt}</div>
+          <div class="ctrl-plus" onclick="changeItemQtyGlobal('${p.id}', 1, event)">+</div>
+        </div>
+      `;
+    }
+    
+    let clickAttr = cnt === 0 ? `onclick="changeItemQtyGlobal('${p.id}', 1, event)"` : '';
+    
+    buttonsHtml += `
+      <div class="pkg-btn ${selectedCls}" data-id="${p.id}" ${clickAttr} style="min-height: 100px; margin-bottom: 8px;">
+        <span class="btn-name">${p.label}</span>
+        <span class="btn-reg">ปกติ ${fmt(p.regPrice)} ฿</span>
+        <span class="btn-price" style="font-size: clamp(16px, 3vw, 20px);">${fmt(p.price)} ฿</span>
+        ${badge}
+      </div>
+    `;
+  });
+
+  const selectionGridHtml = `
+    <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 24px;">
+      <div style="text-align: center; margin-bottom: 12px;">
+          <h2 style="color: var(--accent); font-size: clamp(18px, 3vw, 22px); margin-bottom: 4px;">💡 เลือกลองจัดแพ็กเกจด้วยตัวคุณเอง</h2>
+          <p style="color: var(--muted); font-size: 13px;">(สามารถรวมบิลกันได้เพื่อรับโปรโมชัน)</p>
+      </div>
+      <div class="pkg-grid" style="margin-bottom: 0;">${buttonsHtml}</div>
+    </div>
+  `;
+
   if (qty === 0) {
-    res.innerHTML = '<div class="calc-empty">👆 แตะเลือกแพ็กเกจด้านบน<br><span style="font-size: clamp(11px, 1.5vw, 15px); opacity: 0.7; margin-top: 6px; display: block;">(แตะซ้ำเพื่อเพิ่มจำนวนชุด สูงสุด 6 ชุด)</span></div>';
+    presWrap.innerHTML = `
+      ${selectionGridHtml}
+      <div class="calc-empty" style="margin-top: 40px; font-size: 16px;">👆 แตะเลือกแพ็กเกจด้านบนเพื่อดูสรุปความคุ้มค่าครับ</div>
+    `;
     return;
   }
 
-  const totalReg = Object.entries(cart).reduce((s,[id,cnt])=>s+PACKAGES.find(x=>x.id===id).regPrice*cnt,0);
-  const totalEvent = Object.entries(cart).reduce((s,[id,cnt])=>s+PACKAGES.find(x=>x.id===id).price*cnt,0);
-  const disc = getDisc(totalEvent);
-  const finalAmt = totalEvent - disc;
+  const totalReg = Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).regPrice*cnt,0);
+  const totalEvent = Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).price*cnt,0);
+  const promo = calculatePromo(totalEvent, qty);
+  const finalAmt = totalEvent - promo.disc;
+
   const totalSaved = totalReg - finalAmt;
+  const savedPerc = Math.round((totalSaved / totalReg) * 100);
+  const avgPrice = Math.round(finalAmt / qty);
 
-  const rem = 15000 - (totalEvent % 15000);
-  const hint = rem < 15000 && qty < 6
-    ? `<div class="hint-bar">💡 ซื้อเพิ่มอีก <strong>฿${fmt(rem)}</strong> รับส่วนลดเพิ่ม 1,000.- ทันที</div>`
-    : '';
+  const itemsHtml = Object.entries(mergedCart).map(([id, cnt]) => {
+    const p = CONFIG.packages.find(x => x.id === id);
+    return `<span class="pkg-tag ${p.cls}" style="font-size: clamp(12px, 2vw, 16px); padding: 6px 12px; border-radius: 8px;">${p.label} x${cnt}</span>`;
+  }).join('');
 
-  res.innerHTML = `
-    <div class="summary-row reg">
-      <span>ราคาปกติหน้าร้านรวม:</span>
-      <span class="val">฿${fmt(totalReg)}</span>
+  let giftHtml = '';
+  if (promo.gifts > 0 || promo.giftText) {
+    giftHtml = `<div style="background:var(--tag-std-bg); border:1px solid var(--tag-std); color:var(--accent); padding:16px; border-radius:12px; margin-top:16px; font-weight:800; text-align:center; font-size:clamp(16px, 2.5vw, 20px);">🎁 รับของแถมฟรี! ${promo.giftText}</div>`;
+  }
+
+  presWrap.innerHTML = `
+    ${selectionGridHtml}
+    <div class="pres-container">
+      <div class="pres-title">✨ สรุปแพ็กเกจสุดคุ้มของคุณ ✨</div>
+      <div class="pres-items">${itemsHtml}</div>
+      <div class="pres-row"><span>ราคาปกติหน้าร้านรวม:</span><span style="text-decoration:line-through;">${fmt(totalReg)} ฿</span></div>
+      <div class="pres-row"><span>ราคาโปรโมชันหน้างาน:</span><span style="color:var(--text); font-weight:700;">${fmt(totalEvent)} ฿</span></div>
+      ${promo.disc > 0 ? `<div class="pres-row" style="color:var(--gold); font-weight:800;"><span>ส่วนลดพิเศษ On-Top:</span><span>-${fmt(promo.disc)} ฿</span></div>` : ''}
+      <div class="pres-row net"><span>ยอดสุทธิรวมทั้งหมด:</span><span>${fmt(finalAmt)} ฿</span></div>
+      
+      <div class="pres-stats-grid">
+        <div class="pres-stat-box highlight"><div class="pres-stat-label">ประหยัดไปทั้งหมด</div><div class="pres-stat-val">${fmt(totalSaved)} ฿<span class="pres-badge">ลด ${savedPerc}%</span></div></div>
+        <div class="pres-stat-box"><div class="pres-stat-label">เฉลี่ยตกเพียง</div><div class="pres-stat-val avg">${fmt(avgPrice)} ฿ <span style="font-size:clamp(12px, 1.8vw, 15px); color:var(--muted); font-weight:600;">/ ชุด</span></div></div>
+      </div>
+      ${giftHtml}
+      
+      <div style="margin-top:24px; padding:16px; background:var(--card); border:1px solid var(--border); border-radius:12px; text-align:center;">
+        <label style="display:block; font-size:14px; font-weight:700; color:var(--text); margin-bottom:8px;">💳 เลือกช่องทางการชำระเงิน (กรณีจ่ายก้อนเดียว)</label>
+        <select id="paymentMethodPres" class="form-input" onchange="togglePaymentQRPres(this.value)" style="margin-bottom:12px;">
+          <option value="Bank Transfer" ${currentPaymentMethodPres === 'Bank Transfer' ? 'selected' : ''}>โอนเงิน (Bank Transfer)</option>
+          <option value="Credit Card" ${currentPaymentMethodPres === 'Credit Card' ? 'selected' : ''}>บัตรเครดิต (Credit Card)</option>
+          <option value="Cash" ${currentPaymentMethodPres === 'Cash' ? 'selected' : ''}>เงินสด (Cash)</option>
+          <option value="Installment" ${currentPaymentMethodPres === 'Installment' ? 'selected' : ''}>ผ่อนชำระ (Installment)</option>
+        </select>
+        <div id="qrPaymentContainer_pres" style="text-align:center; display:${currentPaymentMethodPres === 'Bank Transfer' ? 'block' : 'none'};">
+          <img src="6. QR payment.jpg" alt="QR Payment" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+        </div>
+        <p style="font-size:11px; color:var(--muted); margin-top:8px;">*หากต้องการแบ่งจ่ายหลายท่าน โปรดแจ้งพนักงานครับ</p>
+      </div>
+
+      <button class="btn-checkout" onclick="proceedToPOS()" style="margin-top: 24px; font-size: 18px; padding: 16px;">✅ จัดออเดอร์ตามนี้</button>
+      <button class="btn-clear" onclick="clearCalc()" style="margin-top: 12px; padding: 14px; font-size: 16px; border: 1px solid var(--danger);">✕ ล้างรายการ (เริ่มใหม่)</button>
     </div>
-    <div class="summary-row event" style="margin-top:4px;">
-      <span>แต่ถ้าซื้อในงานนี้จะเป็นราคา:</span>
-      <span>฿${fmt(totalEvent)}</span>
-    </div>
-    ${disc > 0 ? `
-    <div class="summary-row discount">
-      <span>ส่วนลด On-Top งาน:</span>
-      <span>- ฿${fmt(disc)}</span>
-    </div>` : ''}
-    <div class="summary-row final">
-      <span>ยอดชำระสุทธิ:</span>
-      <span>฿${fmt(finalAmt)}</span>
-    </div>
-    <div class="summary-row saving">
-      🎉 ประหยัดไปทั้งหมด ฿${fmt(totalSaved)}
-    </div>
-    ${hint}
-    <button class="btn-clear" onclick="clearCalc()">✕ ล้างตะกร้าใหม่</button>
   `;
 }
 
-// ── TABLE SCENARIOS ──
-function genScenarios() {
-  const rows=[], seen=new Set();
-  function comb(k,start,cur) {
-    if (cur.length===k) {
-      const key=[...cur].map(x=>x.id).sort().join('-');
-      if (seen.has(key)) return; seen.add(key);
-      const totalEvent = cur.reduce((s,p)=>s+p.price,0);
-      const totalReg = cur.reduce((s,p)=>s+p.regPrice,0);
-      const disc = getDisc(totalEvent);
-      const finalAmt = totalEvent - disc;
-      rows.push({combo:[...cur], qty:k, totalEvent, totalReg, disc, final:finalAmt, saved: totalReg - finalAmt});
-      return;
-    }
-    for (let i=start;i<PACKAGES.length;i++) comb(k,i,[...cur,PACKAGES[i]]);
+function proceedToPOS() {
+  switchTab('pos');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── NORMALIZER ──
+function normalizeOrder(order) {
+   if (order.itemsData && order.payers && order.payers[0] && order.payers[0].date) return order; 
+
+   let payers = order.payers || [{
+      name: order.name || 'ลูกค้า',
+      contact: '',
+      method: order.paymentMethod || 'Bank Transfer',
+      date: order.date,
+      slip: order.slip || order.slipBase64 || null,
+      total: 0, discount: 0, net: order.amount
+   }];
+   
+   payers.forEach(p => {
+      if(!p.date) p.date = order.date;
+      if(!p.contact) p.contact = "";
+   });
+
+   let itemsData = order.itemsData || [];
+   if(itemsData.length === 0) {
+       Object.entries(order.items || {}).forEach(([id, cnt]) => {
+          const p = CONFIG.packages.find(x => x.id === id);
+          if(!p) return;
+          for(let i=0; i<cnt; i++) {
+             itemsData.push({ payerIdx: 0, pkgId: p.id, label: p.label, price: p.price, barcode: '', recipient: '', discount: 0, net: p.price });
+          }
+       });
+
+       if (order.barcodes) {
+          order.barcodes.forEach((bc, idx) => {
+             if (itemsData[idx]) {
+                const colIdx = bc.indexOf(':');
+                let rest = colIdx > -1 ? bc.substring(colIdx+1).trim() : bc;
+                let rec = '';
+                if(rest.includes('[') && rest.endsWith(']')) {
+                  const match = rest.match(/\[(.*?)\]$/);
+                  if(match) { rec = match[1].trim(); rest = rest.replace(/\[.*?\]$/, '').trim(); }
+                }
+                itemsData[idx].barcode = rest;
+             }
+          });
+       }
+   }
+
+   let totalOriginal = 0;
+   itemsData.forEach(item => totalOriginal += item.price);
+   let totalDisc = totalOriginal - (order.amount || 0);
+   let avgDisc = itemsData.length > 0 ? totalDisc / itemsData.length : 0;
+   let usedDisc = 0;
+   
+   itemsData.forEach((item, idx) => {
+      let d = (idx === itemsData.length - 1) ? totalDisc - usedDisc : Math.round(avgDisc * 100) / 100;
+      item.discount = d;
+      item.net = item.price - d;
+      usedDisc += d;
+   });
+   
+   if(!order.payers) {
+      payers[0].total = totalOriginal;
+      payers[0].discount = totalDisc;
+      payers[0].net = order.amount || 0;
+   }
+
+   return { ...order, payers, itemsData };
+}
+
+// ── CHECKOUT & HISTORY ──
+async function processCheckout() {
+  let splitCount = parseInt(document.getElementById('splitCount').value);
+  let payers = [];
+  let itemsData = [];
+  let barcodes = [];
+  let allScanned = true;
+
+  for(let i=0; i<splitCount; i++) {
+     let name = document.getElementById(`payerName_${i}`).value.trim() || `ลูกค้าคนที่ ${i+1}`;
+     let contact = document.getElementById(`payerContact_${i}`).value.trim();
+     let method = document.getElementById(`payerMethod_${i}`).value;
+     let dateStr = document.getElementById(`payerDate_${i}`).value;
+     let timeStr = document.getElementById(`payerTime_${i}`).value;
+     let slip = currentSlips[i] || null;
+     
+     if (!dateStr || !timeStr) { alert(`กรุณาระบุวันที่และเวลาให้ ผู้ชำระคนที่ ${i+1}`); return; }
+
+     const [y, m, d] = dateStr.split('-');
+     const formattedDate = `${d}/${m}/${y} ${timeStr}`;
+
+     payers.push({ name, contact, method, date: formattedDate, slip, total:0, discount:0, net:0 });
+
+     const rows = document.querySelectorAll(`#barcodesContainer_${i} .barcode-row`);
+     let rowIdx = 0;
+     Object.entries(cartByPayer[i]).forEach(([pkgId, cnt]) => {
+        const p = CONFIG.packages.find(x => x.id === pkgId);
+        for(let k=0; k<cnt; k++) {
+           const row = rows[rowIdx++];
+           if(!row) continue;
+           const code = row.querySelector('.pos-barcode').value.trim();
+           if(!code) allScanned = false;
+           
+           itemsData.push({ payerIdx: i, pkgId: p.id, label: p.label, price: p.price, barcode: code, recipient: '', discount:0, net:0 });
+           
+           let bVal = `${p.label}: ${code}`;
+           barcodes.push(bVal);
+        }
+     });
   }
-  for (let k=1;k<=6;k++) comb(k,0,[]);
-  rows.sort((a,b)=>a.qty-b.qty || a.totalEvent-b.totalEvent);
-  return rows;
+  
+  if (itemsData.length === 0) { alert('กรุณาเลือกแพ็กเกจก่อนครับ'); return; }
+  
+  if (!allScanned) {
+    if(!confirm('สแกนบาร์โค้ดไม่ครบทุกชุด ต้องการดำเนินการต่อหรือไม่?')) return;
+  }
+
+  const btn = document.querySelector('.btn-checkout');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = 'กำลังบันทึกข้อมูล... ⏳';
+  btn.disabled = true;
+
+  const orderId = 'ORD' + Date.now().toString().slice(-6);
+  const globalDateObj = new Date();
+  const globalDateStr = `${String(globalDateObj.getDate()).padStart(2,'0')}/${String(globalDateObj.getMonth()+1).padStart(2,'0')}/${globalDateObj.getFullYear()} ${String(globalDateObj.getHours()).padStart(2,'0')}:${String(globalDateObj.getMinutes()).padStart(2,'0')}`;
+
+  const prefix = (CONFIG.event && CONFIG.event.prefix) ? CONFIG.event.prefix.toUpperCase().substring(0,5) : 'INV';
+  const yyyy = String(globalDateObj.getFullYear());
+  const mm = String(globalDateObj.getMonth()+1).padStart(2,'0');
+  const dd = String(globalDateObj.getDate()).padStart(2,'0');
+  const todayPrefix = `${prefix}${yyyy.slice(-2)}${mm}${dd}`;
+  
+  const todaysOrders = salesHistory.filter(o => o.billNumber && o.billNumber.startsWith(todayPrefix));
+  const runNum = String(todaysOrders.length + 1).padStart(3, '0');
+  const autoBillNumber = `${todayPrefix}-${runNum}`;
+
+  let totalEventPrice = itemsData.reduce((s, item) => s + item.price, 0);
+  const promo = calculatePromo(totalEventPrice, itemsData.length);
+  const finalAmt = totalEventPrice - promo.disc;
+
+  let avgDisc = itemsData.length > 0 ? promo.disc / itemsData.length : 0;
+  let usedDisc = 0;
+
+  itemsData.forEach((item, idx) => {
+      let d = (idx === itemsData.length - 1) ? promo.disc - usedDisc : Math.round(avgDisc * 100) / 100;
+      item.discount = d;
+      item.net = item.price - d;
+      usedDisc += d;
+
+      payers[item.payerIdx].total += item.price;
+      payers[item.payerIdx].discount += item.discount;
+      payers[item.payerIdx].net += item.net;
+  });
+
+  const payload = {
+    action: 'insert',
+    id: orderId,
+    date: globalDateStr,
+    payerCount: splitCount,
+    payers: payers,
+    itemsData: itemsData,
+    amount: finalAmt,
+    barcodes: barcodes,
+    billNumber: autoBillNumber,
+    eventName: CONFIG.event ? CONFIG.event.name : ''
+  };
+
+  try {
+    await new Promise(r => setTimeout(r, 300));
+    salesHistory.unshift(payload); 
+    localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
+    
+    alert(`✅ บันทึกออเดอร์สำเร็จ!`);
+    clearCalc();
+    renderHistory();
+  } catch (error) {
+    alert('❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
 }
 
-function renderTable(rows) {
-  const tbody=document.getElementById('tableBody');
-  let lastQty=null;
-  rows.forEach(row=>{
-    if (row.qty!==lastQty) {
-      const sep=document.createElement('tr');
-      sep.innerHTML=`<td colspan="6" class="section-label">📦 ซื้อ ${row.qty} ชุด</td>`;
-      sep.dataset.qty=row.qty; 
-      tbody.appendChild(sep); lastQty=row.qty;
-    }
-    const counts={};
-    row.combo.forEach(p=>{counts[p.id]=(counts[p.id]||0)+1;});
+function renderHistory() {
+  const tbody = document.getElementById('historyBody');
+  if (salesHistory.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:20px;">ยังไม่มีประวัติการขาย</td></tr>';
+    return;
+  }
 
-    const tags = row.combo
-      .filter((p,i,a)=>a.findIndex(x=>x.id===p.id)===i)
-      .map(p=>`<span class="pkg-tag ${p.cls}">${p.label}${counts[p.id]>1?' ×'+counts[p.id]:''}</span>`)
-      .join('');
+  tbody.innerHTML = '';
+  salesHistory.forEach(rawOrder => {
+    const order = normalizeOrder(rawOrder);
+    
+    let pkgCount = {};
+    order.itemsData.forEach(item => { pkgCount[item.pkgId] = (pkgCount[item.pkgId]||0) + 1; });
+    const itemTags = Object.entries(pkgCount).map(([id, cnt]) => {
+      const p = CONFIG.packages.find(x => x.id === id) || {label: id, cls: ''};
+      return `<span class="pkg-tag ${p.cls}">${p.label} x${cnt}</span>`;
+    }).join('');
 
-    const tr=document.createElement('tr');
-    tr.dataset.qty=row.qty;
-    tr.innerHTML=`
-      <td><div class="combo">${tags}</div></td>
-      <td style="font-weight:700;">${row.qty}</td>
-      <td style="color:var(--text);font-weight:600;">฿${fmt(row.totalEvent)}</td>
-      <td>${row.disc>0?`<span style="color:var(--gold);font-weight:700;">-฿${fmt(row.disc)}</span>`:`<span style="color:var(--muted)">—</span>`}</td>
-      <td><span class="price-final">฿${fmt(row.final)}</span></td>
-      <td><span class="saving-cell">฿${fmt(row.saved)}</span></td>
+    const hasAnySlip = order.payers.some(p => p.slip);
+    const slipBtn = hasAnySlip ? `<button class="btn-view-slip" onclick="viewMultiSlip('${order.id}')">ดูสลิป</button>` : '';
+    const rcptBtn = `<button class="btn-view-slip" onclick="openReceiptModal('${order.id}')" style="border-color:var(--accent2); color:var(--accent2);">📄 ใบเสร็จ</button>`;
+    const editBtn = `<button class="btn-view-slip" onclick="openEditModal('${order.id}')" style="background:transparent; border:1px solid var(--accent); color:var(--accent);">✏️ แก้ไข</button>`;
+    
+    const billDisp = order.billNumber 
+      ? `<div style="font-size:11px; color:var(--accent); font-weight:700; margin-top:4px;">🧾 ${order.billNumber}</div>` 
+      : `<div style="font-size:11px; color:var(--muted); margin-top:4px; font-style:italic;">(ยังไม่ระบุบิล)</div>`;
+
+    const names = order.payers.map(p => p.name).join(', ');
+    const totalAmt = order.payers.reduce((s,p) => s+p.net, 0);
+
+    tbody.innerHTML += `
+      <tr>
+        <td><div class="h-date">${order.payers[0].date}</div><div class="h-name">${names}</div><div style="font-size:9px;color:var(--muted)">${order.id}</div>${billDisp}</td>
+        <td>${itemTags}</td>
+        <td class="h-price">${fmt(totalAmt)} ฿</td>
+        <td style="text-align:center; min-width:80px; vertical-align: top;">${slipBtn}${rcptBtn}${editBtn}</td>
+      </tr>
     `;
-    tbody.appendChild(tr);
   });
 }
 
-function filterTable(val,btn) {
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('#tableBody tr').forEach(tr=>{
-    if(!tr.dataset.qty) return;
-    tr.style.display = (val==='all' || tr.dataset.qty===val) ? '' : 'none';
+function clearHistory() {
+  if(confirm('🚨 คำเตือน: ประวัติการขายทั้งหมดในอุปกรณ์นี้จะถูกลบถาวร ต้องการล้างจริงหรือไม่?')) {
+    salesHistory = [];
+    localStorage.removeItem('geneus_pos_history');
+    renderHistory();
+  }
+}
+
+function viewMultiSlip(orderId) {
+  const raw = salesHistory.find(o => o.id === orderId);
+  if (!raw) return;
+  const order = normalizeOrder(raw);
+  
+  let html = '';
+  order.payers.forEach((p, i) => {
+     if(p.slip) {
+        html += `<div style="margin-bottom:12px;"><div style="font-size:12px; font-weight:700; color:var(--accent); text-align:left; margin-bottom:4px;">สลิปของ: ${p.name}</div><img src="${p.slip}" style="max-width:100%; border-radius:8px; border:1px solid var(--border);"></div>`;
+     }
+  });
+  
+  document.getElementById('modalImageContainer').innerHTML = html;
+  document.getElementById('slipModal').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('slipModal').style.display = 'none'; }
+
+// ── RECEIPT / EXPORT BILL ──
+let currentReceiptOrder = null;
+
+function openReceiptModal(orderId) {
+  const rawOrder = salesHistory.find(o => o.id === orderId);
+  if (!rawOrder) return;
+  currentReceiptOrder = normalizeOrder(rawOrder);
+
+  const selWrap = document.getElementById('rcptPayerSelectorWrap');
+  const sel = document.getElementById('rcptPayerSelector');
+  if(currentReceiptOrder.payers.length > 1) {
+     selWrap.style.display = 'block';
+     sel.innerHTML = currentReceiptOrder.payers.map((p, i) => `<option value="${i}">บิลของ: ${p.name}</option>`).join('');
+  } else {
+     selWrap.style.display = 'none';
+     sel.innerHTML = `<option value="0"></option>`;
+  }
+
+  renderReceiptForPayer(0);
+  document.getElementById('receiptModal').style.display = 'flex';
+}
+
+function renderReceiptForPayer(payerIdx) {
+  const order = currentReceiptOrder;
+  const payer = order.payers[payerIdx];
+
+  document.getElementById('rcptId').innerText = order.id;
+  document.getElementById('rcptDate').innerText = payer.date;
+  document.getElementById('rcptName').innerText = payer.name;
+
+  if (order.eventName) {
+    document.getElementById('rcptEventName').innerText = order.eventName;
+    document.getElementById('rcptEventWrap').style.display = 'block';
+  } else {
+    document.getElementById('rcptEventWrap').style.display = 'none';
+  }
+
+  if (order.billNumber) {
+    let bNo = order.billNumber;
+    if (order.payers.length > 1) bNo += `-${parseInt(payerIdx)+1}`;
+    document.getElementById('rcptBill').innerText = bNo;
+    document.getElementById('rcptBillWrap').style.display = 'block';
+  } else {
+    document.getElementById('rcptBillWrap').style.display = 'none';
+  }
+
+  let itemsHtml = '';
+  
+  order.itemsData.forEach(item => {
+    if(item.payerIdx == payerIdx) {
+      itemsHtml += `
+        <tr style="border-bottom: 1px dashed #cccccc; background: transparent;">
+          <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${item.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(item.price)} ฿)</span></td>
+          <td style="text-align:center; padding: 6px 0; color:#000000;">1</td>
+          <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(item.price)} ฿</td>
+        </tr>`;
+    }
+  });
+  
+  document.getElementById('rcptItems').innerHTML = itemsHtml;
+  document.getElementById('rcptTotal').innerHTML = `ยอดรวม (Subtotal): <strong>${fmt(payer.total)} ฿</strong>`;
+
+  if (payer.discount > 0) {
+    document.getElementById('rcptDiscount').innerHTML = `ส่วนลดงานเฉลี่ย (Discount): <strong>-${fmt(payer.discount)} ฿</strong>`;
+  } else {
+    document.getElementById('rcptDiscount').innerHTML = '';
+  }
+
+  document.getElementById('rcptNet').innerHTML = `ยอดชำระสุทธิ (Net): <strong style="font-size: 16px;">${fmt(payer.net)} ฿</strong>`;
+}
+
+function closeReceiptModal() { document.getElementById('receiptModal').style.display = 'none'; }
+
+function printReceipt() {
+  window.print();
+}
+
+function downloadReceipt() {
+  const receiptElement = document.getElementById('receiptContent');
+  const btnText = event.target;
+  const origText = btnText.innerHTML;
+  btnText.innerHTML = 'กำลังประมวลผล... ⏳';
+
+  html2canvas(receiptElement, { scale: 2, backgroundColor: null }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `Geneus_Receipt_${document.getElementById('rcptBill').innerText || Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btnText.innerHTML = origText;
+  }).catch(err => {
+    alert('เกิดข้อผิดพลาดในการสร้างรูปภาพครับ');
+    btnText.innerHTML = origText;
   });
 }
 
-buildButtons();
-renderTable(genScenarios());
+// ── EXPORT CSV ──
+function exportCSV() {
+  if (salesHistory.length === 0) { alert('ยังไม่มีประวัติการขายให้ Export ครับ'); return; }
+  
+  const headers = [
+    "Tax Invoice/Order", "Date/Time Paid", "Customer Name", "Contact Channel",
+    "Lead Channel", "Lead Nation", "Sale Channel", "Payment Method",
+    "Package", "Quantity", "Original Price", "Coupon Code",
+    "Coupon Discount", "Coin Discount", "Paid Amount", "Currency",
+    "Shipping Fee", "Total Amount", "Recipient Name", "Shipping Address",
+    "Shipping Province", "Phone No", "วันที่ส่งชุดตรวจ", "Tracking No", "Kit IDs"
+  ];
+  
+  let csvContent = "\uFEFF" + headers.join(",") + "\n";
+  
+  salesHistory.forEach(rawOrder => {
+    const order = normalizeOrder(rawOrder);
+    const saleChannel = order.eventName ? `Event POS - ${order.eventName}` : "Event POS";
+
+    order.itemsData.forEach((item) => {
+       const payer = order.payers[item.payerIdx];
+       let bNo = order.billNumber;
+       if(order.payers.length > 1) bNo += `-${item.payerIdx + 1}`;
+       
+       const dateOnly = payer.date ? payer.date.split(' ')[0] : '';
+
+       const row = [
+         bNo || order.id,
+         payer.date,
+         payer.name,
+         "", // Contact Channel ว่างไว้ไปใช้ Phone No
+         "", "", 
+         saleChannel, 
+         payer.method,
+         item.label,
+         1, 
+         item.price,
+         item.discount > 0 ? "Event On-Top" : "", 
+         item.discount, 
+         0, 
+         item.net, 
+         "THB",
+         0, 
+         item.net, 
+         item.recipient || payer.name, // Recipient Name ดึงจาก Customer Name ถ้าไม่มี
+         "รับหน้างาน", "", 
+         payer.contact, // Phone No
+         dateOnly, "รับหน้างาน", 
+         item.barcode 
+       ];
+       
+       const escapedRow = row.map(val => {
+         const str = String(val);
+         if (str.includes(',') || str.includes('"') || str.includes('\n')) return `"${str.replace(/"/g, '""')}"`;
+         return str;
+       });
+       
+       csvContent += escapedRow.join(",") + "\n";
+    });
+  });
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `Geneus_POS_Export_${new Date().getTime()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// ── EDIT MODAL (Simplified for Multi-Items) ──
+let editingOrderId = null;
+function openEditModal(orderId) {
+  const rawOrder = salesHistory.find(o => o.id === orderId);
+  if (!rawOrder) return;
+  const order = normalizeOrder(rawOrder);
+  editingOrderId = order.id;
+
+  const bcContainer = document.getElementById('editBarcodesContainer');
+  bcContainer.innerHTML = '';
+  order.itemsData.forEach((item, idx) => {
+    bcContainer.innerHTML += `
+      <div class="barcode-row" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px dashed var(--border);">
+        <div class="b-label" style="width:100%; color:var(--accent2); font-size:13px;">${item.label}</div>
+        <input type="text" class="form-input edit-barcode" style="flex:1; min-width:140px;" value="${item.barcode}" data-idx="${idx}">
+      </div>
+    `;
+  });
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; editingOrderId = null; }
+
+async function saveEditedOrder() {
+  const idxOrder = salesHistory.findIndex(o => o.id === editingOrderId);
+  if (idxOrder === -1) return;
+  
+  let order = normalizeOrder(salesHistory[idxOrder]);
+
+  document.querySelectorAll('#editBarcodesContainer .barcode-row').forEach(row => {
+    const codeInput = row.querySelector('.edit-barcode');
+    if(!codeInput) return;
+    const i = parseInt(codeInput.dataset.idx);
+    order.itemsData[i].barcode = codeInput.value.trim();
+  });
+
+  const btn = document.getElementById('btn-save-edit');
+  const origText = btn.innerHTML;
+  btn.innerHTML = 'กำลังบันทึกข้อมูล... ⏳';
+  btn.disabled = true;
+
+  try {
+    await new Promise(r => setTimeout(r, 300));
+    salesHistory[idxOrder] = order; 
+    localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
+    alert('✅ บันทึกบาร์โค้ดเรียบร้อย ข้อมูลถูกอัปเดตในเครื่องแล้ว');
+    closeEditModal();
+    renderHistory();
+  } catch(e) {
+    alert('❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+    closeEditModal();
+  } finally {
+    btn.innerHTML = origText;
+    btn.disabled = false;
+  }
+}
+
+// ── SETTINGS ──
+function togglePromoFields(type) {
+  const cb = document.getElementById(`cfg-${type}-active`);
+  const fields = document.getElementById(`cfg-${type}-fields`);
+  if (fields) {
+      fields.style.display = cb.checked ? 'grid' : 'none';
+  }
+}
+
+function populateSettingsUI() {
+  document.getElementById('cfg-event-name').value = CONFIG.event ? CONFIG.event.name : '';
+  document.getElementById('cfg-event-prefix').value = CONFIG.event ? CONFIG.event.prefix : 'INV';
+  
+  document.getElementById('cfg-amt-active').checked = CONFIG.promo.amtActive;
+  document.getElementById('cfg-amt-req').value = CONFIG.promo.amtStepReq;
+  document.getElementById('cfg-amt-disc').value = CONFIG.promo.amtStepDisc;
+  
+  document.getElementById('cfg-qty-active').checked = CONFIG.promo.qtyActive;
+  document.getElementById('cfg-qty-req').value = CONFIG.promo.qtyStepReq;
+  document.getElementById('cfg-qty-disc').value = CONFIG.promo.qtyStepDisc;
+  
+  document.getElementById('cfg-gift-active').checked = CONFIG.promo.giftActive;
+  document.getElementById('cfg-gift-req').value = CONFIG.promo.giftReq;
+  document.getElementById('cfg-gift-name').value = CONFIG.promo.giftName;
+  
+  togglePromoFields('amt');
+  togglePromoFields('qty');
+  togglePromoFields('gift');
+
+  const wrap = document.getElementById('settings-packages');
+  wrap.innerHTML = '';
+  CONFIG.packages.forEach((p, idx) => {
+    wrap.innerHTML += `
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px; border-bottom:1px solid rgba(42,58,85,0.4); padding-bottom:8px;">
+        <label style="grid-column: span 2; color:var(--accent2); font-weight:700;">${p.label}</label>
+        <div><span style="font-size:11px;color:var(--muted)">ราคาโปร</span><input type="number" id="cfg-p-${idx}-price" class="form-input" value="${p.price}"></div>
+        <div><span style="font-size:11px;color:var(--muted)">ราคาปกติ</span><input type="number" id="cfg-p-${idx}-reg" class="form-input" value="${p.regPrice}"></div>
+      </div>
+    `;
+  });
+}
+
+function saveSettings() {
+  if (!CONFIG.event) CONFIG.event = {};
+  CONFIG.event.name = document.getElementById('cfg-event-name').value;
+  CONFIG.event.prefix = document.getElementById('cfg-event-prefix').value || 'INV';
+  
+  CONFIG.promo.amtActive = document.getElementById('cfg-amt-active').checked;
+  CONFIG.promo.amtStepReq = Number(document.getElementById('cfg-amt-req').value) || 0;
+  CONFIG.promo.amtStepDisc = Number(document.getElementById('cfg-amt-disc').value) || 0;
+  
+  CONFIG.promo.qtyActive = document.getElementById('cfg-qty-active').checked;
+  CONFIG.promo.qtyStepReq = Number(document.getElementById('cfg-qty-req').value) || 0;
+  CONFIG.promo.qtyStepDisc = Number(document.getElementById('cfg-qty-disc').value) || 0;
+  
+  CONFIG.promo.giftActive = document.getElementById('cfg-gift-active').checked;
+  CONFIG.promo.giftReq = Number(document.getElementById('cfg-gift-req').value) || 0;
+  CONFIG.promo.giftName = document.getElementById('cfg-gift-name').value || '';
+
+  CONFIG.packages.forEach((p, idx) => {
+    p.price = Number(document.getElementById(`cfg-p-${idx}-price`).value) || 0;
+    p.regPrice = Number(document.getElementById(`cfg-p-${idx}-reg`).value) || 0;
+  });
+
+  localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
+  alert('บันทึกการตั้งค่าเรียบร้อย!');
+  clearCalc(); applyConfig(); switchTab('presentation');
+}
+
+init();
 </script>
 </body>
 </html>
