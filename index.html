@@ -239,12 +239,20 @@ td { padding: 12px; vertical-align: middle; }
 <div id="tab-settings" class="content">
   
   <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
-    <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">🔗 เชื่อมต่อ Google Sheets</h3>
+    <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">🔗 เชื่อมต่อ Google Sheets & Cloud</h3>
     <div>
       <label style="font-size:12px; color:var(--muted); font-weight:700;">Google Apps Script Web App URL</label>
       <input type="text" id="cfg-sheet-url" class="form-input" placeholder="https://script.google.com/macros/s/..." style="font-size:12px;">
-      <p style="font-size:11px; color:var(--muted); margin-top:6px;">*ถ้าระบุ URL ข้อมูลจะถูกบันทึกลง Sheet ทุกครั้งที่กดยืนยันออเดอร์โดยอัตโนมัติ</p>
     </div>
+    <div style="display: flex; gap: 10px; margin-top: 12px;">
+      <button class="btn-checkout" onclick="uploadSettingsToCloud()" style="background: #0ea5e9; flex: 1; margin-top:0; padding:10px; font-size:14px;">☁️ อัปโหลดตั้งค่าขึ้น Cloud</button>
+      <button class="btn-checkout" onclick="downloadSettingsFromCloud()" style="background: #10b981; flex: 1; margin-top:0; padding:10px; font-size:14px;">🔄 ดึงการตั้งค่าจาก Cloud</button>
+    </div>
+    <p style="font-size:11px; color:var(--muted); margin-top:8px; line-height:1.4;">
+      * ระบุ URL ข้อมูลจะถูกบันทึกลง Sheet ทันทีที่รับออเดอร์<br>
+      * <b>อัปโหลด:</b> เซฟโปรโมชัน/ราคาของเครื่องนี้ไปเก็บในคลาวด์<br>
+      * <b>ดึงการตั้งค่า:</b> โหลดการตั้งค่าล่าสุดจากคลาวด์มาใช้ในเครื่องนี้ (หากใช้ config.json ผ่าน Github ไม่จำเป็นต้องใช้อันนี้)
+    </p>
   </div>
 
   <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
@@ -302,7 +310,7 @@ td { padding: 12px; vertical-align: middle; }
     <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">ราคาแพ็กเกจ</h3>
     <div id="settings-packages"></div>
   </div>
-  <button class="btn-checkout" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
+  <button class="btn-checkout" onclick="saveSettings(false)">💾 บันทึกการตั้งค่า (ในเครื่อง)</button>
 </div>
 
 <!-- SLIP MODAL (View Multiple Slips) -->
@@ -437,7 +445,40 @@ let currentScanTarget = null;
 const fmt = n => Math.round(n).toLocaleString('th-TH');
 
 // ── INITIALIZE ──
-function init() {
+async function init() {
+  // 1. ลองโหลดจาก config.json ก่อน (ดึงจาก GitHub)
+  try {
+    const res = await fetch('config.json?v=' + new Date().getTime());
+    if (res.ok) {
+      const fetchedConfig = await res.json();
+      CONFIG = { ...DEFAULT_CONFIG, ...fetchedConfig };
+      // บันทึกทับ localStorage เอาไว้ใช้งานตอน Offline ได้ด้วย
+      localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
+      console.log("Loaded configuration from config.json");
+    } else {
+      loadLocalConfig();
+    }
+  } catch (err) {
+    console.log("Could not load config.json, falling back to localStorage");
+    loadLocalConfig();
+  }
+
+  // 2. โหลดประวัติการขาย
+  const savedHistory = localStorage.getItem('geneus_pos_history');
+  if (savedHistory) { try { salesHistory = JSON.parse(savedHistory); } catch(e){} }
+
+  populateSettingsUI();
+  buildPOSUI(); 
+  applyConfig();
+  renderHistory();
+
+  // 3. หากมี Google Sheet URL ลองให้มัน Sync Cloud อีกครั้ง (เป็นทางเลือกเสริมหากต้องการ)
+  if(CONFIG.googleSheetUrl && CONFIG.googleSheetUrl !== "") {
+     downloadSettingsFromCloud(true);
+  }
+}
+
+function loadLocalConfig() {
   const savedConfig = localStorage.getItem('geneus_pos_config');
   if (savedConfig) { 
     try { 
@@ -447,26 +488,12 @@ function init() {
       if(typeof parsed.googleSheetUrl !== 'undefined') CONFIG.googleSheetUrl = parsed.googleSheetUrl;
       
       if (parsed.promo) {
-         if (typeof parsed.promo.amtActive === 'undefined') {
-            CONFIG.promo.amtActive = parsed.promo.amtStepReq > 0;
-         }
-         if (typeof parsed.promo.qtyActive === 'undefined') {
-            CONFIG.promo.qtyActive = parsed.promo.qtyStepReq > 0;
-         }
-         if (typeof parsed.promo.giftActive === 'undefined') {
-            CONFIG.promo.giftActive = parsed.promo.giftReq > 0;
-         }
+         if (typeof parsed.promo.amtActive === 'undefined') CONFIG.promo.amtActive = parsed.promo.amtStepReq > 0;
+         if (typeof parsed.promo.qtyActive === 'undefined') CONFIG.promo.qtyActive = parsed.promo.qtyStepReq > 0;
+         if (typeof parsed.promo.giftActive === 'undefined') CONFIG.promo.giftActive = parsed.promo.giftReq > 0;
       }
     } catch(e){} 
   }
-  
-  const savedHistory = localStorage.getItem('geneus_pos_history');
-  if (savedHistory) { try { salesHistory = JSON.parse(savedHistory); } catch(e){} }
-
-  populateSettingsUI();
-  buildPOSUI(); 
-  applyConfig();
-  renderHistory();
 }
 
 function switchTab(tabId) {
@@ -491,14 +518,13 @@ function openScanner(targetKey) {
   html5QrcodeScanner.start(
       { facingMode: "environment" },
       { 
-          fps: 30, // เพิ่มความเร็วในการประมวลผลเป็น 30 เฟรมต่อวินาที
+          fps: 30, 
           qrbox: function(viewfinderWidth, viewFinderHeight) {
-              // ขยายกรอบรับภาพให้ใหญ่ขึ้น (80% ของหน้าจอ) เพื่อให้สแกนติดง่ายขึ้น
               var minEdgeSize = Math.min(viewfinderWidth, viewFinderHeight);
               var qrboxSize = Math.floor(minEdgeSize * 0.8);
               return { width: qrboxSize, height: qrboxSize };
           },
-          aspectRatio: 1.0 // ช่วยรักษาสัดส่วนกล้องไม่ให้ภาพบีบ
+          aspectRatio: 1.0 
       },
       (decodedText) => {
           const input = document.querySelector(`input[data-key="${currentScanTarget}"]`);
@@ -819,6 +845,14 @@ function handleMultiUpload(e, idx) {
 }
 
 // ── CUSTOMER PRESENTATION (TAB 2) ──
+function togglePaymentQRPres(val) {
+  currentPaymentMethodPres = val;
+  const qrContainer = document.getElementById('qrPaymentContainer_pres');
+  if (qrContainer) {
+    qrContainer.style.display = (val === 'Bank Transfer') ? 'block' : 'none';
+  }
+}
+
 function renderPresentation() {
   const presWrap = document.getElementById('presentationWrap');
   if(!presWrap) return;
@@ -1433,6 +1467,69 @@ async function saveEditedOrder() {
   }
 }
 
+// ── CLOUD SYNC ──
+async function uploadSettingsToCloud() {
+  if (!CONFIG.googleSheetUrl) { alert('กรุณาระบุ URL ของ Google Sheets ในช่องด้านบนก่อนครับ'); return; }
+  saveSettings(true); 
+  
+  const btn = event.target;
+  const origText = btn.innerHTML;
+  btn.innerHTML = 'กำลังอัปโหลด... ⏳';
+  btn.disabled = true;
+
+  try {
+    const payload = { action: 'save_config', config: CONFIG };
+    await fetch(CONFIG.googleSheetUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    alert('✅ อัปโหลดการตั้งค่าขึ้น Cloud สำเร็จ!\nอุปกรณ์เครื่องอื่นจะได้รับอัปเดตนี้เมื่อเปิดแอปใหม่');
+  } catch(e) {
+    alert('❌ ไม่สามารถเชื่อมต่อ Cloud ได้');
+  } finally {
+    btn.innerHTML = origText;
+    btn.disabled = false;
+  }
+}
+
+async function downloadSettingsFromCloud(silent = false) {
+  if (!CONFIG.googleSheetUrl) {
+     if(!silent) alert('กรุณาระบุ URL ของ Google Sheets ก่อนครับ');
+     return;
+  }
+
+  let btn = null, origText = '';
+  if (!silent && event && event.target) {
+    btn = event.target;
+    origText = btn.innerHTML;
+    btn.innerHTML = 'กำลังดึงข้อมูล... ⏳';
+    btn.disabled = true;
+  }
+
+  try {
+    const res = await fetch(CONFIG.googleSheetUrl + '?action=get_config');
+    const cloudConfig = await res.json();
+    
+    if (cloudConfig && !cloudConfig.status) { 
+       const localUrl = CONFIG.googleSheetUrl;
+       CONFIG = cloudConfig;
+       CONFIG.googleSheetUrl = localUrl; 
+       localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
+       populateSettingsUI();
+       applyConfig();
+       if(!silent) alert('✅ ดึงการตั้งค่าจาก Cloud สำเร็จ!');
+    } else {
+       if(!silent) alert('⚠️ ยังไม่มีการตั้งค่าบน Cloud (โปรดใช้เครื่องหลักกดอัปโหลดขึ้นไปก่อนครับ)');
+    }
+  } catch(e) {
+    if(!silent) alert('❌ ไม่สามารถดึงข้อมูลจาก Cloud ได้');
+  } finally {
+    if(btn) { btn.innerHTML = origText; btn.disabled = false; }
+  }
+}
+
 // ── SETTINGS ──
 function togglePromoFields(type) {
   const cb = document.getElementById(`cfg-${type}-active`);
@@ -1474,7 +1571,7 @@ function populateSettingsUI() {
   });
 }
 
-function saveSettings() {
+function saveSettings(silent = false) {
   CONFIG.googleSheetUrl = document.getElementById('cfg-sheet-url').value.trim();
   if (!CONFIG.event) CONFIG.event = {};
   CONFIG.event.name = document.getElementById('cfg-event-name').value;
@@ -1498,11 +1595,18 @@ function saveSettings() {
   });
 
   localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
-  alert('บันทึกการตั้งค่าเรียบร้อย!');
-  clearCalc(); applyConfig(); switchTab('presentation');
+  if(!silent) {
+     alert('บันทึกการตั้งค่าเรียบร้อย!');
+     clearCalc(); applyConfig(); switchTab('presentation');
+  }
 }
 
-init();
+// ตรวจสอบสถานะการโหลดและเริ่มการทำงาน
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
 </script>
 </body>
 </html>
