@@ -188,6 +188,18 @@ td { padding: 12px; vertical-align: middle; }
 
 <div id="tab-pos" class="content">
   <div class="checkout-form" style="border-top: none; margin-top: 0; padding-top: 0;">
+    <div class="form-group" style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+      <label style="color:var(--accent); font-size:15px; margin-bottom:10px;">👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label>
+      <select id="splitCount" class="form-input" style="border-color:var(--accent); font-weight:bold; font-size:16px;" onchange="toggleSplit()">
+        <option value="1">1 ท่าน (จ่ายก้อนเดียว)</option>
+        <option value="2">2 ท่าน (แยกจ่าย)</option>
+        <option value="3">3 ท่าน (แยกจ่าย)</option>
+        <option value="4">4 ท่าน (แยกจ่าย)</option>
+        <option value="5">5 ท่าน (แยกจ่าย)</option>
+        <option value="6">6 ท่าน (แยกจ่าย)</option>
+      </select>
+    </div>
+
     <!-- Container for dynamic payer blocks -->
     <div id="payersContainer"></div>
 
@@ -225,6 +237,16 @@ td { padding: 12px; vertical-align: middle; }
 </div>
 
 <div id="tab-settings" class="content">
+  
+  <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
+    <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">🔗 เชื่อมต่อ Google Sheets</h3>
+    <div>
+      <label style="font-size:12px; color:var(--muted); font-weight:700;">Google Apps Script Web App URL</label>
+      <input type="text" id="cfg-sheet-url" class="form-input" placeholder="https://script.google.com/macros/s/..." style="font-size:12px;">
+      <p style="font-size:11px; color:var(--muted); margin-top:6px;">*ถ้าระบุ URL ข้อมูลจะถูกบันทึกลง Sheet ทุกครั้งที่กดยืนยันออเดอร์โดยอัตโนมัติ</p>
+    </div>
+  </div>
+
   <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
     <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">📝 ข้อมูลงานอีเวนต์</h3>
     <div style="display:grid; gap:10px;">
@@ -296,7 +318,7 @@ td { padding: 12px; vertical-align: middle; }
 <div id="scannerModal" class="modal" style="z-index: 9999;">
   <div class="modal-content" style="text-align: center;">
     <h3 style="margin-bottom: 10px; color:var(--accent);">📷 สแกนบาร์โค้ด</h3>
-    <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">หันกล้องไปที่ 2D/3D Barcode บนกล่องชุดตรวจ</p>
+    <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">หันกล้องให้อยู่ในกรอบ และ<strong>ขยับเข้า-ออกช้าๆ</strong> เพื่อโฟกัส</p>
     <div id="reader"></div>
     <button class="btn-close-modal" onclick="closeScanner()" style="margin-top:16px;">✕ ยกเลิกสแกน</button>
   </div>
@@ -385,6 +407,7 @@ td { padding: 12px; vertical-align: middle; }
 
 <script>
 const DEFAULT_CONFIG = {
+  googleSheetUrl: '',
   event: { name: '', prefix: 'INV' },
   promo: { 
     amtActive: false, amtStepReq: 15000, amtStepDisc: 1000, 
@@ -421,6 +444,7 @@ function init() {
       const parsed = JSON.parse(savedConfig); 
       CONFIG = { ...DEFAULT_CONFIG, ...parsed };
       if(!parsed.event) CONFIG.event = DEFAULT_CONFIG.event;
+      if(typeof parsed.googleSheetUrl !== 'undefined') CONFIG.googleSheetUrl = parsed.googleSheetUrl;
       
       if (parsed.promo) {
          if (typeof parsed.promo.amtActive === 'undefined') {
@@ -466,7 +490,16 @@ function openScanner(targetKey) {
   
   html5QrcodeScanner.start(
       { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 250, height: 250 } },
+      { 
+          fps: 30, // เพิ่มความเร็วในการประมวลผลเป็น 30 เฟรมต่อวินาที
+          qrbox: function(viewfinderWidth, viewFinderHeight) {
+              // ขยายกรอบรับภาพให้ใหญ่ขึ้น (80% ของหน้าจอ) เพื่อให้สแกนติดง่ายขึ้น
+              var minEdgeSize = Math.min(viewfinderWidth, viewFinderHeight);
+              var qrboxSize = Math.floor(minEdgeSize * 0.8);
+              return { width: qrboxSize, height: qrboxSize };
+          },
+          aspectRatio: 1.0 // ช่วยรักษาสัดส่วนกล้องไม่ให้ภาพบีบ
+      },
       (decodedText) => {
           const input = document.querySelector(`input[data-key="${currentScanTarget}"]`);
           if(input) { input.value = decodedText; }
@@ -512,6 +545,25 @@ function applyConfig() {
   for(let i=0; i<6; i++) { updatePayerCartUI(i); }
   updateGlobalTotals();
   renderPresentation();
+}
+
+function changeItemQtyGlobal(id, delta, e) {
+  if (e) e.stopPropagation();
+  let totalQty = 0;
+  for(let i=0; i<6; i++) Object.values(cartByPayer[i]).forEach(c => totalQty += c);
+  
+  if (delta > 0 && totalQty >= 6) { alert('จำกัดสูงสุด 6 ชุดต่อ 1 บิลครับ'); return; }
+
+  if (delta > 0) {
+    changeItemQty(0, id, 1, null);
+  } else {
+    for(let i=5; i>=0; i--) {
+      if (cartByPayer[i][id] > 0) {
+        changeItemQty(i, id, -1, null);
+        break;
+      }
+    }
+  }
 }
 
 function changeItemQty(payerIdx, id, delta, e) {
@@ -835,7 +887,6 @@ function renderPresentation() {
      let payerDisc = exactDiscPerItem * payerQty;
      let payerNet = payerTotal - payerDisc;
      
-     // ปัดทศนิยมการแสดงผล
      let showPayerNet = payerNet % 1 === 0 ? fmt(payerNet) : payerNet.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
      html += `
@@ -962,6 +1013,46 @@ function normalizeOrder(order) {
    return { ...order, payers, itemsData };
 }
 
+// ── ROW BUILDER (FOR BOTH CSV & SHEET) ──
+function buildExportRows(order) {
+  const rows = [];
+  const saleChannel = order.eventName ? `Event POS - ${order.eventName}` : "Event POS";
+
+  order.itemsData.forEach((item) => {
+     const payer = order.payers[item.payerIdx];
+     let bNo = order.billNumber;
+     if(order.payers.length > 1) bNo += `-${item.payerIdx + 1}`;
+     const dateOnly = payer.date ? payer.date.split(' ')[0] : '';
+
+     const row = [
+       bNo || order.id,
+       payer.date,
+       payer.name,
+       "", 
+       "", "", 
+       saleChannel, 
+       payer.method,
+       item.label,
+       1, 
+       item.price,
+       item.discount > 0 ? "Event On-Top" : "", 
+       item.discount, 
+       0, 
+       item.net, 
+       "THB",
+       0, 
+       item.net, 
+       payer.name, 
+       "รับหน้างาน", "", 
+       payer.contact, 
+       dateOnly, "รับหน้างาน", 
+       item.barcode 
+     ];
+     rows.push(row);
+  });
+  return rows;
+}
+
 // ── CHECKOUT & HISTORY ──
 async function processCheckout() {
   let splitCount = parseInt(document.getElementById('splitCount').value);
@@ -1060,10 +1151,25 @@ async function processCheckout() {
   };
 
   try {
-    await new Promise(r => setTimeout(r, 300));
+    // Save to Local Storage
     salesHistory.unshift(payload); 
     localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
     
+    // Sync to Google Sheets if configured
+    if (CONFIG.googleSheetUrl) {
+       try {
+         const rowsToSync = buildExportRows(payload);
+         fetch(CONFIG.googleSheetUrl, {
+           method: 'POST',
+           mode: 'no-cors',
+           headers: { 'Content-Type': 'text/plain' },
+           body: JSON.stringify(rowsToSync)
+         }).catch(e => console.log('Sheet Sync Error', e));
+       } catch (e) {
+         console.log(e);
+       }
+    }
+
     alert(`✅ บันทึกออเดอร์สำเร็จ!`);
     clearCalc();
     renderHistory();
@@ -1142,7 +1248,7 @@ function viewMultiSlip(orderId) {
 
 function closeModal() { document.getElementById('slipModal').style.display = 'none'; }
 
-// ── RECEIPT / EXPORT BILL ──
+// ── RECEIPT ──
 let currentReceiptOrder = null;
 
 function openReceiptModal(orderId) {
@@ -1214,17 +1320,12 @@ function renderReceiptForPayer(payerIdx) {
 }
 
 function closeReceiptModal() { document.getElementById('receiptModal').style.display = 'none'; }
-
-function printReceipt() {
-  window.print();
-}
-
+function printReceipt() { window.print(); }
 function downloadReceipt() {
   const receiptElement = document.getElementById('receiptContent');
   const btnText = event.target;
   const origText = btnText.innerHTML;
   btnText.innerHTML = 'กำลังประมวลผล... ⏳';
-
   html2canvas(receiptElement, { scale: 2, backgroundColor: null }).then(canvas => {
     const link = document.createElement('a');
     link.download = `Geneus_Receipt_${document.getElementById('rcptBill').innerText || Date.now()}.png`;
@@ -1240,7 +1341,6 @@ function downloadReceipt() {
 // ── EXPORT CSV ──
 function exportCSV() {
   if (salesHistory.length === 0) { alert('ยังไม่มีประวัติการขายให้ Export ครับ'); return; }
-  
   const headers = [
     "Tax Invoice/Order", "Date/Time Paid", "Customer Name", "Contact Channel",
     "Lead Channel", "Lead Nation", "Sale Channel", "Payment Method",
@@ -1249,51 +1349,16 @@ function exportCSV() {
     "Shipping Fee", "Total Amount", "Recipient Name", "Shipping Address",
     "Shipping Province", "Phone No", "วันที่ส่งชุดตรวจ", "Tracking No", "Kit IDs"
   ];
-  
   let csvContent = "\uFEFF" + headers.join(",") + "\n";
   
   salesHistory.forEach(rawOrder => {
-    const order = normalizeOrder(rawOrder);
-    const saleChannel = order.eventName ? `Event POS - ${order.eventName}` : "Event POS";
-
-    order.itemsData.forEach((item) => {
-       const payer = order.payers[item.payerIdx];
-       let bNo = order.billNumber;
-       if(order.payers.length > 1) bNo += `-${item.payerIdx + 1}`;
-       
-       const dateOnly = payer.date ? payer.date.split(' ')[0] : '';
-
-       const row = [
-         bNo || order.id,
-         payer.date,
-         payer.name,
-         "", // Contact Channel ว่างไว้
-         "", "", 
-         saleChannel, 
-         payer.method,
-         item.label,
-         1, 
-         item.price,
-         item.discount > 0 ? "Event On-Top" : "", 
-         item.discount, 
-         0, 
-         item.net, 
-         "THB",
-         0, 
-         item.net, 
-         payer.name, // Recipient Name = Customer Name (No separate recipient field now)
-         "รับหน้างาน", "", 
-         payer.contact, // Phone No
-         dateOnly, "รับหน้างาน", 
-         item.barcode 
-       ];
-       
+    const rows = buildExportRows(normalizeOrder(rawOrder));
+    rows.forEach(row => {
        const escapedRow = row.map(val => {
          const str = String(val);
          if (str.includes(',') || str.includes('"') || str.includes('\n')) return `"${str.replace(/"/g, '""')}"`;
          return str;
        });
-       
        csvContent += escapedRow.join(",") + "\n";
     });
   });
@@ -1308,7 +1373,7 @@ function exportCSV() {
   document.body.removeChild(link);
 }
 
-// ── EDIT MODAL (Simplified for Barcodes only) ──
+// ── EDIT MODAL ──
 let editingOrderId = null;
 function openEditModal(orderId) {
   const rawOrder = salesHistory.find(o => o.id === orderId);
@@ -1340,7 +1405,6 @@ async function saveEditedOrder() {
   if (idxOrder === -1) return;
   
   let order = normalizeOrder(salesHistory[idxOrder]);
-
   document.querySelectorAll('#editBarcodesContainer .barcode-row').forEach(row => {
     const codeInput = row.querySelector('.edit-barcode');
     if(!codeInput) return;
@@ -1373,12 +1437,11 @@ async function saveEditedOrder() {
 function togglePromoFields(type) {
   const cb = document.getElementById(`cfg-${type}-active`);
   const fields = document.getElementById(`cfg-${type}-fields`);
-  if (fields) {
-      fields.style.display = cb.checked ? 'grid' : 'none';
-  }
+  if (fields) { fields.style.display = cb.checked ? 'grid' : 'none'; }
 }
 
 function populateSettingsUI() {
+  document.getElementById('cfg-sheet-url').value = CONFIG.googleSheetUrl || '';
   document.getElementById('cfg-event-name').value = CONFIG.event ? CONFIG.event.name : '';
   document.getElementById('cfg-event-prefix').value = CONFIG.event ? CONFIG.event.prefix : 'INV';
   
@@ -1412,6 +1475,7 @@ function populateSettingsUI() {
 }
 
 function saveSettings() {
+  CONFIG.googleSheetUrl = document.getElementById('cfg-sheet-url').value.trim();
   if (!CONFIG.event) CONFIG.event = {};
   CONFIG.event.name = document.getElementById('cfg-event-name').value;
   CONFIG.event.prefix = document.getElementById('cfg-event-prefix').value || 'INV';
