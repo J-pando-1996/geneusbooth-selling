@@ -203,6 +203,8 @@ td { padding: 12px; vertical-align: middle; }
     <!-- Container for dynamic payer blocks -->
     <div id="payersContainer"></div>
 
+    <div class="calc-result" id="calcResult" style="margin-bottom: 16px;"></div>
+
     <button class="btn-checkout" onclick="processCheckout()">✅ ยืนยันออเดอร์ (Checkout)</button>
     <button class="btn-clear" onclick="clearCalc()">✕ ยกเลิกออเดอร์นี้ (เริ่มใหม่)</button>
   </div>
@@ -243,7 +245,8 @@ td { padding: 12px; vertical-align: middle; }
       <input type="text" id="cfg-sheet-url" class="form-input" placeholder="https://script.google.com/macros/s/..." style="font-size:12px;">
     </div>
     <p style="font-size:11px; color:var(--muted); margin-top:8px; line-height:1.4;">
-      * ระบุ URL ข้อมูลการขายจะถูกส่งไปบันทึกลง Sheet ทันทีที่กดยืนยันรับออเดอร์
+      * แนะนำให้นำ URL ไปใส่ไว้ในไฟล์ <b>config.json</b> ระบบจะดึง URL มาเติมให้อัตโนมัติทุกครั้งที่เปิดเว็บ<br>
+      * ข้อมูลการขายจะถูกส่งไปบันทึกลง Sheet ทันทีที่กดยืนยันรับออเดอร์
     </p>
   </div>
 
@@ -438,24 +441,9 @@ const fmt = n => Math.round(n).toLocaleString('th-TH');
 
 // ── INITIALIZE ──
 async function init() {
-  // 1. ลองโหลดจาก config.json ก่อน (ดึงจาก GitHub)
-  try {
-    const res = await fetch('config.json?v=' + new Date().getTime());
-    if (res.ok) {
-      const fetchedConfig = await res.json();
-      CONFIG = { ...DEFAULT_CONFIG, ...fetchedConfig };
-      // บันทึกทับ localStorage เอาไว้ใช้งานตอน Offline ได้ด้วย
-      localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
-      console.log("Loaded configuration from config.json");
-    } else {
-      loadLocalConfig();
-    }
-  } catch (err) {
-    console.log("Could not load config.json, falling back to localStorage");
-    loadLocalConfig();
-  }
+  loadLocalConfig();
 
-  // 2. โหลดประวัติการขาย
+  // โหลดประวัติการขาย
   const savedHistory = localStorage.getItem('geneus_pos_history');
   if (savedHistory) { try { salesHistory = JSON.parse(savedHistory); } catch(e){} }
 
@@ -755,6 +743,21 @@ function updateGlobalTotals() {
     const subLabel = document.getElementById('payerSubtotal_'+i);
     if(subLabel) subLabel.innerText = fmt(payerSubtotals[i]) + ' ฿';
   }
+
+  const promo = calculatePromo(totalEventPrice, totalQty);
+  const finalAmt = totalEventPrice - promo.disc;
+
+  const res = document.getElementById('calcResult');
+  if (totalQty === 0) {
+    res.innerHTML = '<div class="calc-empty">👆 กรุณาเลือกจำนวนผู้ชำระเงิน และเลือกแพ็กเกจด้านบนครับ</div>';
+  } else {
+    res.innerHTML = `
+      <div class="summary-row event"><span>รวมราคาชุดตรวจทั้งหมด (${totalQty} ชุด):</span><span>${fmt(totalEventPrice)} ฿</span></div>
+      ${promo.disc > 0 ? `<div class="summary-row discount"><span>ส่วนลด On-Top รวม:</span><span>-${fmt(promo.disc)} ฿</span></div>` : ''}
+      ${promo.gifts > 0 ? `<div class="summary-row gift"><span>🎉 ได้รับของแถม:</span><span>${promo.giftText}</span></div>` : ''}
+      <div class="summary-row final"><span>ยอดรวมสุทธิทั้งบิล:</span><span>${fmt(finalAmt)} ฿</span></div>
+    `;
+  }
 }
 
 function setSplitCount(val) {
@@ -1024,10 +1027,37 @@ function buildExportRows(order) {
   const rows = [];
   const saleChannel = order.eventName ? `Event POS - ${order.eventName}` : "Event POS";
 
+  // รวมรายการแพ็กเกจชนิดเดียวกันของผู้ชำระเงินรายเดียวกันเข้าด้วยกัน
+  const groupedItems = {};
+
   order.itemsData.forEach((item) => {
-     const payer = order.payers[item.payerIdx];
+     const key = `${item.payerIdx}_${item.pkgId}`;
+     if (!groupedItems[key]) {
+        groupedItems[key] = {
+           payerIdx: item.payerIdx,
+           label: item.label,
+           qty: 0,
+           totalPrice: 0,
+           totalDiscount: 0,
+           totalNet: 0,
+           barcodes: []
+        };
+     }
+     groupedItems[key].qty += 1;
+     // ป้องกันเศษทศนิยมเกินจากการบวก
+     groupedItems[key].totalPrice = Math.round((groupedItems[key].totalPrice + item.price) * 100) / 100;
+     groupedItems[key].totalDiscount = Math.round((groupedItems[key].totalDiscount + item.discount) * 100) / 100;
+     groupedItems[key].totalNet = Math.round((groupedItems[key].totalNet + item.net) * 100) / 100;
+     
+     if (item.barcode) {
+         groupedItems[key].barcodes.push(item.barcode);
+     }
+  });
+
+  Object.values(groupedItems).forEach((gItem) => {
+     const payer = order.payers[gItem.payerIdx];
      let bNo = order.billNumber;
-     if(order.payers.length > 1) bNo += `-${item.payerIdx + 1}`;
+     if(order.payers.length > 1) bNo += `-${gItem.payerIdx + 1}`;
      const dateOnly = payer.date ? payer.date.split(' ')[0] : '';
 
      const row = [
@@ -1038,24 +1068,25 @@ function buildExportRows(order) {
        "", "", 
        saleChannel, 
        payer.method,
-       item.label,
-       1, 
-       item.price,
-       item.discount > 0 ? "Event On-Top" : "", 
-       item.discount, 
+       gItem.label,
+       gItem.qty, 
+       gItem.totalPrice,
+       gItem.totalDiscount > 0 ? "Event On-Top" : "", 
+       gItem.totalDiscount, 
        0, 
-       item.net, 
+       gItem.totalNet, 
        "THB",
        0, 
-       item.net, 
+       gItem.totalNet, 
        payer.name, 
        "รับหน้างาน", "", 
        payer.contact, 
        dateOnly, "รับหน้างาน", 
-       item.barcode 
+       gItem.barcodes.join(", ") // ใช้ลูกน้ำและช่องว่างในการคั่น
      ];
      rows.push(row);
   });
+  
   return rows;
 }
 
