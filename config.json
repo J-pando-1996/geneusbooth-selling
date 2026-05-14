@@ -1,8 +1,8 @@
 {
   "googleSheetUrl": "https://script.google.com/macros/s/AKfycbwzBQMdcrJfcehHiJpXP5FnCIWx7ztiivJJiSXr9VHTQygfbnN9dVVo18AuUV3Q4Znu/exec",
   "event": {
-    "name": "Pet Expo 2026",
-    "prefix": "PET"
+    "name": "Thailand Wellness Expo 2026",
+    "prefix": "EVT"
   },
   "promo": {
     "amtActive": true,
