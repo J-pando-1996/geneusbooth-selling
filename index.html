@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Geneus DNA — Event POS</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-<!-- เพิ่มไลบรารีสำหรับแปลง HTML เป็นรูปภาพ -->
+<!-- ไลบรารีสำหรับแปลง HTML เป็นรูปภาพ และ สแกนบาร์โค้ดผ่านกล้อง -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
 <style>
 :root {
   --bg: #f4f7f6;
@@ -109,6 +111,9 @@ input:checked + .slider:before { transform: translateX(16px); }
 .btn-checkout:active { transform: scale(0.98); }
 .btn-clear { width: 100%; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 700; margin-top: 10px; }
 
+.btn-scan { background: var(--accent); color: #ffffff; border: none; padding: 0 12px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 5px rgba(5,150,105,0.2); }
+.btn-scan:active { transform: scale(0.95); }
+
 /* HISTORY TABLE */
 .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: var(--card); margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
@@ -126,8 +131,11 @@ td { padding: 12px; vertical-align: middle; }
 .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 400px; width: 100%; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
 .btn-close-modal { background: var(--danger); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; }
 
+#reader { width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+#reader video { max-width: 100%; border-radius: 8px; }
+
 /* PRESENTATION MODE (CUSTOMER VIEW) */
-.pres-container { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 16px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.06); }
+.pres-container { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 16px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.06); margin-top: 16px; }
 .pres-title { color: var(--text); font-size: clamp(20px, 3.5vw, 26px); font-weight: 900; margin-bottom: 24px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
 .pres-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 24px; }
 .pres-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: clamp(15px, 2.5vw, 18px); color: var(--muted); }
@@ -152,7 +160,7 @@ td { padding: 12px; vertical-align: middle; }
 /* PRINT STYLES */
 @media print {
   body { background: #fff; margin: 0; padding: 0; }
-  .header, .tab-container, .content, #slipModal, #editModal { display: none !important; }
+  .header, .tab-container, .content, #slipModal, #editModal, #scannerModal { display: none !important; }
   #receiptModal { position: absolute; left: 0; top: 0; display: block !important; background: transparent; width: 100%; height: auto; padding: 0; }
   .modal-content { max-width: 100%; margin: 0; padding: 0; box-shadow: none; border: none; }
   #receiptContent { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; box-shadow: none !important; }
@@ -174,27 +182,19 @@ td { padding: 12px; vertical-align: middle; }
   <button class="tab-btn" onclick="switchTab('settings')" id="btn-settings">⚙️ ตั้งค่า</button>
 </div>
 
-<div id="tab-presentation" class="content active"></div>
+<div id="tab-presentation" class="content active">
+  <div id="presentationWrap"></div>
+</div>
 
 <div id="tab-pos" class="content">
   <div class="checkout-form" style="border-top: none; margin-top: 0; padding-top: 0;">
-    <div class="form-group" style="margin-bottom: 20px;">
-      <label>👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label>
-      <select id="splitCount" class="form-input" style="border-color:var(--accent); font-weight:bold; font-size:16px;" onchange="toggleSplit()">
-        <option value="1">1 ท่าน (จ่ายก้อนเดียว)</option>
-        <option value="2">2 ท่าน (แยกจ่าย)</option>
-        <option value="3">3 ท่าน (แยกจ่าย)</option>
-        <option value="4">4 ท่าน (แยกจ่าย)</option>
-        <option value="5">5 ท่าน (แยกจ่าย)</option>
-        <option value="6">6 ท่าน (แยกจ่าย)</option>
-      </select>
-    </div>
-
     <!-- Container for dynamic payer blocks -->
     <div id="payersContainer"></div>
 
+    <div class="calc-result" id="calcResult" style="margin-bottom: 16px;"></div>
+
     <button class="btn-checkout" onclick="processCheckout()">✅ ยืนยันออเดอร์ (Checkout)</button>
-    <button class="btn-clear" onclick="clearCalc()">✕ ยกเลิกออเดอร์นี้</button>
+    <button class="btn-clear" onclick="clearCalc()">✕ ยกเลิกออเดอร์นี้ (เริ่มใหม่)</button>
   </div>
 </div>
 
@@ -292,7 +292,17 @@ td { padding: 12px; vertical-align: middle; }
   </div>
 </div>
 
-<!-- EDIT MODAL (Simplified for Barcodes only) -->
+<!-- SCANNER MODAL -->
+<div id="scannerModal" class="modal" style="z-index: 9999;">
+  <div class="modal-content" style="text-align: center;">
+    <h3 style="margin-bottom: 10px; color:var(--accent);">📷 สแกนบาร์โค้ด</h3>
+    <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">หันกล้องไปที่ 2D/3D Barcode บนกล่องชุดตรวจ</p>
+    <div id="reader"></div>
+    <button class="btn-close-modal" onclick="closeScanner()" style="margin-top:16px;">✕ ยกเลิกสแกน</button>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
 <div id="editModal" class="modal">
   <div class="modal-content" style="text-align: left; max-height: 90vh; overflow-y: auto;">
     <h3 style="margin-bottom: 16px; color:var(--accent); text-align: center;">✏️ แก้ไขข้อมูลออเดอร์</h3>
@@ -396,7 +406,10 @@ let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 let cartByPayer = [{}, {}, {}, {}, {}, {}];
 let currentSlips = {}; 
 let salesHistory = [];
-let currentPaymentMethodPres = 'Bank Transfer'; // เก็บวิธีชำระเงินที่เลือกในหน้า Presentation
+let currentSplitCount = 1;
+
+let html5QrcodeScanner = null;
+let currentScanTarget = null;
 
 const fmt = n => Math.round(n).toLocaleString('th-TH');
 
@@ -437,6 +450,44 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(`tab-${tabId}`).classList.add('active');
   document.getElementById(`btn-${tabId}`).classList.add('active');
+  if(tabId === 'presentation') {
+      renderPresentation();
+  }
+}
+
+// ── SCANNER LOGIC ──
+function openScanner(targetKey) {
+  currentScanTarget = targetKey;
+  document.getElementById('scannerModal').style.display = 'flex';
+  
+  if(!html5QrcodeScanner) {
+      html5QrcodeScanner = new Html5Qrcode("reader");
+  }
+  
+  html5QrcodeScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      (decodedText) => {
+          const input = document.querySelector(`input[data-key="${currentScanTarget}"]`);
+          if(input) { input.value = decodedText; }
+          closeScanner();
+      },
+      (errorMessage) => {
+          // parse error, ignore securely
+      }
+  ).catch((err) => {
+      alert("ไม่สามารถเข้าถึงกล้องได้ กรุณาตรวจสอบสิทธิ์การใช้งานกล้องในเบราว์เซอร์: " + err);
+      closeScanner();
+  });
+}
+
+function closeScanner() {
+  if(html5QrcodeScanner) {
+      html5QrcodeScanner.stop().then(() => {
+          html5QrcodeScanner.clear();
+      }).catch(err => console.error(err));
+  }
+  document.getElementById('scannerModal').style.display = 'none';
 }
 
 // ── CORE LOGIC ──
@@ -458,29 +509,9 @@ function calculatePromo(totalEvent, qty) {
 }
 
 function applyConfig() {
-  // รีเซ็ตตะกร้า และ อัปเดตหน้าจอทั้งหมด
   for(let i=0; i<6; i++) { updatePayerCartUI(i); }
   updateGlobalTotals();
   renderPresentation();
-}
-
-function changeItemQtyGlobal(id, delta, e) {
-  if (e) e.stopPropagation();
-  let totalQty = 0;
-  for(let i=0; i<6; i++) Object.values(cartByPayer[i]).forEach(c => totalQty += c);
-  
-  if (delta > 0 && totalQty >= 6) { alert('จำกัดสูงสุด 6 ชุดต่อ 1 บิลครับ'); return; }
-
-  if (delta > 0) {
-    changeItemQty(0, id, 1, null);
-  } else {
-    for(let i=5; i>=0; i--) {
-      if (cartByPayer[i][id] > 0) {
-        changeItemQty(i, id, -1, null);
-        break;
-      }
-    }
-  }
 }
 
 function changeItemQty(payerIdx, id, delta, e) {
@@ -503,8 +534,7 @@ function changeItemQty(payerIdx, id, delta, e) {
 function clearCalc() {
   cartByPayer = [{}, {}, {}, {}, {}, {}];
   currentSlips = {};
-  document.getElementById('splitCount').value = "1";
-  toggleSplit(); 
+  setSplitCount(1); // Reset to 1 payer
 
   const now = new Date();
   const defaultDate = now.toLocaleDateString('en-CA');
@@ -515,18 +545,11 @@ function clearCalc() {
     if(document.getElementById(`payerContact_${i}`)) document.getElementById(`payerContact_${i}`).value = '';
     if(document.getElementById(`payerDate_${i}`)) document.getElementById(`payerDate_${i}`).value = defaultDate;
     if(document.getElementById(`payerTime_${i}`)) document.getElementById(`payerTime_${i}`).value = defaultTime;
-    if(document.getElementById(`payerMethod_${i}`)) {
-      document.getElementById(`payerMethod_${i}`).value = 'Bank Transfer';
-      togglePayerQR(i);
-    }
+    if(document.getElementById(`payerMethod_${i}`)) document.getElementById(`payerMethod_${i}`).value = 'Bank Transfer';
     const preview = document.getElementById(`slipPreview_${i}`);
     if (preview) { preview.src=''; preview.style.display='none'; }
     updatePayerCartUI(i);
   }
-  
-  currentPaymentMethodPres = 'Bank Transfer';
-  if(document.getElementById('paymentMethodPres')) document.getElementById('paymentMethodPres').value = 'Bank Transfer';
-  togglePaymentQRPres('Bank Transfer');
   
   updateGlobalTotals();
   renderPresentation();
@@ -544,47 +567,46 @@ function buildPOSUI() {
      html += `
        <div class="payer-block" id="payerBlock_${i}" style="display:${i===0?'block':'none'}; border:1px solid var(--border); padding:16px; border-radius:12px; margin-bottom:16px; background:var(--card2); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
          <h4 style="margin-bottom:16px; color:var(--accent); display:flex; justify-content:space-between; align-items:center;">
-           <span style="font-size:16px;">👤 ผู้ชำระเงินท่านที่ ${i+1}</span>
+           <span style="font-size:16px;">👤 ลูกค้าท่านที่ ${i+1}</span>
            <span id="payerSubtotal_${i}" style="color:var(--text); font-size:14px; font-weight:800;">0 ฿</span>
          </h4>
 
          <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:16px;">
-            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:10px;">📦 เลือกแพ็กเกจชุดตรวจ</label>
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:10px;">📦 1. เลือกแพ็กเกจชุดตรวจให้ท่านที่ ${i+1}</label>
             <div class="pkg-grid" id="pkgButtons_${i}"></div>
          </div>
 
-         <div class="form-row-2">
-           <div class="form-group"><label>📝 ชื่อลูกค้า (Customer Name)</label><input type="text" id="payerName_${i}" class="form-input" placeholder="ชื่อ-นามสกุล"></div>
-           <div class="form-group"><label>📞 เบอร์โทรศัพท์ (Phone No.)</label><input type="tel" id="payerContact_${i}" class="form-input" placeholder="08X-XXX-XXXX"></div>
-         </div>
+         <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:16px;">
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px;">📝 2. ข้อมูลและการชำระเงินของท่านที่ ${i+1}</label>
+            <div class="form-row-2">
+              <div class="form-group"><label>ชื่อลูกค้า (Customer Name)</label><input type="text" id="payerName_${i}" class="form-input" placeholder="ชื่อ-นามสกุล"></div>
+              <div class="form-group"><label>เบอร์โทรศัพท์ (Phone No.)</label><input type="tel" id="payerContact_${i}" class="form-input" placeholder="08X-XXX-XXXX"></div>
+            </div>
 
-         <div class="form-row-2">
-           <div class="form-group"><label>📅 วันที่ชำระ</label><input type="date" id="payerDate_${i}" class="form-input" value="${defaultDate}"></div>
-           <div class="form-group"><label>⏰ เวลา</label><input type="time" id="payerTime_${i}" class="form-input" value="${defaultTime}"></div>
+            <div class="form-row-2">
+              <div class="form-group"><label>วันที่ชำระ</label><input type="date" id="payerDate_${i}" class="form-input" value="${defaultDate}"></div>
+              <div class="form-group"><label>เวลา</label><input type="time" id="payerTime_${i}" class="form-input" value="${defaultTime}"></div>
+            </div>
+
+            <div class="form-group" style="margin-top:8px;">
+              <label>วิธีชำระเงิน</label>
+              <select id="payerMethod_${i}" class="form-input">
+                <option value="Bank Transfer">โอนเงิน (Bank Transfer)</option>
+                <option value="Credit Card">บัตรเครดิต (Credit Card)</option>
+                <option value="Cash">เงินสด (Cash)</option>
+                <option value="Installment">ผ่อนชำระ (Installment)</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-top:8px;">
+              <label>แนบสลิป/หลักฐาน</label>
+              <input type="file" accept="image/*" class="form-input" onchange="handleMultiUpload(event, ${i})" style="padding:6px; font-size:12px;">
+              <img id="slipPreview_${i}" style="display:none; max-width:100px; margin-top:8px; border-radius:4px; border:1px solid var(--border);">
+            </div>
          </div>
 
          <div class="form-group" style="margin-top:8px;">
-           <label>💳 วิธีชำระเงิน</label>
-           <select id="payerMethod_${i}" class="form-input" onchange="togglePayerQR(${i})">
-             <option value="Bank Transfer">โอนเงิน (QR)</option>
-             <option value="Credit Card">บัตรเครดิต (Credit Card)</option>
-             <option value="Cash">เงินสด (Cash)</option>
-             <option value="Installment">ผ่อนชำระ (Installment)</option>
-           </select>
-         </div>
-         
-         <div id="qrPayer_${i}" style="margin-top:12px; text-align:center; display:block;">
-           <img src="6. QR payment.jpg" alt="QR Payment" style="max-width: 150px; border-radius: 8px; border: 1px solid var(--border);">
-         </div>
-
-         <div class="form-group" style="margin-top:8px;">
-           <label>🧾 อัปโหลดสลิป</label>
-           <input type="file" accept="image/*" class="form-input" onchange="handleMultiUpload(event, ${i})" style="padding:6px; font-size:12px;">
-           <img id="slipPreview_${i}" style="display:none; max-width:100px; margin-top:8px; border-radius:4px; border:1px solid var(--border);">
-         </div>
-
-         <div class="form-group" style="margin-top:16px;">
-            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px;">📸 สแกนบาร์โค้ด</label>
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px;">📸 3. สแกนบาร์โค้ดของท่านที่ ${i+1}</label>
             <div id="barcodesContainer_${i}"></div>
          </div>
        </div>
@@ -631,17 +653,23 @@ function updatePayerCartUI(payerIdx) {
   Object.entries(cart).forEach(([id, cnt]) => {
      const p = CONFIG.packages.find(x => x.id === id);
      for(let i=0; i<cnt; i++) {
-        const key = `${id}_${i}`;
+        const key = `pos_${payerIdx}_${id}_${i}`;
         const val = saved[key] || '';
         bcHtml += `
           <div class="barcode-row" style="background:#fff; padding:12px; border-radius:8px; margin-bottom:8px; border:1px dashed var(--border);">
             <div style="font-weight:700; color:var(--accent2); margin-bottom:8px; font-size:13px;">${p.label} (กล่องที่ ${i+1})</div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px;">
-              <input type="text" class="form-input pos-barcode" style="flex:1; min-width:110px; font-size:12px; padding:8px;" placeholder="สแกนบาร์โค้ด" data-key="${key}" value="${val}">
+            <div style="display:flex; gap:8px;">
+              <input type="text" class="form-input pos-barcode" style="flex:1;" placeholder="สแกน หรือ พิมพ์บาร์โค้ด" data-key="${key}" value="${val}">
+              <button type="button" class="btn-scan" onclick="openScanner('${key}')">📷 สแกน</button>
             </div>
           </div>`;
      }
   });
+  
+  if(Object.keys(cart).length === 0) {
+      bcHtml = `<div style="text-align:center; color:var(--muted); font-size:12px; padding:10px;">โปรดเลือกแพ็กเกจด้านบนเพื่อแสดงช่องสแกนบาร์โค้ด</div>`;
+  }
+  
   bcWrap.innerHTML = bcHtml;
 }
 
@@ -662,36 +690,57 @@ function updateGlobalTotals() {
     const subLabel = document.getElementById('payerSubtotal_'+i);
     if(subLabel) subLabel.innerText = fmt(payerSubtotals[i]) + ' ฿';
   }
+
+  const promo = calculatePromo(totalEventPrice, totalQty);
+  const finalAmt = totalEventPrice - promo.disc;
+
+  const res = document.getElementById('calcResult');
+  if (totalQty === 0) {
+    res.innerHTML = '<div class="calc-empty">👆 กรุณาเลือกจำนวนผู้ชำระเงิน และเลือกแพ็กเกจด้านบนครับ</div>';
+  } else {
+    res.innerHTML = `
+      <div class="summary-row event"><span>รวมราคาชุดตรวจทั้งหมด (${totalQty} ชุด):</span><span>${fmt(totalEventPrice)} ฿</span></div>
+      ${promo.disc > 0 ? `<div class="summary-row discount"><span>ส่วนลด On-Top รวม:</span><span>-${fmt(promo.disc)} ฿</span></div>` : ''}
+      ${promo.gifts > 0 ? `<div class="summary-row gift"><span>🎉 ได้รับของแถม:</span><span>${promo.giftText}</span></div>` : ''}
+      <div class="summary-row final"><span>ยอดรวมสุทธิทั้งบิล:</span><span>${fmt(finalAmt)} ฿</span></div>
+    `;
+  }
+}
+
+function setSplitCount(val) {
+   currentSplitCount = parseInt(val);
+   
+   // Handle merging carts if shrinking from 6 down to 2, etc.
+   for(let i=0; i<6; i++) {
+      if(i >= currentSplitCount) {
+          let hasItems = false;
+          for(let pkgId in cartByPayer[i]) {
+            cartByPayer[0][pkgId] = (cartByPayer[0][pkgId] || 0) + cartByPayer[i][pkgId];
+            hasItems = true;
+          }
+          if(hasItems) cartByPayer[i] = {};
+      }
+   }
+   
+   // update UI dropdowns
+   const pSel = document.getElementById('presSplitCount');
+   if(pSel) pSel.value = currentSplitCount;
+   const posSel = document.getElementById('splitCount');
+   if(posSel) posSel.value = currentSplitCount;
+
+   // Toggle visibility in POS
+   for(let i=0; i<6; i++) {
+      const block = document.getElementById('payerBlock_'+i);
+      if(block) block.style.display = i < currentSplitCount ? 'block' : 'none';
+      updatePayerCartUI(i);
+   }
+   
+   updateGlobalTotals();
+   renderPresentation();
 }
 
 function toggleSplit() {
-  const count = parseInt(document.getElementById('splitCount').value);
-  for(let i=0; i<6; i++) {
-    const block = document.getElementById('payerBlock_'+i);
-    if (i < count) {
-      if(block) block.style.display = 'block';
-    } else {
-      if(block) block.style.display = 'none';
-      let hasItems = false;
-      for(let pkgId in cartByPayer[i]) {
-        cartByPayer[0][pkgId] = (cartByPayer[0][pkgId] || 0) + cartByPayer[i][pkgId];
-        hasItems = true;
-      }
-      if (hasItems) {
-        cartByPayer[i] = {};
-        updatePayerCartUI(i);
-        updatePayerCartUI(0);
-      }
-    }
-  }
-  updateGlobalTotals();
-  renderPresentation();
-}
-
-function togglePayerQR(idx) {
-  const method = document.getElementById(`payerMethod_${idx}`).value;
-  const qr = document.getElementById(`qrPayer_${idx}`);
-  if (qr) qr.style.display = (method === 'Bank Transfer') ? 'block' : 'none';
+  setSplitCount(document.getElementById('splitCount').value);
 }
 
 function handleMultiUpload(e, idx) {
@@ -718,126 +767,128 @@ function handleMultiUpload(e, idx) {
 }
 
 // ── CUSTOMER PRESENTATION (TAB 2) ──
-function togglePaymentQRPres(val) {
-  currentPaymentMethodPres = val;
-  const qrContainer = document.getElementById('qrPaymentContainer_pres');
-  if (qrContainer) {
-    qrContainer.style.display = (val === 'Bank Transfer') ? 'block' : 'none';
-  }
-  const p0 = document.getElementById('payerMethod_0');
-  if(p0) { p0.value = val; togglePayerQR(0); }
-}
-
 function renderPresentation() {
-  const presWrap = document.getElementById('tab-presentation');
+  const presWrap = document.getElementById('presentationWrap');
+  if(!presWrap) return;
   
-  let mergedCart = {};
-  let qty = 0;
-  for(let i=0; i<6; i++) {
+  // คำนวณยอดรวมทั้งหมดของทั้งบิล
+  let totalQty = 0;
+  let totalEventPrice = 0;
+  let totalRegPrice = 0;
+  for(let i=0; i<currentSplitCount; i++) {
     Object.entries(cartByPayer[i]).forEach(([id, cnt]) => {
-      mergedCart[id] = (mergedCart[id] || 0) + cnt;
-      qty += cnt;
+      const p = CONFIG.packages.find(x => x.id === id);
+      if(p) {
+          totalQty += cnt;
+          totalEventPrice += p.price * cnt;
+          totalRegPrice += p.regPrice * cnt;
+      }
     });
   }
+
+  const promo = calculatePromo(totalEventPrice, totalQty);
+  const finalAmt = totalEventPrice - promo.disc;
+  const exactDiscPerItem = totalQty > 0 ? (promo.disc / totalQty) : 0;
   
-  let buttonsHtml = '';
-  CONFIG.packages.forEach(p => {
-    const cnt = mergedCart[p.id] || 0;
-    const selectedCls = cnt > 0 ? 'selected' : '';
-    let badge = '';
-    if (cnt > 0) {
-      badge = `
-        <div class="pkg-qty-ctrl">
-          <div class="ctrl-minus" onclick="changeItemQtyGlobal('${p.id}', -1, event)">−</div>
-          <div class="ctrl-val">${cnt}</div>
-          <div class="ctrl-plus" onclick="changeItemQtyGlobal('${p.id}', 1, event)">+</div>
+  const totalSaved = totalRegPrice - finalAmt;
+  const savedPerc = totalRegPrice > 0 ? Math.round((totalSaved / totalRegPrice) * 100) : 0;
+
+  // 1. Dropdown เลือกคน
+  let html = `
+    <div class="form-group" style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align:center;">
+      <label style="color:var(--accent); font-size:16px; font-weight:900; margin-bottom:12px; display:block;">👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label>
+      <select id="presSplitCount" class="form-input" style="border-color:var(--accent); font-weight:bold; font-size:16px; text-align:center;" onchange="setSplitCount(this.value)">
+        <option value="1" ${currentSplitCount===1?'selected':''}>1 ท่าน (จ่ายก้อนเดียว)</option>
+        <option value="2" ${currentSplitCount===2?'selected':''}>2 ท่าน (แยกจ่าย)</option>
+        <option value="3" ${currentSplitCount===3?'selected':''}>3 ท่าน (แยกจ่าย)</option>
+        <option value="4" ${currentSplitCount===4?'selected':''}>4 ท่าน (แยกจ่าย)</option>
+        <option value="5" ${currentSplitCount===5?'selected':''}>5 ท่าน (แยกจ่าย)</option>
+        <option value="6" ${currentSplitCount===6?'selected':''}>6 ท่าน (แยกจ่าย)</option>
+      </select>
+    </div>
+  `;
+
+  // 2. Loop สร้างตะกร้าของแต่ละคน
+  for(let i=0; i<currentSplitCount; i++) {
+     let payerTotal = 0;
+     let payerQty = 0;
+     let pkgButtonsHtml = '';
+     
+     CONFIG.packages.forEach(p => {
+        const cnt = cartByPayer[i][p.id] || 0;
+        if(cnt > 0) { payerTotal += p.price * cnt; payerQty += cnt; }
+        
+        const selectedCls = cnt > 0 ? 'selected' : '';
+        let badge = cnt > 0 ? `<div class="pkg-qty-ctrl"><div class="ctrl-minus" onclick="changeItemQty(${i}, '${p.id}', -1, event)">−</div><div class="ctrl-val">${cnt}</div><div class="ctrl-plus" onclick="changeItemQty(${i}, '${p.id}', 1, event)">+</div></div>` : '';
+        let clickAttr = cnt === 0 ? `onclick="changeItemQty(${i}, '${p.id}', 1, event)"` : '';
+        
+        pkgButtonsHtml += `
+          <div class="pkg-btn ${selectedCls}" data-id="${p.id}" ${clickAttr} style="min-height: 100px; margin-bottom: 8px;">
+            <span class="btn-name">${p.label}</span>
+            <span class="btn-reg">${fmt(p.regPrice)} ฿</span>
+            <span class="btn-price" style="font-size: clamp(14px, 2.5vw, 18px);">${fmt(p.price)} ฿</span>
+            ${badge}
+          </div>
+        `;
+     });
+
+     let payerDisc = exactDiscPerItem * payerQty;
+     let payerNet = payerTotal - payerDisc;
+     
+     // ปัดทศนิยมการแสดงผล
+     let showPayerNet = payerNet % 1 === 0 ? fmt(payerNet) : payerNet.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+     html += `
+        <div style="background:#fff; border-radius:16px; padding:16px; margin-bottom:16px; border:1px solid var(--border); box-shadow:0 4px 10px rgba(0,0,0,0.03);">
+           <h3 style="color:var(--accent2); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">👤 ลูกค้าท่านที่ ${i+1}</h3>
+           <div class="pkg-grid">${pkgButtonsHtml}</div>
+           
+           ${payerQty > 0 ? `
+           <div style="background:var(--card2); border-radius:12px; padding:12px; margin-top:12px; border:1px solid #cbd5e1;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:14px; color:var(--muted);"><span>รวมราคาหน้างาน:</span><span>${fmt(payerTotal)} ฿</span></div>
+              ${payerDisc > 0 ? `<div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:14px; color:var(--gold); font-weight:700;"><span>ส่วนลด On-top หารเฉลี่ย:</span><span>-${fmt(payerDisc)} ฿</span></div>` : ''}
+              <div style="display:flex; justify-content:space-between; font-weight:900; font-size:18px; color:var(--accent); margin-top:8px; border-top:1px dashed var(--border); padding-top:8px;">
+                 <span>ยอดโอนของท่านที่ ${i+1}:</span><span>${showPayerNet} ฿</span>
+              </div>
+           </div>
+           ` : `<div class="calc-empty" style="padding:10px 0;">แตะเลือกแพ็กเกจด้านบนให้ท่านที่ ${i+1}</div>`}
+        </div>
+     `;
+  }
+
+  // 3. Grand Summary & QR Code
+  if (totalQty > 0) {
+      let giftHtml = '';
+      if (promo.gifts > 0 || promo.giftText) {
+        giftHtml = `<div style="background:var(--tag-std-bg); border:1px solid var(--tag-std); color:var(--accent); padding:16px; border-radius:12px; margin-top:16px; font-weight:800; text-align:center; font-size:clamp(16px, 2.5vw, 20px);">🎁 รับของแถมฟรี! ${promo.giftText}</div>`;
+      }
+
+      html += `
+        <div class="pres-container">
+          <div class="pres-title">✨ สรุปยอดรวมทั้งบิล ✨</div>
+          <div class="pres-row"><span>รวมราคาปกติหน้าร้าน:</span><span style="text-decoration:line-through;">${fmt(totalRegPrice)} ฿</span></div>
+          <div class="pres-row"><span>รวมราคาโปรหน้างาน:</span><span style="color:var(--text); font-weight:700;">${fmt(totalEventPrice)} ฿</span></div>
+          ${promo.disc > 0 ? `<div class="pres-row" style="color:var(--gold); font-weight:800;"><span>ส่วนลดพิเศษ On-Top:</span><span>-${fmt(promo.disc)} ฿</span></div>` : ''}
+          <div class="pres-row net"><span>ยอดสุทธิรวมทั้งหมด:</span><span>${fmt(finalAmt)} ฿</span></div>
+          
+          <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:12px; text-align:center; margin-top:16px;">
+              <div style="font-size:14px; color:var(--muted); margin-bottom:4px; font-weight:600;">บิลนี้ประหยัดไปทั้งหมด</div>
+              <div style="font-size:24px; font-weight:900; color:var(--gold); line-height:1.1;">${fmt(totalSaved)} ฿ <span class="pres-badge">ลด ${savedPerc}%</span></div>
+          </div>
+          ${giftHtml}
+          
+          <div style="margin-top:24px; padding:16px; background:var(--card); border:1px dashed var(--accent); border-radius:12px; text-align:center;">
+            <p style="font-size:14px; color:var(--accent); font-weight:bold; margin-bottom:12px;">สแกน QR Code โอนจ่ายตามยอดของแต่ละท่านได้เลยครับ 👇</p>
+            <img src="6. QR payment.jpg" alt="QR Payment" style="max-width: 200px; border-radius: 8px; border: 1px solid var(--border); margin: 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+          </div>
+
+          <button class="btn-checkout" onclick="proceedToPOS()" style="margin-top: 24px; font-size: 18px; padding: 16px;">✅ ไปหน้าจัดออเดอร์</button>
+          <button class="btn-clear" onclick="clearCalc()" style="margin-top: 12px; padding: 14px; font-size: 16px; border: 1px solid var(--danger);">✕ ล้างรายการ (เริ่มใหม่)</button>
         </div>
       `;
-    }
-    
-    let clickAttr = cnt === 0 ? `onclick="changeItemQtyGlobal('${p.id}', 1, event)"` : '';
-    
-    buttonsHtml += `
-      <div class="pkg-btn ${selectedCls}" data-id="${p.id}" ${clickAttr} style="min-height: 100px; margin-bottom: 8px;">
-        <span class="btn-name">${p.label}</span>
-        <span class="btn-reg">ปกติ ${fmt(p.regPrice)} ฿</span>
-        <span class="btn-price" style="font-size: clamp(16px, 3vw, 20px);">${fmt(p.price)} ฿</span>
-        ${badge}
-      </div>
-    `;
-  });
-
-  const selectionGridHtml = `
-    <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 24px;">
-      <div style="text-align: center; margin-bottom: 12px;">
-          <h2 style="color: var(--accent); font-size: clamp(18px, 3vw, 22px); margin-bottom: 4px;">💡 เลือกลองจัดแพ็กเกจด้วยตัวคุณเอง</h2>
-          <p style="color: var(--muted); font-size: 13px;">(สามารถรวมบิลกันได้เพื่อรับโปรโมชัน)</p>
-      </div>
-      <div class="pkg-grid" style="margin-bottom: 0;">${buttonsHtml}</div>
-    </div>
-  `;
-
-  if (qty === 0) {
-    presWrap.innerHTML = `
-      ${selectionGridHtml}
-      <div class="calc-empty" style="margin-top: 40px; font-size: 16px;">👆 แตะเลือกแพ็กเกจด้านบนเพื่อดูสรุปความคุ้มค่าครับ</div>
-    `;
-    return;
   }
 
-  const totalReg = Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).regPrice*cnt,0);
-  const totalEvent = Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).price*cnt,0);
-  const promo = calculatePromo(totalEvent, qty);
-  const finalAmt = totalEvent - promo.disc;
-
-  const totalSaved = totalReg - finalAmt;
-  const savedPerc = Math.round((totalSaved / totalReg) * 100);
-  const avgPrice = Math.round(finalAmt / qty);
-
-  const itemsHtml = Object.entries(mergedCart).map(([id, cnt]) => {
-    const p = CONFIG.packages.find(x => x.id === id);
-    return `<span class="pkg-tag ${p.cls}" style="font-size: clamp(12px, 2vw, 16px); padding: 6px 12px; border-radius: 8px;">${p.label} x${cnt}</span>`;
-  }).join('');
-
-  let giftHtml = '';
-  if (promo.gifts > 0 || promo.giftText) {
-    giftHtml = `<div style="background:var(--tag-std-bg); border:1px solid var(--tag-std); color:var(--accent); padding:16px; border-radius:12px; margin-top:16px; font-weight:800; text-align:center; font-size:clamp(16px, 2.5vw, 20px);">🎁 รับของแถมฟรี! ${promo.giftText}</div>`;
-  }
-
-  presWrap.innerHTML = `
-    ${selectionGridHtml}
-    <div class="pres-container">
-      <div class="pres-title">✨ สรุปแพ็กเกจสุดคุ้มของคุณ ✨</div>
-      <div class="pres-items">${itemsHtml}</div>
-      <div class="pres-row"><span>ราคาปกติหน้าร้านรวม:</span><span style="text-decoration:line-through;">${fmt(totalReg)} ฿</span></div>
-      <div class="pres-row"><span>ราคาโปรโมชันหน้างาน:</span><span style="color:var(--text); font-weight:700;">${fmt(totalEvent)} ฿</span></div>
-      ${promo.disc > 0 ? `<div class="pres-row" style="color:var(--gold); font-weight:800;"><span>ส่วนลดพิเศษ On-Top:</span><span>-${fmt(promo.disc)} ฿</span></div>` : ''}
-      <div class="pres-row net"><span>ยอดสุทธิรวมทั้งหมด:</span><span>${fmt(finalAmt)} ฿</span></div>
-      
-      <div class="pres-stats-grid">
-        <div class="pres-stat-box highlight"><div class="pres-stat-label">ประหยัดไปทั้งหมด</div><div class="pres-stat-val">${fmt(totalSaved)} ฿<span class="pres-badge">ลด ${savedPerc}%</span></div></div>
-        <div class="pres-stat-box"><div class="pres-stat-label">เฉลี่ยตกเพียง</div><div class="pres-stat-val avg">${fmt(avgPrice)} ฿ <span style="font-size:clamp(12px, 1.8vw, 15px); color:var(--muted); font-weight:600;">/ ชุด</span></div></div>
-      </div>
-      ${giftHtml}
-      
-      <div style="margin-top:24px; padding:16px; background:var(--card); border:1px solid var(--border); border-radius:12px; text-align:center;">
-        <label style="display:block; font-size:14px; font-weight:700; color:var(--text); margin-bottom:8px;">💳 เลือกช่องทางการชำระเงิน (กรณีจ่ายก้อนเดียว)</label>
-        <select id="paymentMethodPres" class="form-input" onchange="togglePaymentQRPres(this.value)" style="margin-bottom:12px;">
-          <option value="Bank Transfer" ${currentPaymentMethodPres === 'Bank Transfer' ? 'selected' : ''}>โอนเงิน (Bank Transfer)</option>
-          <option value="Credit Card" ${currentPaymentMethodPres === 'Credit Card' ? 'selected' : ''}>บัตรเครดิต (Credit Card)</option>
-          <option value="Cash" ${currentPaymentMethodPres === 'Cash' ? 'selected' : ''}>เงินสด (Cash)</option>
-          <option value="Installment" ${currentPaymentMethodPres === 'Installment' ? 'selected' : ''}>ผ่อนชำระ (Installment)</option>
-        </select>
-        <div id="qrPaymentContainer_pres" style="text-align:center; display:${currentPaymentMethodPres === 'Bank Transfer' ? 'block' : 'none'};">
-          <img src="6. QR payment.jpg" alt="QR Payment" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border);">
-        </div>
-        <p style="font-size:11px; color:var(--muted); margin-top:8px;">*หากต้องการแบ่งจ่ายหลายท่าน โปรดแจ้งพนักงานครับ</p>
-      </div>
-
-      <button class="btn-checkout" onclick="proceedToPOS()" style="margin-top: 24px; font-size: 18px; padding: 16px;">✅ จัดออเดอร์ตามนี้</button>
-      <button class="btn-clear" onclick="clearCalc()" style="margin-top: 12px; padding: 14px; font-size: 16px; border: 1px solid var(--danger);">✕ ล้างรายการ (เริ่มใหม่)</button>
-    </div>
-  `;
+  presWrap.innerHTML = html;
 }
 
 function proceedToPOS() {
@@ -920,14 +971,14 @@ async function processCheckout() {
   let allScanned = true;
 
   for(let i=0; i<splitCount; i++) {
-     let name = document.getElementById(`payerName_${i}`).value.trim() || `ลูกค้าคนที่ ${i+1}`;
+     let name = document.getElementById(`payerName_${i}`).value.trim() || `ลูกค้าท่านที่ ${i+1}`;
      let contact = document.getElementById(`payerContact_${i}`).value.trim();
      let method = document.getElementById(`payerMethod_${i}`).value;
      let dateStr = document.getElementById(`payerDate_${i}`).value;
      let timeStr = document.getElementById(`payerTime_${i}`).value;
      let slip = currentSlips[i] || null;
      
-     if (!dateStr || !timeStr) { alert(`กรุณาระบุวันที่และเวลาให้ ผู้ชำระคนที่ ${i+1}`); return; }
+     if (!dateStr || !timeStr) { alert(`กรุณาระบุวันที่และเวลาให้ ลูกค้าท่านที่ ${i+1}`); return; }
 
      const [y, m, d] = dateStr.split('-');
      const formattedDate = `${d}/${m}/${y} ${timeStr}`;
@@ -1216,7 +1267,7 @@ function exportCSV() {
          bNo || order.id,
          payer.date,
          payer.name,
-         "", // Contact Channel ว่างไว้ไปใช้ Phone No
+         "", // Contact Channel ว่างไว้
          "", "", 
          saleChannel, 
          payer.method,
@@ -1230,7 +1281,7 @@ function exportCSV() {
          "THB",
          0, 
          item.net, 
-         item.recipient || payer.name, // Recipient Name ดึงจาก Customer Name ถ้าไม่มี
+         payer.name, // Recipient Name = Customer Name (No separate recipient field now)
          "รับหน้างาน", "", 
          payer.contact, // Phone No
          dateOnly, "รับหน้างาน", 
@@ -1257,7 +1308,7 @@ function exportCSV() {
   document.body.removeChild(link);
 }
 
-// ── EDIT MODAL (Simplified for Multi-Items) ──
+// ── EDIT MODAL (Simplified for Barcodes only) ──
 let editingOrderId = null;
 function openEditModal(orderId) {
   const rawOrder = salesHistory.find(o => o.id === orderId);
@@ -1268,10 +1319,14 @@ function openEditModal(orderId) {
   const bcContainer = document.getElementById('editBarcodesContainer');
   bcContainer.innerHTML = '';
   order.itemsData.forEach((item, idx) => {
+    const key = `edit_${idx}`;
     bcContainer.innerHTML += `
       <div class="barcode-row" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px dashed var(--border);">
         <div class="b-label" style="width:100%; color:var(--accent2); font-size:13px;">${item.label}</div>
-        <input type="text" class="form-input edit-barcode" style="flex:1; min-width:140px;" value="${item.barcode}" data-idx="${idx}">
+        <div style="display:flex; gap:8px; width:100%;">
+          <input type="text" class="form-input edit-barcode" style="flex:1;" value="${item.barcode}" data-key="${key}" data-idx="${idx}">
+          <button type="button" class="btn-scan" onclick="openScanner('${key}')">📷 สแกน</button>
+        </div>
       </div>
     `;
   });
