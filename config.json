@@ -1,0 +1,25 @@
+{
+  "googleSheetUrl": "",
+  "event": {
+    "name": "Pet Expo 2026",
+    "prefix": "PET"
+  },
+  "promo": {
+    "amtActive": false,
+    "amtStepReq": 15000,
+    "amtStepDisc": 1000,
+    "qtyActive": true,
+    "qtyStepReq": 3,
+    "qtyStepDisc": 500,
+    "giftActive": true,
+    "giftReq": 4,
+    "giftName": "กระเป๋า Geneus"
+  },
+  "packages": [
+    { "id": "dog", "label": "Dog DNA", "price": 5500, "regPrice": 6500, "cls": "tag-dog" },
+    { "id": "std", "label": "Standard", "price": 4500, "regPrice": 5900, "cls": "tag-std" },
+    { "id": "prem", "label": "Premium", "price": 6900, "regPrice": 8900, "cls": "tag-prem" },
+    { "id": "plus", "label": "Premium Plus", "price": 9500, "regPrice": 11900, "cls": "tag-plus" },
+    { "id": "premex", "label": "Exclusive", "price": 8900, "regPrice": 11900, "cls": "tag-premex" }
+  ]
+}
