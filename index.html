@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Geneus DNA — Event POS</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-<!-- ไลบรารีสำหรับแปลง HTML เป็นรูปภาพ และ สแกนบาร์โค้ดผ่านกล้อง -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
@@ -31,9 +30,9 @@
 body { background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-serif; font-size: clamp(14px, 2vw, 16px); padding-bottom: 80px; }
 
 /* HEADER */
-.header { text-align: center; padding: 16px; background: var(--card); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-.header h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(20px, 4vw, 24px); font-weight: 900; letter-spacing: 1px; color: var(--accent); text-transform: uppercase; }
-.header p { color: var(--muted); margin-top: 4px; font-size: 12px; }
+.header { text-align: center; padding: 12px 16px; background: var(--card); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+.header img.logo { max-height: 45px; width: auto; display: block; margin: 0 auto; }
+.header p { color: var(--muted); margin-top: 6px; font-size: 11px; font-weight: 700; }
 
 /* TABS */
 .tab-container { display: flex; background: var(--card); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
@@ -45,10 +44,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-s
 .content { padding: 16px; display: none; }
 .content.active { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-/* PROMO NOTE */
-.promo-note { background: linear-gradient(135deg, #ecfdf5, #dcfce7); border: 1px solid #a7f3d0; border-radius: 12px; padding: 12px; text-align: center; margin-bottom: 16px; font-size: clamp(13px, 2vw, 15px); color: #065f46; font-weight: 700; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.08); }
-.promo-note span { color: #047857; font-weight: 400; display: block; margin-top: 4px; font-size: 11px; }
 
 /* PKG GRID */
 .pkg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
@@ -102,18 +97,10 @@ input:checked + .slider:before { transform: translateX(16px); }
 .form-input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-serif; font-size: 14px; outline: none; transition: 0.2s; color-scheme: light; }
 .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(5,150,105,0.2); }
 
-.file-upload-wrapper { position: relative; width: 100%; height: 50px; border: 2px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f8fafc; cursor: pointer; overflow: hidden; }
-.file-upload-wrapper:hover { border-color: var(--accent); background: #ecfdf5; }
-.file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.file-upload-text { font-size: 13px; font-weight: 600; color: var(--muted); pointer-events: none; }
-
 .btn-checkout { width: 100%; background: var(--accent); color: #ffffff; padding: 14px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 16px; font-weight: 900; border: none; box-shadow: 0 4px 15px rgba(5,150,105,0.25); transition: 0.2s; margin-top: 16px; }
-.btn-checkout:disabled { background: var(--muted); cursor: not-allowed; box-shadow: none; }
-.btn-checkout:active { transform: scale(0.98); }
+.btn-checkout:disabled { background: var(--muted); cursor: not-allowed; }
 .btn-clear { width: 100%; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 700; margin-top: 10px; }
-
-.btn-scan { background: var(--accent); color: #ffffff; border: none; padding: 0 12px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 5px rgba(5,150,105,0.2); }
-.btn-scan:active { transform: scale(0.95); }
+.btn-scan { background: var(--accent); color: #ffffff; border: none; padding: 0 12px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
 /* HISTORY TABLE */
 .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: var(--card); margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
@@ -127,33 +114,18 @@ td { padding: 12px; vertical-align: middle; }
 .h-price { font-weight: 800; color: var(--accent); }
 .btn-view-slip { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; display: block; width: 100%; margin-bottom: 4px; }
 
-/* MODAL */
+/* MODAL & LOADER */
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); overflow-y: auto; }
 .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 400px; width: 100%; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
 .btn-close-modal { background: var(--danger); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 12px; }
 
-#reader { width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
-#reader video { max-width: 100%; border-radius: 8px; }
-
-/* LOADER OVERLAY */
 #globalLoader { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; flex-direction:column; align-items:center; justify-content:center; }
 .spinner { border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom:12px; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* PRESENTATION MODE (CUSTOMER VIEW) */
+/* PRESENTATION CUSTOM */
 .pres-container { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 16px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.06); margin-top: 16px; }
-.pres-title { color: var(--text); font-size: clamp(20px, 3.5vw, 26px); font-weight: 900; margin-bottom: 24px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
-.pres-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 24px; }
-.pres-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: clamp(15px, 2.5vw, 18px); color: var(--muted); }
-.pres-row.net { font-size: clamp(28px, 5vw, 40px); font-weight: 900; color: var(--accent); border-top: 2px dashed var(--border); padding-top: 20px; margin-top: 16px; }
-.pres-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
-.pres-stat-box { background: #f8fafc; border-radius: 14px; padding: 16px; border: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; justify-content: center; }
-.pres-stat-box.highlight { background: #fffbeb; border-color: #fde68a; box-shadow: 0 4px 10px rgba(217,119,6,0.05); }
-.pres-stat-label { font-size: clamp(13px, 2vw, 15px); color: var(--muted); margin-bottom: 8px; font-weight: 600; }
-.pres-stat-val { font-size: clamp(22px, 4vw, 28px); font-weight: 900; color: var(--text); line-height: 1.1; }
-.pres-stat-box.highlight .pres-stat-val { color: var(--gold); }
-.pres-stat-val.avg { color: var(--accent2); }
-.pres-badge { background: var(--danger); color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: 800; vertical-align: middle; margin-left: 8px; }
+.pres-title { color: var(--text); font-size: clamp(18px, 3.5vw, 22px); font-weight: 900; margin-bottom: 20px; text-align: center; text-transform: uppercase; }
 
 /* UTILS */
 .pkg-tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; border: 1px solid; display: inline-block; margin: 2px; }
@@ -163,14 +135,9 @@ td { padding: 12px; vertical-align: middle; }
 .tag-premex { background: var(--tag-premex-bg); color: var(--tag-premex); border-color: var(--tag-premex); }
 .tag-plus   { background: var(--tag-plus-bg);   color: var(--tag-plus);   border-color: var(--tag-plus); }
 
-/* PRINT STYLES */
 @media print {
-  body { background: #fff; margin: 0; padding: 0; }
-  .header, .tab-container, .content, #slipModal, #editModal, #scannerModal { display: none !important; }
-  #receiptModal { position: absolute; left: 0; top: 0; display: block !important; background: transparent; width: 100%; height: auto; padding: 0; }
-  .modal-content { max-width: 100%; margin: 0; padding: 0; box-shadow: none; border: none; }
-  #receiptContent { width: 80mm !important; max-width: 80mm !important; margin: 0 !important; box-shadow: none !important; }
-  .print-hide { display: none !important; }
+  .header, .tab-container, .content, .print-hide { display: none !important; }
+  #receiptModal { position: absolute; left: 0; top: 0; display: block !important; width: 100%; padding: 0; }
 }
 </style>
 </head>
@@ -182,8 +149,8 @@ td { padding: 12px; vertical-align: middle; }
 </div>
 
 <div class="header">
-  <h1>Geneus POS</h1>
-  <p>Cloud Synchronized System</p>
+  <img src="Logo_Geneus DNA Unlock-the-power_Horizontal.png" alt="Geneus DNA Logo" class="logo">
+  <p>Cloud Synchronized POS</p>
 </div>
 
 <div class="tab-container">
@@ -262,51 +229,44 @@ td { padding: 12px; vertical-align: middle; }
   <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
     <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">📝 ข้อมูลงานอีเวนต์</h3>
     <div style="display:grid; gap:10px;">
-      <div>
-        <label style="font-size:12px; color:var(--muted); font-weight:700;">ชื่องาน (Event Name) *จะแสดงในใบเสร็จและ CSV</label>
-        <input type="text" id="cfg-event-name" class="form-input" placeholder="เช่น Pet Expo 2026">
-      </div>
-      <div>
-        <label style="font-size:12px; color:var(--muted); font-weight:700;">ตัวย่อรหัสบิล (Prefix) *อักษรภาษาอังกฤษ 3 ตัว</label>
-        <input type="text" id="cfg-event-prefix" class="form-input" placeholder="เช่น PET หรือ INV" maxlength="5">
-      </div>
+      <div><label>ชื่องาน (Event Name)</label><input type="text" id="cfg-event-name" class="form-input"></div>
+      <div><label>ตัวย่อรหัสบิล (Prefix)</label><input type="text" id="cfg-event-prefix" class="form-input" maxlength="5"></div>
     </div>
   </div>
 
   <div style="background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px;">
     <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">🎯 ตั้งค่าโปรโมชัน</h3>
+    <div id="settings-promo-wrap">
+       <div class="form-group">
+         <label class="switch"><input type="checkbox" id="cfg-amt-active" onchange="togglePromoFields('amt')"><span class="slider"></span></label>
+         ลดตามยอดซื้อ (On-top)
+       </div>
+       <div id="cfg-amt-fields" style="display:none; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+          <div><label>ครบ (บาท)</label><input type="number" id="cfg-amt-req" class="form-input"></div>
+          <div><label>ลด (บาท)</label><input type="number" id="cfg-amt-disc" class="form-input"></div>
+       </div>
+    </div>
     
-    <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:12px;">
-      <label style="font-weight:700; color:var(--text); display:flex; align-items:center; margin-bottom:8px;">
-        <label class="switch"><input type="checkbox" id="cfg-amt-active" onchange="togglePromoFields('amt')"><span class="slider"></span></label>
-        1. ส่วนลด On-top ตามยอดซื้อ
-      </label>
-      <div id="cfg-amt-fields" style="display:none; grid-template-columns: 1fr 1fr; gap:10px;">
-        <div><label style="font-size:12px; color:var(--muted);">ทุกๆ ยอดครบ (บาท)</label><input type="number" id="cfg-amt-req" class="form-input"></div>
-        <div><label style="font-size:12px; color:var(--muted);">ลดเพิ่ม (บาท)</label><input type="number" id="cfg-amt-disc" class="form-input"></div>
-      </div>
+    <div id="settings-promo-wrap-qty">
+       <div class="form-group">
+         <label class="switch"><input type="checkbox" id="cfg-qty-active" onchange="togglePromoFields('qty')"><span class="slider"></span></label>
+         ลดตามจำนวนชุด (ซื้อหลายชุดลดเพิ่ม)
+       </div>
+       <div id="cfg-qty-fields" style="display:none; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+          <div><label>ครบ (ชุด)</label><input type="number" id="cfg-qty-req" class="form-input"></div>
+          <div><label>ลด (บาท)</label><input type="number" id="cfg-qty-disc" class="form-input"></div>
+       </div>
     </div>
 
-    <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:12px;">
-      <label style="font-weight:700; color:var(--text); display:flex; align-items:center; margin-bottom:8px;">
-        <label class="switch"><input type="checkbox" id="cfg-qty-active" onchange="togglePromoFields('qty')"><span class="slider"></span></label>
-        2. ส่วนลดตามจำนวนชุด (ซื้อหลายชุดลดเพิ่ม)
-      </label>
-      <div id="cfg-qty-fields" style="display:none; grid-template-columns: 1fr 1fr; gap:10px;">
-        <div><label style="font-size:12px; color:var(--muted);">ทุกๆ จำนวน (ชุด)</label><input type="number" id="cfg-qty-req" class="form-input"></div>
-        <div><label style="font-size:12px; color:var(--muted);">ลดเพิ่ม (บาท)</label><input type="number" id="cfg-qty-disc" class="form-input"></div>
-      </div>
-    </div>
-
-    <div>
-      <label style="font-weight:700; color:var(--text); display:flex; align-items:center; margin-bottom:8px;">
-        <label class="switch"><input type="checkbox" id="cfg-gift-active" onchange="togglePromoFields('gift')"><span class="slider"></span></label>
-        3. โปรโมชันของแถม
-      </label>
-      <div id="cfg-gift-fields" style="display:none; grid-template-columns: 1fr 2fr; gap:10px;">
-        <div><label style="font-size:12px; color:var(--muted);">ซื้อครบ (ชุด)</label><input type="number" id="cfg-gift-req" class="form-input"></div>
-        <div><label style="font-size:12px; color:var(--muted);">ชื่อของแถม</label><input type="text" id="cfg-gift-name" class="form-input"></div>
-      </div>
+    <div id="settings-promo-wrap-gift">
+       <div class="form-group">
+         <label class="switch"><input type="checkbox" id="cfg-gift-active" onchange="togglePromoFields('gift')"><span class="slider"></span></label>
+         โปรโมชันของแถม
+       </div>
+       <div id="cfg-gift-fields" style="display:none; grid-template-columns: 1fr 2fr; gap:10px; margin-bottom:10px;">
+          <div><label>ครบ (ชุด)</label><input type="number" id="cfg-gift-req" class="form-input"></div>
+          <div><label>ชื่อของแถม</label><input type="text" id="cfg-gift-name" class="form-input"></div>
+       </div>
     </div>
   </div>
 
@@ -314,10 +274,9 @@ td { padding: 12px; vertical-align: middle; }
     <h3 style="font-size:16px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">ราคาแพ็กเกจ</h3>
     <div id="settings-packages"></div>
   </div>
-  <button class="btn-checkout" onclick="saveSettings(false)">💾 บันทึกการตั้งค่า (ทดสอบเฉพาะเครื่อง)</button>
+  <button class="btn-checkout" onclick="saveSettings(false)">💾 บันทึกการตั้งค่าลงอุปกรณ์</button>
 </div>
 
-<!-- SLIP MODAL -->
 <div id="slipModal" class="modal">
   <div class="modal-content" style="text-align:center;">
     <h3 style="margin-bottom: 10px; color:var(--accent);">หลักฐานการโอนเงิน</h3>
@@ -326,27 +285,23 @@ td { padding: 12px; vertical-align: middle; }
   </div>
 </div>
 
-<!-- SCANNER MODAL -->
 <div id="scannerModal" class="modal" style="z-index: 9999;">
   <div class="modal-content" style="text-align: center;">
     <h3 style="margin-bottom: 10px; color:var(--accent);">📷 สแกนบาร์โค้ด</h3>
-    <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">หันกล้องให้อยู่ในกรอบ และ<strong>ขยับเข้า-ออกช้าๆ</strong> เพื่อโฟกัส</p>
     <div id="reader"></div>
-    <button class="btn-close-modal" onclick="closeScanner()" style="margin-top:16px;">✕ ยกเลิกสแกน</button>
+    <button class="btn-close-modal" onclick="closeScanner()">✕ ยกเลิก</button>
   </div>
 </div>
 
-<!-- EDIT MODAL (Full Edit Mode) -->
 <div id="editModal" class="modal">
   <div class="modal-content" style="text-align: left; max-height: 90vh; overflow-y: auto;">
     <h3 style="margin-bottom: 16px; color:var(--accent); text-align: center;">✏️ แก้ไขข้อมูลออเดอร์</h3>
     <div id="editFormContainer"></div>
-    <button class="btn-checkout" onclick="saveEditedOrder()" id="btn-save-edit" style="margin-top: 16px;">💾 บันทึกการแก้ไข (อัปเดต Cloud)</button>
+    <button class="btn-checkout" onclick="saveEditedOrder()" id="btn-save-edit">💾 บันทึกการแก้ไข (อัปเดต Cloud)</button>
     <button class="btn-clear" onclick="closeEditModal()">✕ ยกเลิก</button>
   </div>
 </div>
 
-<!-- RECEIPT MODAL -->
 <div id="receiptModal" class="modal">
   <div class="modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
     
@@ -355,9 +310,10 @@ td { padding: 12px; vertical-align: middle; }
       <select id="rcptPayerSelector" class="form-input" onchange="renderReceiptForPayer(this.value)"></select>
     </div>
 
-    <!-- ส่วนที่จะถูกจับภาพ (แคปจอ) -->
     <div id="receiptContent" style="background: #ffffff; padding: 16px; color: #000000; font-family: 'Sarabun', sans-serif; width: 80mm; margin: 0 auto; box-sizing: border-box; position: relative; overflow: hidden;">
-      <h2 style="text-align:center; color: #000000; font-family:'Montserrat', sans-serif; font-weight: 900; margin-bottom: 4px; font-size: 20px;">GENEUS DNA</h2>
+      <div style="text-align:center; margin-bottom: 12px;">
+         <img src="Logo_Geneus DNA Unlock the power_Vertical.png" alt="GENEUS DNA" style="width: 100px; height: auto;">
+      </div>
       
       <div style="text-align:center; font-size: 10px; color: #333333; line-height: 1.4; margin-bottom: 12px;">
         <strong>บริษัท จีเนียส เจเนติกส์ จำกัด (สำนักงานใหญ่)</strong><br>
@@ -889,28 +845,60 @@ function renderPresentation() {
   const presWrap = document.getElementById('presentationWrap');
   if(!presWrap) return;
   
-  let totalQty = 0;
-  let totalEventPrice = 0;
-  let totalRegPrice = 0;
   let mergedCart = {};
-
-  for(let i=0; i<currentSplitCount; i++) {
+  let totalQty = 0;
+  for(let i=0; i<6; i++) {
     Object.entries(cartByPayer[i]).forEach(([id, cnt]) => {
-      const p = CONFIG.packages.find(x => x.id === id);
-      if(p) {
-          totalQty += cnt;
-          totalEventPrice += p.price * cnt;
-          totalRegPrice += p.regPrice * cnt;
-          mergedCart[id] = (mergedCart[id] || 0) + cnt;
-      }
+      mergedCart[id] = (mergedCart[id] || 0) + cnt;
+      totalQty += cnt;
     });
   }
+  
+  let buttonsHtml = '';
+  CONFIG.packages.forEach(p => {
+    const cnt = mergedCart[p.id] || 0;
+    const selectedCls = cnt > 0 ? 'selected' : '';
+    let badge = '';
+    if (cnt > 0) {
+      badge = `
+        <div class="pkg-qty-ctrl">
+          <div class="ctrl-minus" onclick="changeItemQtyGlobal('${p.id}', -1, event)">−</div>
+          <div class="ctrl-val">${cnt}</div>
+          <div class="ctrl-plus" onclick="changeItemQtyGlobal('${p.id}', 1, event)">+</div>
+        </div>
+      `;
+    }
+    
+    let clickAttr = cnt === 0 ? `onclick="changeItemQtyGlobal('${p.id}', 1, event)"` : '';
+    
+    buttonsHtml += `
+      <div class="pkg-btn ${selectedCls}" data-id="${p.id}" ${clickAttr} style="min-height: 100px; margin-bottom: 8px;">
+        <span class="btn-name">${p.label}</span>
+        <span class="btn-reg">${fmt(p.regPrice)} ฿</span>
+        <span class="btn-price" style="font-size: clamp(14px, 2.5vw, 18px);">${fmt(p.price)} ฿</span>
+        ${badge}
+      </div>
+    `;
+  });
 
+  const selectionGridHtml = `
+    <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 24px;">
+      <div style="text-align: center; margin-bottom: 12px;">
+          <h2 style="color: var(--accent); font-size: clamp(18px, 3vw, 22px); margin-bottom: 4px;">💡 เลือกลองจัดแพ็กเกจด้วยตัวคุณเอง</h2>
+          <p style="color: var(--muted); font-size: 13px;">(สามารถรวมบิลกันได้เพื่อรับโปรโมชัน)</p>
+      </div>
+      <div class="pkg-grid" style="margin-bottom: 0;">${buttonsHtml}</div>
+    </div>
+  `;
+
+  const totalRegPrice = Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).regPrice*cnt,0);
+  const totalEventPrice = Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).price*cnt,0);
   const promo = calculatePromo(totalEventPrice, totalQty);
   const finalAmt = totalEventPrice - promo.disc;
-  const exactDiscPerItem = totalQty > 0 ? (promo.disc / totalQty) : 0;
+
   const totalSaved = totalRegPrice - finalAmt;
   const savedPerc = totalRegPrice > 0 ? Math.round((totalSaved / totalRegPrice) * 100) : 0;
+  const exactDiscPerItem = totalQty > 0 ? (promo.disc / totalQty) : 0;
 
   // 1. Dropdown เลือกจำนวนผู้ชำระเงิน แสดงเสมอ
   let html = `
@@ -1414,28 +1402,42 @@ function openReceiptModal(orderId) {
   const sel = document.getElementById('rcptPayerSelector');
   if(currentReceiptOrder.payers.length > 1) {
      selWrap.style.display = 'block';
-     // เพิ่มตัวเลือก "รวมทุกบิล" 
-     let opts = `<option value="all">รวมทุกบิล (Combined Bill)</option>`;
-     opts += currentReceiptOrder.payers.map((p, i) => `<option value="${i}">บิลของ: ${p.name}</option>`).join('');
-     sel.innerHTML = opts;
-     renderReceiptForPayer('all');
+     
+     let optionsHtml = `<option value="all">รวมทุกบิลเข้าด้วยกัน</option>`;
+     optionsHtml += currentReceiptOrder.payers.map((p, i) => `<option value="${i}">บิลของ: ${p.name}</option>`).join('');
+     sel.innerHTML = optionsHtml;
   } else {
      selWrap.style.display = 'none';
      sel.innerHTML = `<option value="0"></option>`;
-     renderReceiptForPayer(0);
   }
 
+  // Default to full combined receipt if multiple, otherwise 0
+  renderReceiptForPayer(currentReceiptOrder.payers.length > 1 ? 'all' : 0);
   document.getElementById('receiptModal').style.display = 'flex';
 }
 
 function renderReceiptForPayer(payerIdx) {
   const order = currentReceiptOrder;
-  
+
   if (payerIdx === 'all') {
     // --- Render ใบเสร็จแบบรวม (Combined) ---
     document.getElementById('rcptId').innerText = order.id;
     document.getElementById('rcptDate').innerText = order.date || order.payers[0].date;
-    document.getElementById('rcptName').innerText = order.payers.map(p => p.name).join(', ') || 'ลูกค้าหลายท่าน';
+    
+    // หาคนที่ซื้อชุดตรวจเยอะที่สุดเพื่อแสดงเป็นชื่อผู้ชำระในบิลรวม
+    let payerItemCounts = {};
+    order.itemsData.forEach(item => {
+       payerItemCounts[item.payerIdx] = (payerItemCounts[item.payerIdx] || 0) + 1;
+    });
+    let maxItems = -1;
+    let topPayerIdx = 0;
+    for (let pIdx in payerItemCounts) {
+       if (payerItemCounts[pIdx] > maxItems) {
+          maxItems = payerItemCounts[pIdx];
+          topPayerIdx = pIdx;
+       }
+    }
+    document.getElementById('rcptName').innerText = order.payers[topPayerIdx]?.name || 'ลูกค้า';
 
     if (order.eventName) {
       document.getElementById('rcptEventName').innerText = order.eventName;
@@ -1451,42 +1453,41 @@ function renderReceiptForPayer(payerIdx) {
       document.getElementById('rcptBillWrap').style.display = 'none';
     }
 
-    // จัดกลุ่มรายการแพ็กเกจ
-    let grouped = {};
-    order.itemsData.forEach(item => {
-       if(!grouped[item.pkgId]) {
-          grouped[item.pkgId] = { label: item.label, price: item.price, cnt: 0, sum: 0 };
-       }
-       grouped[item.pkgId].cnt++;
-       grouped[item.pkgId].sum += item.price;
-    });
-
     let itemsHtml = '';
-    Object.values(grouped).forEach(g => {
+    // รวมรายการแพ็กเกจชนิดเดียวกัน
+    const combinedItems = {};
+    order.itemsData.forEach(item => {
+       if (!combinedItems[item.pkgId]) combinedItems[item.pkgId] = { label: item.label, price: item.price, cnt: 0 };
+       combinedItems[item.pkgId].cnt += 1;
+    });
+    
+    Object.values(combinedItems).forEach(item => {
       itemsHtml += `
         <tr style="border-bottom: 1px dashed #cccccc; background: transparent;">
-          <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${g.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(g.price)} ฿)</span></td>
-          <td style="text-align:center; padding: 6px 0; color:#000000;">${g.cnt}</td>
-          <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(g.sum)} ฿</td>
+          <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${item.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(item.price)} ฿)</span></td>
+          <td style="text-align:center; padding: 6px 0; color:#000000;">${item.cnt}</td>
+          <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(item.price * item.cnt)} ฿</td>
         </tr>`;
     });
     
-    let tSub = 0, tDisc = 0, tNet = 0;
-    order.payers.forEach(p => { tSub += p.total; tDisc += p.discount; tNet += p.net; });
-
     document.getElementById('rcptItems').innerHTML = itemsHtml;
-    document.getElementById('rcptTotal').innerHTML = `ยอดรวม (Subtotal): <strong>${fmt(tSub)} ฿</strong>`;
     
-    if (tDisc > 0) {
-      document.getElementById('rcptDiscount').innerHTML = `ส่วนลดรวมทั้งหมด (Discount): <strong>-${fmt(tDisc)} ฿</strong>`;
+    let grandTotal = order.payers.reduce((s, p) => s + p.total, 0);
+    let grandDiscount = order.payers.reduce((s, p) => s + p.discount, 0);
+    let grandNet = order.payers.reduce((s, p) => s + p.net, 0);
+
+    document.getElementById('rcptTotal').innerHTML = `ยอดรวม (Subtotal): <strong>${fmt(grandTotal)} ฿</strong>`;
+    if (grandDiscount > 0) {
+      document.getElementById('rcptDiscount').innerHTML = `ส่วนลดรวม (Discount): <strong>-${fmt(grandDiscount)} ฿</strong>`;
     } else {
       document.getElementById('rcptDiscount').innerHTML = '';
     }
-    document.getElementById('rcptNet').innerHTML = `ยอดชำระสุทธิรวม (Net): <strong style="font-size: 16px;">${fmt(tNet)} ฿</strong>`;
+    document.getElementById('rcptNet').innerHTML = `ยอดชำระสุทธิ (Net): <strong style="font-size: 16px;">${fmt(grandNet)} ฿</strong>`;
 
   } else {
-    // --- Render ใบเสร็จแบบแยกคน (Single) ---
+    // --- Render ใบเสร็จเฉพาะคน (Individual) ---
     const payer = order.payers[payerIdx];
+
     document.getElementById('rcptId').innerText = order.id;
     document.getElementById('rcptDate').innerText = payer.date;
     document.getElementById('rcptName').innerText = payer.name;
@@ -1507,36 +1508,27 @@ function renderReceiptForPayer(payerIdx) {
       document.getElementById('rcptBillWrap').style.display = 'none';
     }
 
-    // จัดกลุ่มรายการแพ็กเกจ (ของลูกค้ารายนี้)
-    let grouped = {};
+    let itemsHtml = '';
     order.itemsData.forEach(item => {
       if(item.payerIdx == payerIdx) {
-         if(!grouped[item.pkgId]) {
-            grouped[item.pkgId] = { label: item.label, price: item.price, cnt: 0, sum: 0 };
-         }
-         grouped[item.pkgId].cnt++;
-         grouped[item.pkgId].sum += item.price;
+        itemsHtml += `
+          <tr style="border-bottom: 1px dashed #cccccc; background: transparent;">
+            <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${item.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(item.price)} ฿)</span></td>
+            <td style="text-align:center; padding: 6px 0; color:#000000;">1</td>
+            <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(item.price)} ฿</td>
+          </tr>`;
       }
-    });
-
-    let itemsHtml = '';
-    Object.values(grouped).forEach(g => {
-      itemsHtml += `
-        <tr style="border-bottom: 1px dashed #cccccc; background: transparent;">
-          <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${g.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(g.price)} ฿)</span></td>
-          <td style="text-align:center; padding: 6px 0; color:#000000;">${g.cnt}</td>
-          <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(g.sum)} ฿</td>
-        </tr>`;
     });
     
     document.getElementById('rcptItems').innerHTML = itemsHtml;
     document.getElementById('rcptTotal').innerHTML = `ยอดรวม (Subtotal): <strong>${fmt(payer.total)} ฿</strong>`;
 
     if (payer.discount > 0) {
-      document.getElementById('rcptDiscount').innerHTML = `ส่วนลดงาน (Discount): <strong>-${fmt(payer.discount)} ฿</strong>`;
+      document.getElementById('rcptDiscount').innerHTML = `ส่วนลดงานเฉลี่ย (Discount): <strong>-${fmt(payer.discount)} ฿</strong>`;
     } else {
       document.getElementById('rcptDiscount').innerHTML = '';
     }
+
     document.getElementById('rcptNet').innerHTML = `ยอดชำระสุทธิ (Net): <strong style="font-size: 16px;">${fmt(payer.net)} ฿</strong>`;
   }
 }
