@@ -76,7 +76,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 .calc-result { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px; }
 .calc-empty { color: var(--muted); font-size: 14px; text-align: center; padding: 20px 0; }
 
-.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; }
+.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; width: 100%; }
 .summary-row.reg { color: var(--muted); }
 .summary-row.reg .val { text-decoration: line-through; }
 .summary-row.event { color: var(--text); font-weight: 600; }
@@ -91,16 +91,20 @@ input:checked + .slider:before { transform: translateX(16px); }
 .form-input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-serif; font-size: 14px; outline: none; transition: 0.2s; color-scheme: light; }
 .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(5,150,105,0.2); }
 
+.file-upload-wrapper { position: relative; width: 100%; height: 50px; border: 2px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f8fafc; cursor: pointer; overflow: hidden; }
+.file-upload-wrapper:hover { border-color: var(--accent); background: #ecfdf5; }
+.file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.file-upload-text { font-size: 13px; font-weight: 600; color: var(--muted); pointer-events: none; }
+
 .btn-checkout { width: 100%; background: var(--accent); color: #ffffff; padding: 14px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 16px; font-weight: 900; border: none; box-shadow: 0 4px 15px rgba(5,150,105,0.25); transition: 0.2s; margin-top: 16px; }
-.btn-checkout:disabled { background: var(--muted); cursor: not-allowed; }
+.btn-checkout:disabled { background: var(--muted); cursor: not-allowed; box-shadow: none; }
+.btn-checkout:active { transform: scale(0.98); }
 .btn-clear { width: 100%; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 10px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 13px; font-weight: 700; margin-top: 10px; }
-.btn-scan { background: var(--accent); color: #ffffff; border: none; padding: 0 12px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-/* ── BT STATUS BADGE ── */
-.bt-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid; }
-.bt-badge.disconnected { background: #fef2f2; color: var(--danger); border-color: var(--danger); }
-.bt-badge.connected    { background: #ecfdf5; color: var(--accent); border-color: var(--accent); }
+.btn-scan { background: var(--accent); color: #ffffff; border: none; padding: 0 12px; border-radius: 8px; font-family: 'Sarabun', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 5px rgba(5,150,105,0.2); }
+.btn-scan:active { transform: scale(0.95); }
 
+/* HISTORY TABLE */
 .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); background: var(--card); margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 600px; }
 thead tr { background: #f1f5f9; }
@@ -112,17 +116,23 @@ td { padding: 12px; vertical-align: middle; }
 .h-price { font-weight: 800; color: var(--accent); }
 .btn-view-slip { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; display: block; width: 100%; margin-bottom: 4px; }
 
+/* MODAL & LOADER */
 .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); overflow-y: auto; }
 .modal-content { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; max-width: 400px; width: 100%; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: auto; }
 .btn-close-modal { background: var(--danger); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 12px; }
+
+#reader { width: 100%; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+#reader video { max-width: 100%; border-radius: 8px; }
 
 #globalLoader { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; flex-direction:column; align-items:center; justify-content:center; }
 .spinner { border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom:12px; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+/* PRESENTATION CUSTOM */
 .pres-container { background: linear-gradient(145deg, #ffffff, #f8fafc); border-radius: 16px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.06); margin-top: 16px; }
 .pres-title { color: var(--text); font-size: clamp(18px, 3.5vw, 22px); font-weight: 900; margin-bottom: 20px; text-align: center; text-transform: uppercase; }
 
+/* UTILS */
 .pkg-tag { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; border: 1px solid; display: inline-block; margin: 2px; }
 .tag-dog    { background: var(--tag-dog-bg);    color: var(--tag-dog);    border-color: var(--tag-dog); }
 .tag-std    { background: var(--tag-std-bg);    color: var(--tag-std);    border-color: var(--tag-std); }
@@ -130,9 +140,25 @@ td { padding: 12px; vertical-align: middle; }
 .tag-premex { background: var(--tag-premex-bg); color: var(--tag-premex); border-color: var(--tag-premex); }
 .tag-plus   { background: var(--tag-plus-bg);   color: var(--tag-plus);   border-color: var(--tag-plus); }
 
+/* PRINT STYLES - Set for A6 Paper */
 @media print {
-  .header, .tab-container, .content, .print-hide { display: none !important; }
-  #receiptModal { position: absolute; left: 0; top: 0; display: block !important; width: 100%; padding: 0; }
+  @page {
+    size: A6 portrait; 
+    margin: 5mm; 
+  }
+  body { background: #fff; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .header, .tab-container, .content, #slipModal, #editModal, #scannerModal { display: none !important; }
+  #receiptModal { position: absolute; left: 0; top: 0; display: block !important; background: transparent; width: 100%; height: auto; padding: 0; }
+  .modal-content { max-width: 100%; margin: 0; padding: 0; box-shadow: none; border: none; }
+  
+  #receiptContent { 
+    width: 100% !important; 
+    max-width: 100% !important; 
+    margin: 0 !important; 
+    box-shadow: none !important; 
+    padding: 10mm !important; 
+  }
+  .print-hide { display: none !important; }
 }
 </style>
 </head>
@@ -172,8 +198,11 @@ td { padding: 12px; vertical-align: middle; }
         <option value="6">6 ท่าน (แยกจ่าย)</option>
       </select>
     </div>
+
     <div id="payersContainer"></div>
+
     <div class="calc-result" id="calcResult" style="margin-bottom: 16px;"></div>
+
     <button class="btn-checkout" onclick="processCheckout()">✅ ยืนยันออเดอร์ (Checkout)</button>
     <button class="btn-clear" onclick="clearCalc()">✕ ยกเลิกออเดอร์นี้ (เริ่มใหม่)</button>
   </div>
@@ -207,11 +236,11 @@ td { padding: 12px; vertical-align: middle; }
 
 <div id="tab-settings" class="content">
 
-  <!-- ══ [เพิ่มใหม่] BLUETOOTH PRINTER SETTINGS ══ -->
+  <!-- ══ BLUETOOTH PRINTER SETTINGS ══ -->
   <div style="background:var(--card2); border:2px solid var(--accent); border-radius:12px; padding:16px; margin-bottom:20px;">
     <h3 style="font-size:16px; color:var(--accent); margin-bottom:4px; border-bottom:1px dashed var(--border); padding-bottom:8px;">🖨️ เครื่องปริ้น Bluetooth (58mm)</h3>
     <div style="margin-bottom:12px;">
-      <div id="btStatusBadge" class="bt-badge disconnected">● ยังไม่ได้เชื่อมต่อ</div>
+      <div id="btStatusBadge" class="bt-badge disconnected" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid; background: #fef2f2; color: var(--danger); border-color: var(--danger);">● ยังไม่ได้เชื่อมต่อ</div>
     </div>
     <button onclick="connectBluetoothPrinter()" class="btn-checkout" style="margin-top:0; font-size:14px; padding:12px;">
       📡 จับคู่ / เชื่อมต่อ Bluetooth Printer
@@ -220,10 +249,9 @@ td { padding: 12px; vertical-align: middle; }
       🧪 ทดสอบปริ้น
     </button>
     <p style="font-size:11px; color:var(--muted); margin-top:10px; line-height:1.6;">
-      * ใช้ได้กับ <strong>Android + Chrome</strong> เท่านั้น<br>
-      * เปิด Bluetooth บน Android ก่อน แล้วกดจับคู่<br>
+      * ใช้ได้กับ <strong>Android + Chrome</strong> หรือ PC<br>
       * จับคู่ครั้งเดียว ครั้งต่อไปเชื่อมต่อได้เลย<br>
-      * รองรับ Printer ขนาด <strong>58mm</strong> ที่ใช้ ESC/POS
+      * รองรับ Printer ขนาด <strong>58mm</strong>
     </p>
   </div>
 
@@ -259,6 +287,7 @@ td { padding: 12px; vertical-align: middle; }
           <div><label>ลด (บาท)</label><input type="number" id="cfg-amt-disc" class="form-input"></div>
        </div>
     </div>
+    
     <div id="settings-promo-wrap-qty">
        <div class="form-group">
          <label class="switch"><input type="checkbox" id="cfg-qty-active" onchange="togglePromoFields('qty')"><span class="slider"></span></label>
@@ -269,6 +298,7 @@ td { padding: 12px; vertical-align: middle; }
           <div><label>ลด (บาท)</label><input type="number" id="cfg-qty-disc" class="form-input"></div>
        </div>
     </div>
+
     <div id="settings-promo-wrap-gift">
        <div class="form-group">
          <label class="switch"><input type="checkbox" id="cfg-gift-active" onchange="togglePromoFields('gift')"><span class="slider"></span></label>
@@ -288,7 +318,7 @@ td { padding: 12px; vertical-align: middle; }
   <button class="btn-checkout" onclick="saveSettings(false)">💾 บันทึกการตั้งค่าลงอุปกรณ์</button>
 </div>
 
-<!-- MODALS -->
+<!-- SLIP MODAL -->
 <div id="slipModal" class="modal">
   <div class="modal-content" style="text-align:center;">
     <h3 style="margin-bottom: 10px; color:var(--accent);">หลักฐานการโอนเงิน</h3>
@@ -297,337 +327,241 @@ td { padding: 12px; vertical-align: middle; }
   </div>
 </div>
 
+<!-- SCANNER MODAL -->
 <div id="scannerModal" class="modal" style="z-index: 9999;">
   <div class="modal-content" style="text-align: center;">
     <h3 style="margin-bottom: 10px; color:var(--accent);">📷 สแกนบาร์โค้ด</h3>
+    <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">หันกล้องให้อยู่ในกรอบ และ<strong>ขยับเข้า-ออกช้าๆ</strong> เพื่อโฟกัส</p>
     <div id="reader"></div>
-    <button class="btn-close-modal" onclick="closeScanner()">✕ ยกเลิก</button>
+    <button class="btn-close-modal" onclick="closeScanner()" style="margin-top:16px;">✕ ยกเลิกสแกน</button>
   </div>
 </div>
 
+<!-- EDIT MODAL (Full Edit Mode) -->
 <div id="editModal" class="modal">
   <div class="modal-content" style="text-align: left; max-height: 90vh; overflow-y: auto;">
     <h3 style="margin-bottom: 16px; color:var(--accent); text-align: center;">✏️ แก้ไขข้อมูลออเดอร์</h3>
     <div id="editFormContainer"></div>
-    <button class="btn-checkout" onclick="saveEditedOrder()" id="btn-save-edit">💾 บันทึกการแก้ไข (อัปเดต Cloud)</button>
+    <button class="btn-checkout" onclick="saveEditedOrder()" id="btn-save-edit" style="margin-top: 16px;">💾 บันทึกการแก้ไข (อัปเดต Cloud)</button>
     <button class="btn-clear" onclick="closeEditModal()">✕ ยกเลิก</button>
   </div>
 </div>
 
+<!-- RECEIPT MODAL -->
 <div id="receiptModal" class="modal">
   <div class="modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
-
+    
     <div id="rcptPayerSelectorWrap" class="print-hide" style="background:#fff; padding:12px; border-radius:12px; margin-bottom:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:none;">
-      <label style="font-size:12px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">🧾 เลือกใบเสร็จของผู้ชำระเงิน:</label>
+      <label style="font-size:14px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">🧾 เลือกใบเสร็จของผู้ชำระเงิน:</label>
       <select id="rcptPayerSelector" class="form-input" onchange="renderReceiptForPayer(this.value)"></select>
     </div>
 
-    <div id="receiptContent" style="background: #ffffff; padding: 16px; color: #000000; font-family: 'Sarabun', sans-serif; width: 80mm; margin: 0 auto; box-sizing: border-box; position: relative; overflow: hidden;">
-      <div style="text-align:center; margin-bottom: 12px;">
-         <img src="Logo_Geneus DNA Unlock the power_Vertical.png" alt="GENEUS DNA" style="width: 100px; height: auto;">
+    <!-- ส่วนที่จะถูกจับภาพ (แคปจอ) - ปรับขนาดให้เหมาะกับ A6 หรือ 58mm printer -->
+    <div id="receiptContent" style="background: #ffffff; padding: 24px; color: #000000; font-family: 'Sarabun', sans-serif; width: 100mm; max-width: 100%; margin: 0 auto; box-sizing: border-box; position: relative; overflow: hidden; border: 1px solid #eee;">
+      <div style="text-align:center; margin-bottom: 16px;">
+         <img src="Logo_Geneus DNA Unlock the power_Vertical.png" alt="GENEUS DNA" style="width: 120px; height: auto;">
       </div>
-      <div style="text-align:center; font-size: 10px; color: #333333; line-height: 1.4; margin-bottom: 12px;">
+      
+      <div style="text-align:center; font-size: 12px; color: #333333; line-height: 1.4; margin-bottom: 16px;">
         <strong>บริษัท จีเนียส เจเนติกส์ จำกัด (สำนักงานใหญ่)</strong><br>
         เลขที่ 22/5 ชั้น 4 ซอยชิดลม แขวงลุมพินี<br>เขตปทุมวัน กรุงเทพมหานคร 10330<br>
         ทะเบียนนิติบุคคล 0105561207945
       </div>
-      <div style="text-align:center; font-size: 11px; color: #333333; border-bottom: 1px dashed #000000; padding-bottom: 8px; margin-bottom: 12px; font-weight: 600;">
+
+      <div style="text-align:center; font-size: 14px; color: #333333; border-bottom: 1px dashed #000000; padding-bottom: 10px; margin-bottom: 16px; font-weight: 700;">
          ใบสรุปรายการสั่งซื้อ / Order Summary
       </div>
-      <div style="font-size: 12px; margin-bottom: 12px; line-height: 1.5; color: #000000;">
-         <div id="rcptEventWrap" style="display:none; color:#059669; font-weight:700; border-bottom:1px solid #f1f5f9; padding-bottom:4px; margin-bottom:4px;">
-            <span>ชื่องาน:</span> <span id="rcptEventName" style="float: right;"></span>
+      
+      <div style="font-size: 14px; margin-bottom: 16px; line-height: 1.6; color: #000000;">
+         <div id="rcptEventWrap" style="display:none; color:#059669; font-weight:700; border-bottom:1px solid #f1f5f9; padding-bottom:6px; margin-bottom:6px; display:flex; justify-content:space-between; width:100%;">
+            <span style="text-align:left;">ชื่องาน:</span> <span id="rcptEventName" style="text-align:right;"></span>
          </div>
-         <div><span>รหัสออเดอร์:</span> <strong id="rcptId" style="float: right;"></strong></div>
-         <div id="rcptBillWrap" style="display:none;"><span>เลขที่ใบเสร็จ:</span> <strong id="rcptBill" style="float: right;"></strong></div>
-         <div><span>วันที่-เวลา:</span> <strong id="rcptDate" style="float: right;"></strong></div>
-         <div><span>ชื่อผู้ชำระ:</span> <strong id="rcptName" style="float: right;"></strong></div>
+         <div style="display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">รหัสออเดอร์:</span> <strong id="rcptId" style="text-align:right;"></strong></div>
+         <div id="rcptBillWrap" style="display:none; justify-content:space-between; width:100%;"><span style="text-align:left;">เลขที่ใบเสร็จ:</span> <strong id="rcptBill" style="text-align:right;"></strong></div>
+         <div style="display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">วันที่-เวลา:</span> <strong id="rcptDate" style="text-align:right;"></strong></div>
+         <div style="display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">ชื่อผู้ชำระ:</span> <strong id="rcptName" style="text-align:right;"></strong></div>
       </div>
-      <table style="width: 100%; min-width: 0; font-size: 12px; border-collapse: collapse; margin-bottom: 12px; color: #000000;">
+      
+      <table style="width: 100%; min-width: 0; font-size: 14px; border-collapse: collapse; margin-bottom: 16px; color: #000000;">
          <thead>
            <tr style="border-bottom: 1px solid #000000; background: transparent;">
-             <th style="text-align:left; padding-bottom: 4px; width: 50%; color: #000000;">รายการ</th>
-             <th style="text-align:center; padding-bottom: 4px; width: 20%; color: #000000;">จำนวน</th>
-             <th style="text-align:right; padding-bottom: 4px; width: 30%; color: #000000;">รวม</th>
+             <th style="text-align:left; padding-bottom: 6px; width: 50%; color: #000000;">รายการ</th>
+             <th style="text-align:center; padding-bottom: 6px; width: 20%; color: #000000;">จำนวน</th>
+             <th style="text-align:right; padding-bottom: 6px; width: 30%; color: #000000;">รวม</th>
            </tr>
          </thead>
          <tbody id="rcptItems"></tbody>
       </table>
-      <div style="font-size: 12px; text-align: right; border-top: 1px dashed #000000; padding-top: 8px; color: #000000;">
-         <div id="rcptTotal" style="margin-bottom: 4px;"></div>
-         <div id="rcptDiscount" style="margin-bottom: 4px; font-weight: 700;"></div>
-         <div id="rcptNet" style="font-size: 16px; font-weight: 900; margin-top: 8px;"></div>
+      
+      <div style="font-size: 14px; text-align: right; border-top: 1px dashed #000000; padding-top: 12px; color: #000000;">
+         <div id="rcptTotal" style="margin-bottom: 6px; display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">ยอดรวม (Subtotal):</span> <strong style="text-align:right;" id="rcptTotalVal"></strong></div>
+         <div id="rcptDiscount" style="margin-bottom: 6px; font-weight: 700; display:flex; justify-content:space-between; width:100%;"></div>
+         <div id="rcptNet" style="font-size: 18px; font-weight: 900; margin-top: 10px; display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">ยอดชำระสุทธิ (Net):</span> <strong style="text-align:right;" id="rcptNetVal"></strong></div>
       </div>
-      <div style="text-align:center; margin-top: 20px; font-size: 10px; color: #333333;">
+      
+      <div style="text-align:center; margin-top: 30px; font-size: 12px; color: #333333;">
          ขอบคุณที่ไว้วางใจ Geneus DNA<br>
          <span style="font-family:'Montserrat', sans-serif;">www.geneusdna.com</span>
       </div>
     </div>
-
-    <!-- ══ ปุ่มด้านล่าง Receipt Modal ══ -->
+    
     <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;" class="print-hide">
-      <!-- [เพิ่มใหม่] ปุ่มปริ้น Bluetooth -->
-      <button onclick="printViaBluetooth()" id="btnBtPrint"
-        style="flex: 1; min-width: 120px; background: #1d4ed8; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(29,78,216,0.3);">
-        🖨️ ปริ้น Bluetooth
-      </button>
-      <button onclick="downloadReceipt()"
-        style="flex: 1; min-width: 100px; background: #2563eb; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">
-        📥 บันทึกรูป
-      </button>
-      <button onclick="closeReceiptModal()"
-        style="flex: 1; min-width: 100px; background: #dc2626; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer;">
-        ✕ ปิด
-      </button>
+      <button onclick="printViaBluetooth()" id="btnBtPrint" style="flex: 1; min-width: 120px; background: #1d4ed8; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(29,78,216,0.3);">🖨️ ปริ้น Bluetooth</button>
+      <button onclick="printReceipt()" style="flex: 1; min-width: 100px; background: #059669; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(5,150,105,0.3);">🖨️ พิมพ์ (A6)</button>
+      <button onclick="downloadReceipt()" style="flex: 1; min-width: 100px; background: #2563eb; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">📥 บันทึกรูป</button>
+      <button onclick="closeReceiptModal()" style="flex: 1; min-width: 100px; background: #dc2626; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer;">✕ ปิด</button>
     </div>
   </div>
 </div>
 
 <script>
 // ════════════════════════════════════════════════
-// ── [เพิ่มใหม่] BLUETOOTH THERMAL PRINTER (58mm)
+// ── BLUETOOTH PRINTER LOGIC
 // ════════════════════════════════════════════════
-
-// Bluetooth GATT Service/Characteristic UUID สำหรับ thermal printer ทั่วไป
-const BT_SERVICE_UUID  = '000018f0-0000-1000-8000-00805f9b34fb';
-const BT_CHAR_UUID     = '00002af1-0000-1000-8000-00805f9b34fb';
-
-// ถ้าตัวแรกไม่ได้ผล ลอง fallback UUID เหล่านี้
 const BT_SERVICE_FALLBACKS = [
-  '0000ff00-0000-1000-8000-00805f9b34fb',
   '000018f0-0000-1000-8000-00805f9b34fb',
+  '0000ff00-0000-1000-8000-00805f9b34fb',
   '00001101-0000-1000-8000-00805f9b34fb',
-];
-const BT_CHAR_FALLBACKS = [
-  '0000ff02-0000-1000-8000-00805f9b34fb',
-  '00002af1-0000-1000-8000-00805f9b34fb',
 ];
 
 let btDevice = null;
 let btCharacteristic = null;
 
-// อัปเดต badge สถานะ
 function updateBtBadge() {
   const badge = document.getElementById('btStatusBadge');
   if (!badge) return;
   if (btDevice && btCharacteristic) {
-    badge.className = 'bt-badge connected';
+    badge.style.background = '#ecfdf5';
+    badge.style.color = 'var(--accent)';
+    badge.style.borderColor = 'var(--accent)';
     badge.innerHTML = `● เชื่อมต่อแล้ว: <strong>${btDevice.name || 'Printer'}</strong>`;
   } else {
-    badge.className = 'bt-badge disconnected';
+    badge.style.background = '#fef2f2';
+    badge.style.color = 'var(--danger)';
+    badge.style.borderColor = 'var(--danger)';
     badge.innerHTML = '● ยังไม่ได้เชื่อมต่อ';
   }
-  // อัปเดตปุ่มปริ้นใน receipt modal
   const btnBt = document.getElementById('btnBtPrint');
-  if (btnBt) {
-    btnBt.style.opacity = (btCharacteristic) ? '1' : '0.5';
-    btnBt.title = (btCharacteristic) ? '' : 'กรุณาเชื่อมต่อ Bluetooth Printer ที่ ⚙️ ตั้งค่า ก่อนครับ';
-  }
+  if (btnBt) btnBt.style.opacity = (btCharacteristic) ? '1' : '0.5';
 }
 
-// จับคู่และเชื่อมต่อ Bluetooth Printer
 async function connectBluetoothPrinter() {
-  if (!navigator.bluetooth) {
-    alert('❌ Browser นี้ไม่รองรับ Web Bluetooth\n\nกรุณาใช้ Chrome บน Android ครับ');
-    return;
-  }
-
+  if (!navigator.bluetooth) { alert('❌ Browser นี้ไม่รองรับ Web Bluetooth'); return; }
   try {
-    // แสดง device picker ให้เลือก printer
-    btDevice = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: BT_SERVICE_FALLBACKS
-    });
-
-    btDevice.addEventListener('gattserverdisconnected', () => {
-      btCharacteristic = null;
-      updateBtBadge();
-      console.log('Printer disconnected');
-    });
-
-    const server  = await btDevice.gatt.connect();
-
-    // ลองหา service จาก UUID list
+    btDevice = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: BT_SERVICE_FALLBACKS });
+    btDevice.addEventListener('gattserverdisconnected', () => { btCharacteristic = null; updateBtBadge(); console.log('Printer disconnected'); });
+    const server = await btDevice.gatt.connect();
     let service = null;
     for (const uuid of BT_SERVICE_FALLBACKS) {
-      try { service = await server.getPrimaryService(uuid); break; }
-      catch (e) { /* ลอง uuid ถัดไป */ }
+      try { service = await server.getPrimaryService(uuid); break; } catch (e) {}
     }
-
     if (!service) {
-      // ลอง list services ทั้งหมด แล้วเอาตัวแรก
       const services = await server.getPrimaryServices();
       if (services.length > 0) service = services[0];
     }
-
     if (!service) throw new Error('ไม่พบ Service ที่รองรับบน Printer นี้');
-
-    // ลองหา characteristic ที่ write ได้
     let char = null;
     const chars = await service.getCharacteristics();
-    for (const c of chars) {
-      if (c.properties.write || c.properties.writeWithoutResponse) {
-        char = c; break;
-      }
-    }
-
+    for (const c of chars) { if (c.properties.write || c.properties.writeWithoutResponse) { char = c; break; } }
     if (!char) throw new Error('ไม่พบ Characteristic ที่ write ได้บน Printer นี้');
-
     btCharacteristic = char;
     updateBtBadge();
     alert(`✅ เชื่อมต่อสำเร็จ!\nPrinter: ${btDevice.name || 'Unknown'}`);
-
   } catch (err) {
-    btDevice = null;
-    btCharacteristic = null;
-    updateBtBadge();
-    if (err.name !== 'NotFoundError') {
-      alert(`❌ เชื่อมต่อไม่สำเร็จ\n${err.message}`);
-    }
+    btDevice = null; btCharacteristic = null; updateBtBadge();
+    if (err.name !== 'NotFoundError') alert(`❌ เชื่อมต่อไม่สำเร็จ\n${err.message}`);
   }
 }
 
-// ส่ง bytes ไปยัง Bluetooth printer (แบ่งเป็น chunk เพราะ BLE จำกัด 512 bytes/ครั้ง)
 async function sendBytesToPrinter(data) {
   if (!btCharacteristic) throw new Error('ยังไม่ได้เชื่อมต่อ Printer');
-
-  // reconnect ถ้าหลุด
-  if (btDevice && !btDevice.gatt.connected) {
-    await btDevice.gatt.connect();
-  }
-
-  const CHUNK = 512;
+  if (btDevice && !btDevice.gatt.connected) await btDevice.gatt.connect();
+  const CHUNK = 256;
   for (let i = 0; i < data.length; i += CHUNK) {
     const chunk = data.slice(i, i + CHUNK);
-    if (btCharacteristic.properties.writeWithoutResponse) {
-      await btCharacteristic.writeValueWithoutResponse(chunk);
-    } else {
-      await btCharacteristic.writeValue(chunk);
-    }
-    // หน่วงเล็กน้อยระหว่าง chunk
-    await new Promise(r => setTimeout(r, 30));
+    if (btCharacteristic.properties.writeWithoutResponse) await btCharacteristic.writeValueWithoutResponse(chunk);
+    else await btCharacteristic.writeValue(chunk);
+    await new Promise(r => setTimeout(r, 20));
   }
 }
 
-// สร้าง ESC/POS command สำหรับ 58mm (384 dots = 32 chars)
-function buildEscPos58mm(order, payerIdx) {
-  const W = 32; // ความกว้าง 58mm ≈ 32 ตัวอักษร
+async function printReceiptImageViaBluetooth(canvas) {
+  const PRINT_WIDTH = 384; // สำหรับ 58mm printer
+  const scale = PRINT_WIDTH / canvas.width;
+  const printHeight = Math.floor(canvas.height * scale);
 
-  // helper: pad right
-  const padR = (s, len) => { s = String(s); return s.length >= len ? s.substring(0,len) : s + ' '.repeat(len - s.length); };
-  // helper: pad left
-  const padL = (s, len) => { s = String(s); return s.length >= len ? s.substring(0,len) : ' '.repeat(len - s.length) + s; };
-  // helper: 2-column row
-  const row2 = (left, right) => { const space = W - left.length - right.length; return left + (space > 0 ? ' '.repeat(space) : ' ') + right + '\n'; };
-  // helper: center
-  const center = (s) => { const pad = Math.max(0, Math.floor((W - s.length) / 2)); return ' '.repeat(pad) + s + '\n'; };
-  // helper: divider
-  const divider = () => '-'.repeat(W) + '\n';
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = PRINT_WIDTH;
+  tempCanvas.height = printHeight;
+  const ctx = tempCanvas.getContext('2d');
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, PRINT_WIDTH, printHeight);
+  ctx.drawImage(canvas, 0, 0, PRINT_WIDTH, printHeight);
 
-  // ตรวจสอบ payer
-  const isAll = payerIdx === 'all';
-  const payer = isAll
-    ? { name: order.payers[0].name, date: order.date || order.payers[0].date,
-        total: order.payers.reduce((s,p)=>s+p.total,0),
-        discount: order.payers.reduce((s,p)=>s+p.discount,0),
-        net: order.payers.reduce((s,p)=>s+p.net,0) }
-    : order.payers[parseInt(payerIdx)];
+  const imgData = ctx.getImageData(0, 0, PRINT_WIDTH, printHeight);
+  const pixels = imgData.data;
 
-  let billNo = order.billNumber || order.id;
-  if (!isAll && order.payers.length > 1) billNo += `-${parseInt(payerIdx)+1}`;
+  const widthBytes = PRINT_WIDTH / 8;
+  const rasterData = new Uint8Array(widthBytes * printHeight);
 
-  // รวมรายการ
-  const items = isAll ? order.itemsData : order.itemsData.filter(i => i.payerIdx == parseInt(payerIdx));
-  const grouped = {};
-  items.forEach(item => {
-    grouped[item.pkgId] = grouped[item.pkgId] || { label: item.label, price: item.price, cnt: 0 };
-    grouped[item.pkgId].cnt += 1;
-  });
+  for (let y = 0; y < printHeight; y++) {
+    for (let x = 0; x < PRINT_WIDTH; x++) {
+      const idx = (y * PRINT_WIDTH + x) * 4;
+      const brightness = (pixels[idx] * 0.299 + pixels[idx+1] * 0.587 + pixels[idx+2] * 0.114);
+      if (brightness < 180) { // Black pixel threshold
+        const byteIdx = y * widthBytes + Math.floor(x / 8);
+        const bit = 7 - (x % 8);
+        rasterData[byteIdx] |= (1 << bit);
+      }
+    }
+  }
 
-  // สร้าง bytes array
   const ESC = 0x1B, GS = 0x1D;
   const parts = [];
-  const enc = new TextEncoder();
-  const txt = (s) => parts.push(enc.encode(s));
-  const cmd = (...bytes) => parts.push(new Uint8Array(bytes));
-
-  // Initialize
-  cmd(ESC, 0x40);
-  // ฟอนต์เล็ก (Font B) เพื่อให้พอดีกับ 58mm
-  cmd(ESC, 0x4D, 0x01);
-
-  // Header
-  cmd(ESC, 0x61, 0x01); // center
-  txt('Geneus DNA\n');
-  txt('บ.จีเนียส เจเนติกส์ จก.\n');
-  txt(divider());
-
-  cmd(ESC, 0x61, 0x00); // left
-  if (order.eventName) txt(row2('งาน:', order.eventName.substring(0,20)));
-  txt(row2('บิล:', billNo));
-  txt(row2('วันที่:', (payer.date||'').substring(0,18)));
-  txt(row2('ลูกค้า:', (payer.name||'').substring(0,18)));
-  txt(divider());
-
-  // รายการสินค้า
-  Object.values(grouped).forEach(item => {
-    txt(`${item.label}\n`);
-    txt(row2(`  @${fmt(item.price)} x${item.cnt}`, `${fmt(item.price * item.cnt)} B`));
-  });
-
-  txt(divider());
-
-  // ยอดเงิน
-  txt(row2('รวม:', `${fmt(payer.total)} B`));
-  if (payer.discount > 0) txt(row2('ส่วนลด:', `-${fmt(payer.discount)} B`));
-
-  // ยอดสุทธิ bold
-  cmd(ESC, 0x45, 0x01); // bold on
-  txt(row2('ยอดสุทธิ:', `${fmt(payer.net)} B`));
-  cmd(ESC, 0x45, 0x00); // bold off
-
-  txt(divider());
-  cmd(ESC, 0x61, 0x01); // center
-  txt('ขอบคุณที่ไว้วางใจ\n');
-  txt('Geneus DNA\n');
-  txt('www.geneusdna.com\n');
-
-  // Feed + Cut
-  cmd(ESC, 0x64, 0x04); // feed 4 lines
-  cmd(GS, 0x56, 0x41, 0x03); // cut
-
-  // รวม parts ทั้งหมด
-  const totalLen = parts.reduce((s, p) => s + p.length, 0);
-  const result = new Uint8Array(totalLen);
+  parts.push(new Uint8Array([ESC, 0x40])); // Init
+  parts.push(new Uint8Array([ESC, 0x61, 0x01])); // Center
+  const xL = widthBytes % 256, xH = Math.floor(widthBytes / 256);
+  const yL = printHeight % 256, yH = Math.floor(printHeight / 256);
+  parts.push(new Uint8Array([GS, 0x76, 0x30, 0, xL, xH, yL, yH])); // Print raster
+  parts.push(rasterData);
+  parts.push(new Uint8Array([ESC, 0x64, 0x05])); // Feed 5 lines
+  parts.push(new Uint8Array([GS, 0x56, 0x41, 0x03])); // Cut
+  
+  const totalLen = parts.reduce((acc, p) => acc + p.length, 0);
+  const payload = new Uint8Array(totalLen);
   let offset = 0;
-  parts.forEach(p => { result.set(p, offset); offset += p.length; });
-  return result;
+  for (let p of parts) { payload.set(p, offset); offset += p.length; }
+  
+  await sendBytesToPrinter(payload);
 }
 
-// ปริ้นจาก Receipt Modal
 async function printViaBluetooth() {
   if (!btCharacteristic) {
-    const goSettings = confirm('ยังไม่ได้เชื่อมต่อ Bluetooth Printer\n\nไปที่ ⚙️ ตั้งค่า เพื่อจับคู่ก่อนไหมครับ?');
-    if (goSettings) { closeReceiptModal(); switchTab('settings'); }
+    if(confirm('ยังไม่ได้เชื่อมต่อ Bluetooth Printer\nไปตั้งค่าจับคู่ไหมครับ?')) { closeReceiptModal(); switchTab('settings'); }
     return;
   }
-
   const btn = document.getElementById('btnBtPrint');
   const orig = btn.innerHTML;
-  btn.innerHTML = '⏳ กำลังส่ง...';
+  btn.innerHTML = '⏳ กำลังประมวลผลและส่งปริ้น...';
   btn.disabled = true;
 
   try {
-    const sel = document.getElementById('rcptPayerSelector');
-    const payerIdx = sel ? sel.value : 0;
-    const data = buildEscPos58mm(currentReceiptOrder, payerIdx);
-    await sendBytesToPrinter(data);
-    // ปิด modal หลังปริ้นสำเร็จ
+    const receiptElement = document.getElementById('receiptContent');
+    const oldBoxShadow = receiptElement.style.boxShadow;
+    receiptElement.style.boxShadow = 'none';
+
+    // แคปภาพบิลปัจจุบัน
+    const canvas = await html2canvas(receiptElement, { scale: 2, backgroundColor: '#FFFFFF', useCORS: true });
+    receiptElement.style.boxShadow = oldBoxShadow;
+    
+    btn.innerHTML = '🖨️ กำลังส่งข้อมูล...';
+    await printReceiptImageViaBluetooth(canvas);
+    
     setTimeout(() => closeReceiptModal(), 500);
   } catch (err) {
+    console.error(err);
     if (err.message.includes('disconnected') || err.message.includes('GATT')) {
-      btCharacteristic = null; updateBtBadge();
-      alert('❌ Printer หลุดการเชื่อมต่อ\nกรุณาเชื่อมต่อใหม่ที่ ⚙️ ตั้งค่า');
+      btCharacteristic = null; updateBtBadge(); alert('❌ Printer หลุดการเชื่อมต่อ\nไปตั้งค่าจับคู่ใหม่ครับ');
     } else {
       alert('❌ ปริ้นไม่สำเร็จ: ' + err.message);
     }
@@ -637,12 +571,8 @@ async function printViaBluetooth() {
   }
 }
 
-// ทดสอบปริ้น
 async function testBluetoothPrint() {
-  if (!btCharacteristic) {
-    alert('กรุณากดจับคู่ Bluetooth Printer ก่อนครับ');
-    return;
-  }
+  if (!btCharacteristic) { alert('กรุณากดจับคู่ Bluetooth Printer ก่อนครับ'); return; }
   try {
     const ESC = 0x1B, GS = 0x1D;
     const enc = new TextEncoder();
@@ -660,22 +590,20 @@ async function testBluetoothPrint() {
     const data = new Uint8Array(total);
     let off = 0; parts.forEach(p=>{data.set(p,off);off+=p.length;});
     await sendBytesToPrinter(data);
-    alert('✅ ส่งคำสั่งทดสอบแล้ว ตรวจสอบที่เครื่องปริ้นครับ');
-  } catch (err) {
-    alert('❌ ทดสอบไม่สำเร็จ: ' + err.message);
-  }
+    alert('✅ ส่งคำสั่งทดสอบสำเร็จ');
+  } catch (err) { alert('❌ ทดสอบไม่สำเร็จ: ' + err.message); }
 }
 
 // ════════════════════════════════════════════════
-// ── CONFIG & STATE (เดิม)
+// ── CONFIG & STATE
 // ════════════════════════════════════════════════
 const DEFAULT_CONFIG = {
   googleSheetUrl: '',
   event: { name: '', prefix: 'INV' },
-  promo: {
-    amtActive: false, amtStepReq: 15000, amtStepDisc: 1000,
-    qtyActive: false, qtyStepReq: 0, qtyStepDisc: 0,
-    giftActive: false, giftReq: 3, giftName: 'Standard 1 ชุด'
+  promo: { 
+    amtActive: false, amtStepReq: 15000, amtStepDisc: 1000, 
+    qtyActive: false, qtyStepReq: 0, qtyStepDisc: 0, 
+    giftActive: false, giftReq: 3, giftName: 'Standard 1 ชุด' 
   },
   packages: [
     { id:'dog',    label:'Dog DNA',      price:5500, regPrice:6500,  cls:'tag-dog' },
@@ -688,17 +616,21 @@ const DEFAULT_CONFIG = {
 
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 let cartByPayer = [{}, {}, {}, {}, {}, {}];
-let currentSlips = {};
+let currentSlips = {}; 
 let salesHistory = [];
 let currentSplitCount = 1;
 let html5QrcodeScanner = null;
 let currentScanTarget = null;
 
-const fmt = n => Math.round(n).toLocaleString('th-TH');
-
+// --- UTILS ---
 function showLoader(text) { document.getElementById('loaderText').innerText = text || 'กำลังโหลด...'; document.getElementById('globalLoader').style.display = 'flex'; }
 function hideLoader() { document.getElementById('globalLoader').style.display = 'none'; }
 
+function fmt(n) {
+  return Math.round(Number(n) || 0).toLocaleString('th-TH');
+}
+
+// --- INITIALIZE ---
 async function init() {
   try {
     const res = await fetch('config.json?v=' + new Date().getTime());
@@ -710,7 +642,7 @@ async function init() {
   } catch (err) { loadLocalConfig(); }
 
   populateSettingsUI();
-  buildPOSUI();
+  buildPOSUI(); 
   applyConfig();
   updateBtBadge();
 
@@ -718,25 +650,28 @@ async function init() {
      fetchHistoryFromCloud();
   } else {
      const savedHistory = localStorage.getItem('geneus_pos_history');
-     if (savedHistory) { try { salesHistory = JSON.parse(savedHistory); } catch(e){} }
+     if (savedHistory) { 
+        try { salesHistory = JSON.parse(savedHistory); } catch(e){} 
+     }
      renderHistory();
   }
 }
 
 function loadLocalConfig() {
   const savedConfig = localStorage.getItem('geneus_pos_config');
-  if (savedConfig) {
-    try {
-      const parsed = JSON.parse(savedConfig);
+  if (savedConfig) { 
+    try { 
+      const parsed = JSON.parse(savedConfig); 
       CONFIG = { ...DEFAULT_CONFIG, ...parsed };
       if(!parsed.event) CONFIG.event = DEFAULT_CONFIG.event;
       if(typeof parsed.googleSheetUrl !== 'undefined') CONFIG.googleSheetUrl = parsed.googleSheetUrl;
+      
       if (parsed.promo) {
          if (typeof parsed.promo.amtActive === 'undefined') CONFIG.promo.amtActive = parsed.promo.amtStepReq > 0;
          if (typeof parsed.promo.qtyActive === 'undefined') CONFIG.promo.qtyActive = parsed.promo.qtyStepReq > 0;
          if (typeof parsed.promo.giftActive === 'undefined') CONFIG.promo.giftActive = parsed.promo.giftReq > 0;
       }
-    } catch(e){}
+    } catch(e){} 
   }
 }
 
@@ -745,10 +680,12 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.getElementById(`tab-${tabId}`).classList.add('active');
   document.getElementById(`btn-${tabId}`).classList.add('active');
-  if(tabId === 'presentation') renderPresentation();
-  if(tabId === 'settings') updateBtBadge();
+  if(tabId === 'presentation') {
+      renderPresentation();
+  }
 }
 
+// --- CLOUD SYNC: HISTORY ---
 async function fetchHistoryFromCloud(silent = false) {
    if (!CONFIG.googleSheetUrl) return;
    if(!silent) showLoader('กำลังดึงประวัติออเดอร์จาก Cloud...');
@@ -756,179 +693,517 @@ async function fetchHistoryFromCloud(silent = false) {
       const res = await fetch(CONFIG.googleSheetUrl + '?action=get_history');
       if(res.ok) {
          const data = await res.json();
-         if(Array.isArray(data)) { salesHistory = data; localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory)); renderHistory(); }
+         if(Array.isArray(data)) {
+            salesHistory = data;
+            localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
+            renderHistory();
+         }
       }
    } catch(e) {
+      console.error(e);
       if(!silent) alert('ไม่สามารถดึงข้อมูลประวัติจาก Cloud ได้ จะใช้ข้อมูลล่าสุดในเครื่องแทน');
       const savedHistory = localStorage.getItem('geneus_pos_history');
       if (savedHistory) { try { salesHistory = JSON.parse(savedHistory); renderHistory(); } catch(err){} }
-   } finally { if(!silent) hideLoader(); }
+   } finally {
+      if(!silent) hideLoader();
+   }
 }
 
+// --- SCANNER LOGIC ---
 function openScanner(targetKey) {
   currentScanTarget = targetKey;
   document.getElementById('scannerModal').style.display = 'flex';
-  if(!html5QrcodeScanner) html5QrcodeScanner = new Html5Qrcode("reader");
+  
+  if(!html5QrcodeScanner) {
+      html5QrcodeScanner = new Html5Qrcode("reader");
+  }
+  
   html5QrcodeScanner.start(
-    { facingMode: "environment" },
-    { fps: 30, qrbox: function(w,h){ var m=Math.min(w,h); return {width:Math.floor(m*0.8),height:Math.floor(m*0.8)}; }, aspectRatio: 1.0 },
-    (decodedText) => { const input = document.querySelector(`input[data-key="${currentScanTarget}"]`); if(input) input.value = decodedText; closeScanner(); },
-    () => {}
-  ).catch((err) => { alert("ไม่สามารถเข้าถึงกล้องได้: " + err); closeScanner(); });
+      { facingMode: "environment" },
+      { 
+          fps: 30, 
+          qrbox: function(viewfinderWidth, viewFinderHeight) {
+              var minEdgeSize = Math.min(viewfinderWidth, viewFinderHeight);
+              var qrboxSize = Math.floor(minEdgeSize * 0.8);
+              return { width: qrboxSize, height: qrboxSize };
+          },
+          aspectRatio: 1.0 
+      },
+      (decodedText) => {
+          const input = document.querySelector(`input[data-key="${currentScanTarget}"]`);
+          if(input) { input.value = decodedText; }
+          closeScanner();
+      },
+      (errorMessage) => { }
+  ).catch((err) => {
+      alert("ไม่สามารถเข้าถึงกล้องได้ กรุณาตรวจสอบสิทธิ์การใช้งานกล้องในเบราว์เซอร์: " + err);
+      closeScanner();
+  });
 }
 
 function closeScanner() {
-  if(html5QrcodeScanner) { html5QrcodeScanner.stop().then(() => html5QrcodeScanner.clear()).catch(()=>{}); }
+  if(html5QrcodeScanner) {
+      html5QrcodeScanner.stop().then(() => {
+          html5QrcodeScanner.clear();
+      }).catch(err => console.error(err));
+  }
   document.getElementById('scannerModal').style.display = 'none';
 }
 
+// --- CORE LOGIC ---
 function calculatePromo(totalEvent, qty) {
   let disc = 0, gifts = 0, giftText = '';
-  if (CONFIG.promo.amtActive && CONFIG.promo.amtStepReq > 0) disc += Math.floor(totalEvent / CONFIG.promo.amtStepReq) * CONFIG.promo.amtStepDisc;
-  if (CONFIG.promo.qtyActive && CONFIG.promo.qtyStepReq > 0) disc += Math.floor(qty / CONFIG.promo.qtyStepReq) * CONFIG.promo.qtyStepDisc;
-  if (CONFIG.promo.giftActive && CONFIG.promo.giftReq > 0) { gifts = Math.floor(qty / CONFIG.promo.giftReq); if (gifts > 0) giftText = `แถม ${CONFIG.promo.giftName} ${gifts > 1 ? '(x'+gifts+')' : ''}`; }
+  if (CONFIG.promo.amtActive && CONFIG.promo.amtStepReq > 0) {
+    disc += Math.floor(totalEvent / CONFIG.promo.amtStepReq) * CONFIG.promo.amtStepDisc;
+  }
+  if (CONFIG.promo.qtyActive && CONFIG.promo.qtyStepReq > 0) {
+    disc += Math.floor(qty / CONFIG.promo.qtyStepReq) * CONFIG.promo.qtyStepDisc;
+  }
+  if (CONFIG.promo.giftActive && CONFIG.promo.giftReq > 0) {
+    gifts = Math.floor(qty / CONFIG.promo.giftReq);
+    if (gifts > 0) giftText = `แถม ${CONFIG.promo.giftName} ${gifts > 1 ? '(x'+gifts+')' : ''}`;
+  }
   return { disc, gifts, giftText };
 }
 
-function applyConfig() { for(let i=0;i<6;i++) updatePayerCartUI(i); updateGlobalTotals(); renderPresentation(); }
+function applyConfig() {
+  for(let i=0; i<6; i++) { updatePayerCartUI(i); }
+  updateGlobalTotals();
+  renderPresentation();
+}
 
 function changeItemQtyGlobal(id, delta, e) {
   if (e) e.stopPropagation();
-  let totalQty = 0; for(let i=0;i<6;i++) Object.values(cartByPayer[i]).forEach(c=>totalQty+=c);
+  let totalQty = 0;
+  for(let i=0; i<6; i++) Object.values(cartByPayer[i]).forEach(c => totalQty += c);
   if (delta > 0 && totalQty >= 6) { alert('จำกัดสูงสุด 6 ชุดต่อ 1 บิลครับ'); return; }
-  if (delta > 0) { changeItemQty(0, id, 1, null); }
-  else { for(let i=5;i>=0;i--) { if(cartByPayer[i][id]>0) { changeItemQty(i,id,-1,null); break; } } }
+
+  if (delta > 0) {
+    changeItemQty(0, id, 1, null);
+  } else {
+    for(let i=5; i>=0; i--) {
+      if (cartByPayer[i][id] > 0) {
+        changeItemQty(i, id, -1, null);
+        break;
+      }
+    }
+  }
 }
 
 function changeItemQty(payerIdx, id, delta, e) {
   if (e) e.stopPropagation();
-  let totalQty = 0; for(let i=0;i<6;i++) Object.values(cartByPayer[i]).forEach(c=>totalQty+=c);
+  let totalQty = 0;
+  for(let i=0; i<6; i++) Object.values(cartByPayer[i]).forEach(c => totalQty += c);
   if (delta > 0 && totalQty >= 6) { alert('จำกัดสูงสุด 6 ชุดต่อ 1 บิลครับ'); return; }
-  const current = cartByPayer[payerIdx][id] || 0; const newVal = current + delta;
-  if (newVal <= 0) delete cartByPayer[payerIdx][id]; else cartByPayer[payerIdx][id] = newVal;
-  updatePayerCartUI(payerIdx); updateGlobalTotals(); renderPresentation();
+
+  const current = cartByPayer[payerIdx][id] || 0;
+  const newVal = current + delta;
+  if (newVal <= 0) delete cartByPayer[payerIdx][id];
+  else cartByPayer[payerIdx][id] = newVal;
+  
+  updatePayerCartUI(payerIdx);
+  updateGlobalTotals();
+  renderPresentation();
 }
 
 function clearCalc() {
-  cartByPayer = [{},{},{},{},{},{}]; currentSlips = {}; setSplitCount(1);
+  cartByPayer = [{}, {}, {}, {}, {}, {}];
+  currentSlips = {};
+  setSplitCount(1);
+
   const now = new Date();
   const defaultDate = now.toLocaleDateString('en-CA');
   const defaultTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  for(let i=0;i<6;i++) {
+
+  for(let i=0; i<6; i++) {
     if(document.getElementById(`payerName_${i}`)) document.getElementById(`payerName_${i}`).value = '';
     if(document.getElementById(`payerContact_${i}`)) document.getElementById(`payerContact_${i}`).value = '';
     if(document.getElementById(`payerDate_${i}`)) document.getElementById(`payerDate_${i}`).value = defaultDate;
     if(document.getElementById(`payerTime_${i}`)) document.getElementById(`payerTime_${i}`).value = defaultTime;
     if(document.getElementById(`payerMethod_${i}`)) document.getElementById(`payerMethod_${i}`).value = 'Bank Transfer';
-    const fileInput = document.getElementById(`payerSlip_${i}`); if(fileInput) fileInput.value = '';
-    const preview = document.getElementById(`slipPreview_${i}`); if(preview){preview.src='';preview.style.display='none';}
+    const fileInput = document.getElementById(`payerSlip_${i}`);
+    if (fileInput) fileInput.value = '';
+    const preview = document.getElementById(`slipPreview_${i}`);
+    if (preview) { preview.src=''; preview.style.display='none'; }
     updatePayerCartUI(i);
   }
-  updateGlobalTotals(); renderPresentation();
+  
+  updateGlobalTotals();
+  renderPresentation();
 }
 
+// --- POS UI BUILDER ---
 function buildPOSUI() {
-   const container = document.getElementById('payersContainer'); let html = '';
-   const now = new Date(); const defaultDate = now.toLocaleDateString('en-CA'); const defaultTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-   for(let i=0;i<6;i++) {
-     html += `<div class="payer-block" id="payerBlock_${i}" style="display:${i===0?'block':'none'}; border:1px solid var(--border); padding:16px; border-radius:12px; margin-bottom:16px; background:var(--card2); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-       <h4 style="margin-bottom:16px; color:var(--accent); display:flex; justify-content:space-between; align-items:center;"><span style="font-size:16px;">👤 ลูกค้าท่านที่ ${i+1}</span><span id="payerSubtotal_${i}" style="color:var(--text); font-size:14px; font-weight:800;">0 ฿</span></h4>
-       <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:16px;"><label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:10px;">📦 1. เลือกแพ็กเกจชุดตรวจให้ท่านที่ ${i+1}</label><div class="pkg-grid" id="pkgButtons_${i}"></div></div>
-       <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:16px;"><label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px;">📝 2. ข้อมูลและการชำระเงินของท่านที่ ${i+1}</label>
-         <div class="form-row-2"><div class="form-group"><label>ชื่อลูกค้า</label><input type="text" id="payerName_${i}" class="form-input" placeholder="ชื่อ-นามสกุล"></div><div class="form-group"><label>เบอร์โทรศัพท์</label><input type="tel" id="payerContact_${i}" class="form-input" placeholder="08X-XXX-XXXX"></div></div>
-         <div class="form-row-2"><div class="form-group"><label>วันที่ชำระ</label><input type="date" id="payerDate_${i}" class="form-input" value="${defaultDate}"></div><div class="form-group"><label>เวลา</label><input type="time" id="payerTime_${i}" class="form-input" value="${defaultTime}"></div></div>
-         <div class="form-group" style="margin-top:8px;"><label>วิธีชำระเงิน</label><select id="payerMethod_${i}" class="form-input"><option value="Bank Transfer">โอนเงิน (Bank Transfer)</option><option value="Credit Card">บัตรเครดิต (Credit Card)</option><option value="Cash">เงินสด (Cash)</option><option value="Installment">ผ่อนชำระ (Installment)</option></select></div>
-         <div class="form-group" style="margin-top:8px;"><label>แนบสลิป/หลักฐาน</label><input type="file" id="payerSlip_${i}" accept="image/*" class="form-input" onchange="handleMultiUpload(event, ${i})" style="padding:6px; font-size:12px;"><img id="slipPreview_${i}" style="display:none; max-width:100px; margin-top:8px; border-radius:4px; border:1px solid var(--border);"></div></div>
-       <div class="form-group" style="margin-top:8px;"><label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px;">📸 3. สแกนบาร์โค้ดของท่านที่ ${i+1}</label><div id="barcodesContainer_${i}"></div></div>
-     </div>`;
+   const container = document.getElementById('payersContainer');
+   let html = '';
+   const now = new Date();
+   const defaultDate = now.toLocaleDateString('en-CA');
+   const defaultTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+   for(let i=0; i<6; i++) {
+     html += `
+       <div class="payer-block" id="payerBlock_${i}" style="display:${i===0?'block':'none'}; border:1px solid var(--border); padding:16px; border-radius:12px; margin-bottom:16px; background:var(--card2); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+         <h4 style="margin-bottom:16px; color:var(--accent); display:flex; justify-content:space-between; align-items:center;">
+           <span style="font-size:16px;">👤 ลูกค้าท่านที่ ${i+1}</span>
+           <span id="payerSubtotal_${i}" style="color:var(--text); font-size:14px; font-weight:800;">0 ฿</span>
+         </h4>
+
+         <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:16px;">
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:10px;">📦 1. เลือกแพ็กเกจชุดตรวจให้ท่านที่ ${i+1}</label>
+            <div class="pkg-grid" id="pkgButtons_${i}"></div>
+         </div>
+
+         <div style="margin-bottom:16px; border-bottom:1px dashed var(--border); padding-bottom:16px;">
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px;">📝 2. ข้อมูลและการชำระเงินของท่านที่ ${i+1}</label>
+            <div class="form-row-2">
+              <div class="form-group"><label>ชื่อลูกค้า (Customer Name)</label><input type="text" id="payerName_${i}" class="form-input" placeholder="ชื่อ-นามสกุล"></div>
+              <div class="form-group"><label>เบอร์โทรศัพท์ (Phone No.)</label><input type="tel" id="payerContact_${i}" class="form-input" placeholder="08X-XXX-XXXX"></div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group"><label>วันที่ชำระ</label><input type="date" id="payerDate_${i}" class="form-input" value="${defaultDate}"></div>
+              <div class="form-group"><label>เวลา</label><input type="time" id="payerTime_${i}" class="form-input" value="${defaultTime}"></div>
+            </div>
+
+            <div class="form-group" style="margin-top:8px;">
+              <label>วิธีชำระเงิน</label>
+              <select id="payerMethod_${i}" class="form-input">
+                <option value="Bank Transfer">โอนเงิน (Bank Transfer)</option>
+                <option value="Credit Card">บัตรเครดิต (Credit Card)</option>
+                <option value="Cash">เงินสด (Cash)</option>
+                <option value="Installment">ผ่อนชำระ (Installment)</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-top:8px;">
+              <label>แนบสลิป/หลักฐาน</label>
+              <input type="file" id="payerSlip_${i}" accept="image/*" class="form-input" onchange="handleMultiUpload(event, ${i})" style="padding:6px; font-size:12px;">
+              <img id="slipPreview_${i}" style="display:none; max-width:100px; margin-top:8px; border-radius:4px; border:1px solid var(--border);">
+            </div>
+         </div>
+
+         <div class="form-group" style="margin-top:8px;">
+            <label style="display:block; font-size:13px; font-weight:700; color:var(--muted); margin-bottom:8px;">📸 3. สแกนบาร์โค้ดของท่านที่ ${i+1}</label>
+            <div id="barcodesContainer_${i}"></div>
+         </div>
+       </div>
+     `;
    }
    container.innerHTML = html;
 }
 
 function updatePayerCartUI(payerIdx) {
-  const cart = cartByPayer[payerIdx]; const wrap = document.getElementById('pkgButtons_'+payerIdx); if(!wrap) return;
-  wrap.innerHTML = ''; wrap.style.gap = '16px 8px';
+  const cart = cartByPayer[payerIdx];
+  const wrap = document.getElementById('pkgButtons_'+payerIdx);
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  wrap.style.gap = '16px 8px';
+
   CONFIG.packages.forEach(p => {
-    const cnt = cart[p.id] || 0; const b = document.createElement('div');
-    b.className = 'pkg-btn' + (cnt > 0 ? ' selected' : ''); b.dataset.id = p.id;
+    const cnt = cart[p.id] || 0;
+    const b = document.createElement('div');
+    b.className = 'pkg-btn' + (cnt > 0 ? ' selected' : '');
+    b.dataset.id = p.id;
     let inner = `<span class="btn-name">${p.label}</span><span class="btn-reg">${fmt(p.regPrice)} ฿</span><span class="btn-price">${fmt(p.price)} ฿</span>`;
-    if (cnt > 0) inner += `<div class="pkg-qty-ctrl"><div class="ctrl-minus" onclick="changeItemQty(${payerIdx}, '${p.id}', -1, event)">−</div><div class="ctrl-val">${cnt}</div><div class="ctrl-plus" onclick="changeItemQty(${payerIdx}, '${p.id}', 1, event)">+</div></div>`;
-    b.innerHTML = inner; if(cnt === 0) b.addEventListener('click', (e) => changeItemQty(payerIdx, p.id, 1, e));
+    if (cnt > 0) {
+       inner += `<div class="pkg-qty-ctrl">
+         <div class="ctrl-minus" onclick="changeItemQty(${payerIdx}, '${p.id}', -1, event)">−</div>
+         <div class="ctrl-val">${cnt}</div>
+         <div class="ctrl-plus" onclick="changeItemQty(${payerIdx}, '${p.id}', 1, event)">+</div>
+       </div>`;
+    }
+    b.innerHTML = inner;
+    if(cnt === 0) b.addEventListener('click', (e) => changeItemQty(payerIdx, p.id, 1, e));
     wrap.appendChild(b);
   });
-  const bcWrap = document.getElementById('barcodesContainer_'+payerIdx); let saved = {};
-  bcWrap.querySelectorAll('.barcode-row').forEach(row => { const input = row.querySelector('.pos-barcode'); if(input) saved[input.dataset.key] = input.value; });
+
+  const bcWrap = document.getElementById('barcodesContainer_'+payerIdx);
+  let saved = {};
+  bcWrap.querySelectorAll('.barcode-row').forEach(row => {
+     const input = row.querySelector('.pos-barcode');
+     if(input) saved[input.dataset.key] = input.value;
+  });
+
   let bcHtml = '';
   Object.entries(cart).forEach(([id, cnt]) => {
      const p = CONFIG.packages.find(x => x.id === id);
-     for(let i=0;i<cnt;i++) {
-        const key = `pos_${payerIdx}_${id}_${i}`; const val = saved[key] || '';
-        bcHtml += `<div class="barcode-row" style="background:#fff; padding:12px; border-radius:8px; margin-bottom:8px; border:1px dashed var(--border);"><div style="font-weight:700; color:var(--accent2); margin-bottom:8px; font-size:13px;">${p.label} (กล่องที่ ${i+1})</div><div style="display:flex; gap:8px;"><input type="text" class="form-input pos-barcode" style="flex:1;" placeholder="สแกน หรือ พิมพ์บาร์โค้ด" data-key="${key}" value="${val}"><button type="button" class="btn-scan" onclick="openScanner('${key}')">📷 สแกน</button></div></div>`;
+     for(let i=0; i<cnt; i++) {
+        const key = `pos_${payerIdx}_${id}_${i}`;
+        const val = saved[key] || '';
+        bcHtml += `
+          <div class="barcode-row" style="background:#fff; padding:12px; border-radius:8px; margin-bottom:8px; border:1px dashed var(--border);">
+            <div style="font-weight:700; color:var(--accent2); margin-bottom:8px; font-size:13px;">${p.label} (กล่องที่ ${i+1})</div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" class="form-input pos-barcode" style="flex:1;" placeholder="สแกน หรือ พิมพ์บาร์โค้ด" data-key="${key}" value="${val}">
+              <button type="button" class="btn-scan" onclick="openScanner('${key}')">📷 สแกน</button>
+            </div>
+          </div>`;
      }
   });
-  if(Object.keys(cart).length === 0) bcHtml = `<div style="text-align:center; color:var(--muted); font-size:12px; padding:10px;">โปรดเลือกแพ็กเกจด้านบนเพื่อแสดงช่องสแกนบาร์โค้ด</div>`;
+  
+  if(Object.keys(cart).length === 0) {
+      bcHtml = `<div style="text-align:center; color:var(--muted); font-size:12px; padding:10px;">โปรดเลือกแพ็กเกจด้านบนเพื่อแสดงช่องสแกนบาร์โค้ด</div>`;
+  }
   bcWrap.innerHTML = bcHtml;
 }
 
 function updateGlobalTotals() {
-  let totalQty=0,totalEventPrice=0,payerSubtotals=[0,0,0,0,0,0],mergedCart={};
-  for(let i=0;i<6;i++) { Object.entries(cartByPayer[i]).forEach(([id,cnt])=>{ const p=CONFIG.packages.find(x=>x.id===id); if(p){totalQty+=cnt;totalEventPrice+=p.price*cnt;payerSubtotals[i]+=p.price*cnt;mergedCart[id]=(mergedCart[id]||0)+cnt;} }); }
-  const promo=calculatePromo(totalEventPrice,totalQty); const finalAmt=totalEventPrice-promo.disc; const exactDiscPerItem=totalQty>0?(promo.disc/totalQty):0;
-  const res=document.getElementById('calcResult');
-  if(totalQty===0){res.innerHTML='<div class="calc-empty">👆 กรุณาเลือกจำนวนผู้ชำระเงิน และเลือกแพ็กเกจด้านบนครับ</div>';}
-  else {
-    let breakdownHtml='';
-    if(currentSplitCount>1||promo.disc>0){breakdownHtml=`<div style="background:var(--card2);border-radius:12px;padding:12px;margin-bottom:12px;border:1px dashed var(--border);"><div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px;">💡 สรุปยอดแยกตามแพ็กเกจ (หลังหักส่วนลดเฉลี่ย)</div>${Object.entries(mergedCart).map(([id,cnt])=>{const p=CONFIG.packages.find(x=>x.id===id);const netPerItem=p.price-exactDiscPerItem;const showNet=netPerItem%1===0?fmt(netPerItem):netPerItem.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid #f1f5f9;"><span style="color:var(--text);">${p.label} <span style="font-size:11px;color:var(--muted);">(x${cnt})</span></span><span style="font-weight:800;color:var(--accent2);">${showNet} ฿/ชุด</span></div>`;}).join('')}</div>`;}
-    res.innerHTML=`${breakdownHtml}<div class="summary-row event"><span>รวมราคาชุดตรวจทั้งหมด (${totalQty} ชุด):</span><span>${fmt(totalEventPrice)} ฿</span></div>${promo.disc>0?`<div class="summary-row discount"><span>ส่วนลด On-Top รวม:</span><span>-${fmt(promo.disc)} ฿</span></div>`:''} ${promo.gifts>0?`<div class="summary-row gift"><span>🎉 ได้รับของแถม:</span><span>${promo.giftText}</span></div>`:''}<div class="summary-row final"><span>ยอดรวมสุทธิทั้งบิล:</span><span>${fmt(finalAmt)} ฿</span></div>`;
+  let totalQty = 0, totalEventPrice = 0, payerSubtotals = [0,0,0,0,0,0], mergedCart = {};
+
+  for(let i=0; i<6; i++) {
+    Object.entries(cartByPayer[i]).forEach(([id, cnt]) => {
+      const p = CONFIG.packages.find(x => x.id === id);
+      if (p) {
+        totalQty += cnt;
+        totalEventPrice += p.price * cnt;
+        payerSubtotals[i] += p.price * cnt;
+        mergedCart[id] = (mergedCart[id] || 0) + cnt;
+      }
+    });
   }
-  for(let i=0;i<6;i++){const subLabel=document.getElementById('payerSubtotal_'+i);if(subLabel){let pQty=0;Object.values(cartByPayer[i]).forEach(c=>pQty+=c);let pNet=payerSubtotals[i]-(exactDiscPerItem*pQty);let showPNet=pNet%1===0?fmt(pNet):pNet.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});subLabel.innerHTML=`รวม <span style="color:var(--accent);">${showPNet} ฿</span>`;}}
+
+  const promo = calculatePromo(totalEventPrice, totalQty);
+  const finalAmt = totalEventPrice - promo.disc;
+  const exactDiscPerItem = totalQty > 0 ? (promo.disc / totalQty) : 0;
+
+  const res = document.getElementById('calcResult');
+  if (totalQty === 0) {
+    res.innerHTML = '<div class="calc-empty">👆 กรุณาเลือกจำนวนผู้ชำระเงิน และเลือกแพ็กเกจด้านบนครับ</div>';
+  } else {
+    let breakdownHtml = '';
+    if (currentSplitCount > 1 || promo.disc > 0) {
+       breakdownHtml = `
+         <div style="background:var(--card2); border-radius:12px; padding:12px; margin-bottom:12px; border:1px dashed var(--border);">
+           <div style="font-size:13px; font-weight:700; color:var(--accent); margin-bottom:8px;">💡 สรุปยอดแยกตามแพ็กเกจ (หลังหักส่วนลดเฉลี่ย)</div>
+           ${Object.entries(mergedCart).map(([id, cnt]) => {
+              const p = CONFIG.packages.find(x => x.id === id);
+              const netPerItem = p.price - exactDiscPerItem;
+              const showNet = netPerItem % 1 === 0 ? fmt(netPerItem) : netPerItem.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+              return `<div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; margin-bottom:4px; padding-bottom:4px; border-bottom:1px solid #f1f5f9; width: 100%;">
+                         <span style="color:var(--text); text-align:left;">${p.label} <span style="font-size:11px; color:var(--muted);">(x${cnt})</span></span>
+                         <span style="font-weight:800; color:var(--accent2); text-align:right;">${showNet} ฿/ชุด</span>
+                      </div>`;
+           }).join('')}
+         </div>
+       `;
+    }
+
+    res.innerHTML = `
+      ${breakdownHtml}
+      <div class="summary-row event" style="display: flex; justify-content: space-between; width: 100%;"><span style="text-align:left;">รวมราคาชุดตรวจทั้งหมด (${totalQty} ชุด):</span><span style="text-align:right;">${fmt(totalEventPrice)} ฿</span></div>
+      ${promo.disc > 0 ? `<div class="summary-row discount" style="display: flex; justify-content: space-between; width: 100%;"><span style="text-align:left;">ส่วนลด On-Top รวม:</span><span style="text-align:right;">-${fmt(promo.disc)} ฿</span></div>` : ''}
+      ${promo.gifts > 0 ? `<div class="summary-row gift" style="display: flex; justify-content: space-between; width: 100%;"><span style="text-align:left;">🎉 ได้รับของแถม:</span><span style="text-align:right;">${promo.giftText}</span></div>` : ''}
+      <div class="summary-row final" style="display: flex; justify-content: space-between; width: 100%;"><span style="text-align:left;">ยอดรวมสุทธิทั้งบิล:</span><span style="text-align:right;">${fmt(finalAmt)} ฿</span></div>
+    `;
+  }
+  
+  for(let i=0; i<6; i++) {
+    const subLabel = document.getElementById('payerSubtotal_'+i);
+    if(subLabel) {
+       let pQty = 0;
+       Object.values(cartByPayer[i]).forEach(c => pQty += c);
+       let pNet = payerSubtotals[i] - (exactDiscPerItem * pQty);
+       let showPNet = pNet % 1 === 0 ? fmt(pNet) : pNet.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+       subLabel.innerHTML = `รวม <span style="color:var(--accent);">${showPNet} ฿</span>`;
+    }
+  }
 }
 
 function setSplitCount(val) {
-   currentSplitCount=parseInt(val);
-   for(let i=0;i<6;i++){if(i>=currentSplitCount){let hasItems=false;for(let pkgId in cartByPayer[i]){cartByPayer[0][pkgId]=(cartByPayer[0][pkgId]||0)+cartByPayer[i][pkgId];hasItems=true;}if(hasItems)cartByPayer[i]={};}}
-   const pSel=document.getElementById('presSplitCount');if(pSel)pSel.value=currentSplitCount;
-   const posSel=document.getElementById('splitCount');if(posSel)posSel.value=currentSplitCount;
-   for(let i=0;i<6;i++){const block=document.getElementById('payerBlock_'+i);if(block)block.style.display=i<currentSplitCount?'block':'none';updatePayerCartUI(i);}
-   updateGlobalTotals(); renderPresentation();
+   currentSplitCount = parseInt(val);
+   for(let i=0; i<6; i++) {
+      if(i >= currentSplitCount) {
+          let hasItems = false;
+          for(let pkgId in cartByPayer[i]) {
+            cartByPayer[0][pkgId] = (cartByPayer[0][pkgId] || 0) + cartByPayer[i][pkgId];
+            hasItems = true;
+          }
+          if(hasItems) cartByPayer[i] = {};
+      }
+   }
+   
+   const pSel = document.getElementById('presSplitCount');
+   if(pSel) pSel.value = currentSplitCount;
+   const posSel = document.getElementById('splitCount');
+   if(posSel) posSel.value = currentSplitCount;
+
+   for(let i=0; i<6; i++) {
+      const block = document.getElementById('payerBlock_'+i);
+      if(block) block.style.display = i < currentSplitCount ? 'block' : 'none';
+      updatePayerCartUI(i);
+   }
+   
+   updateGlobalTotals();
+   renderPresentation();
 }
 
-function handleMultiUpload(e,idx){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(event){const img=new Image();img.onload=function(){const canvas=document.createElement('canvas');let width=img.width,height=img.height;if(width>600){height*=600/width;width=600;}canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,width,height);currentSlips[idx]=canvas.toDataURL('image/jpeg',0.5);const preview=document.getElementById('slipPreview_'+idx);preview.src=currentSlips[idx];preview.style.display='block';};img.src=event.target.result;};reader.readAsDataURL(file);}
+function toggleSplit() {
+  setSplitCount(document.getElementById('splitCount').value);
+}
+
+function handleMultiUpload(e, idx) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      let width = img.width, height = img.height;
+      if (width > 600) { height *= 600 / width; width = 600; }
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      currentSlips[idx] = canvas.toDataURL('image/jpeg', 0.5);
+      const preview = document.getElementById('slipPreview_' + idx);
+      preview.src = currentSlips[idx];
+      preview.style.display = 'block';
+    }
+    img.src = event.target.result;
+  }
+  reader.readAsDataURL(file);
+}
+
+// ── CUSTOMER PRESENTATION (TAB 2) ──
+function togglePaymentQRPres(val) {
+  currentPaymentMethodPres = val;
+  const qrContainer = document.getElementById('qrPaymentContainer_pres');
+  if (qrContainer) {
+    qrContainer.style.display = (val === 'Bank Transfer') ? 'block' : 'none';
+  }
+}
 
 function renderPresentation() {
-  const presWrap=document.getElementById('presentationWrap');if(!presWrap)return;
-  let mergedCart={},totalQty=0;
-  for(let i=0;i<6;i++){Object.entries(cartByPayer[i]).forEach(([id,cnt])=>{mergedCart[id]=(mergedCart[id]||0)+cnt;totalQty+=cnt;});}
-  let html=`<div class="form-group" style="margin-bottom:20px;background:#fff;padding:16px;border-radius:12px;border:1px solid var(--border);box-shadow:0 4px 15px rgba(0,0,0,0.05);text-align:center;"><label style="color:var(--accent);font-size:16px;font-weight:900;margin-bottom:12px;display:block;">👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label><select id="presSplitCount" class="form-input" style="border-color:var(--accent);font-weight:bold;font-size:16px;text-align:center;" onchange="setSplitCount(this.value)">${[1,2,3,4,5,6].map(n=>`<option value="${n}" ${currentSplitCount===n?'selected':''}>${n} ท่าน ${n===1?'(จ่ายก้อนเดียว)':'(แยกจ่าย)'}</option>`).join('')}</select></div>`;
+  const presWrap = document.getElementById('presentationWrap');
+  if(!presWrap) return;
+  
+  let totalQty = 0;
+  let totalEventPrice = 0;
+  let totalRegPrice = 0;
+  let mergedCart = {};
 
-  const totalRegPrice=Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).regPrice*cnt,0);
-  const totalEventPrice=Object.entries(mergedCart).reduce((s,[id,cnt])=>s+CONFIG.packages.find(x=>x.id===id).price*cnt,0);
-  const promo=calculatePromo(totalEventPrice,totalQty);
-  const finalAmt=totalEventPrice-promo.disc;
-  const totalSaved=totalRegPrice-finalAmt;
-  const savedPerc=totalRegPrice>0?Math.round((totalSaved/totalRegPrice)*100):0;
-  const exactDiscPerItem=totalQty>0?(promo.disc/totalQty):0;
-
-  for(let i=0;i<currentSplitCount;i++){
-     let payerTotal=0,payerQty=0,pkgButtonsHtml='';
-     CONFIG.packages.forEach(p=>{
-        const cnt=cartByPayer[i][p.id]||0;
-        if(cnt>0){payerTotal+=p.price*cnt;payerQty+=cnt;}
-        const selectedCls=cnt>0?'selected':'';
-        let badge=cnt>0?`<div class="pkg-qty-ctrl"><div class="ctrl-minus" onclick="changeItemQty(${i},'${p.id}',-1,event)">−</div><div class="ctrl-val">${cnt}</div><div class="ctrl-plus" onclick="changeItemQty(${i},'${p.id}',1,event)">+</div></div>`:'';
-        let clickAttr=cnt===0?`onclick="changeItemQty(${i},'${p.id}',1,event)"`:'';
-        pkgButtonsHtml+=`<div class="pkg-btn ${selectedCls}" data-id="${p.id}" ${clickAttr} style="min-height:100px;margin-bottom:8px;"><span class="btn-name">${p.label}</span><span class="btn-reg">${fmt(p.regPrice)} ฿</span><span class="btn-price" style="font-size:clamp(14px,2.5vw,18px);">${fmt(p.price)} ฿</span>${badge}</div>`;
-     });
-     let payerDisc=exactDiscPerItem*payerQty;let payerNet=payerTotal-payerDisc;
-     let showPayerNet=payerNet%1===0?fmt(payerNet):payerNet.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
-     let titleText=currentSplitCount>1?`👤 ลูกค้าท่านที่ ${i+1}`:'💡 เลือกลองจัดแพ็กเกจด้วยตัวคุณเอง';
-     html+=`<div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid var(--border);box-shadow:0 4px 10px rgba(0,0,0,0.03);"><h3 style="color:var(--accent2);margin-bottom:12px;border-bottom:1px dashed var(--border);padding-bottom:8px;text-align:center;">${titleText}</h3><div class="pkg-grid">${pkgButtonsHtml}</div>${payerQty>0&&currentSplitCount>1?`<div style="background:var(--card2);border-radius:12px;padding:12px;margin-top:12px;border:1px solid #cbd5e1;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:14px;color:var(--muted);"><span>รวมราคาหน้างาน:</span><span>${fmt(payerTotal)} ฿</span></div>${payerDisc>0?`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:14px;color:var(--gold);font-weight:700;"><span>ส่วนลด On-top หารเฉลี่ย:</span><span>-${fmt(payerDisc)} ฿</span></div>`:''}<div style="display:flex;justify-content:space-between;font-weight:900;font-size:18px;color:var(--accent);margin-top:8px;border-top:1px dashed var(--border);padding-top:8px;"><span>ยอดโอนของท่านที่ ${i+1}:</span><span>${showPayerNet} ฿</span></div></div>`:''}</div>`;
+  for(let i=0; i<currentSplitCount; i++) {
+    Object.entries(cartByPayer[i]).forEach(([id, cnt]) => {
+      const p = CONFIG.packages.find(x => x.id === id);
+      if(p) {
+          totalQty += cnt;
+          totalEventPrice += p.price * cnt;
+          totalRegPrice += p.regPrice * cnt;
+          mergedCart[id] = (mergedCart[id] || 0) + cnt;
+      }
+    });
   }
 
-  if(totalQty===0){html+=`<div class="calc-empty" style="margin-top:20px;font-size:16px;">👆 แตะเลือกแพ็กเกจด้านบนเพื่อดูสรุปความคุ้มค่าครับ</div>`;presWrap.innerHTML=html;return;}
+  const promo = calculatePromo(totalEventPrice, totalQty);
+  const finalAmt = totalEventPrice - promo.disc;
+  const exactDiscPerItem = totalQty > 0 ? (promo.disc / totalQty) : 0;
+  const totalSaved = totalRegPrice - finalAmt;
+  const savedPerc = totalRegPrice > 0 ? Math.round((totalSaved / totalRegPrice) * 100) : 0;
 
-  let giftHtml=promo.gifts>0?`<div style="background:var(--tag-std-bg);border:1px solid var(--tag-std);color:var(--accent);padding:16px;border-radius:12px;margin-top:16px;font-weight:800;text-align:center;font-size:clamp(16px,2.5vw,20px);">🎁 รับของแถมฟรี! ${promo.giftText}</div>`:'';
-  let breakdownHtml=`<div style="background:#fff;border-radius:12px;padding:16px;margin:16px 0;border:1px solid var(--accent);box-shadow:0 4px 10px rgba(5,150,105,0.05);"><h4 style="color:var(--accent);margin-bottom:12px;text-align:center;font-size:16px;">💰 ยอดโอนสำหรับแยกจ่าย (ต่อชุด)</h4>${Object.entries(mergedCart).map(([id,cnt])=>{const p=CONFIG.packages.find(x=>x.id===id);const netPerItem=p.price-exactDiscPerItem;const showNet=netPerItem%1===0?fmt(netPerItem):netPerItem.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});return`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:15px;border-bottom:1px dashed var(--border);padding-bottom:8px;"><span style="color:var(--text);">${p.label} <span style="color:var(--muted);font-size:12px;">(x${cnt})</span></span><span style="font-weight:900;color:var(--accent);font-size:18px;">${showNet} <span style="font-size:14px;">฿</span></span></div>`;}).join('')}<div style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px;">*ยอดสุทธิหลังหักส่วนลด On-Top เรียบร้อยแล้ว</div></div>`;
+  // 1. Dropdown เลือกจำนวนผู้ชำระเงิน แสดงเสมอ
+  let html = `
+    <div class="form-group" style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align:center;">
+      <label style="color:var(--accent); font-size:16px; font-weight:900; margin-bottom:12px; display:block;">👥 จำนวนผู้ชำระเงิน (รวมบิลเพื่อรับโปรฯ)</label>
+      <select id="presSplitCount" class="form-input" style="border-color:var(--accent); font-weight:bold; font-size:16px; text-align:center;" onchange="setSplitCount(this.value)">
+        <option value="1" ${currentSplitCount===1?'selected':''}>1 ท่าน (จ่ายก้อนเดียว)</option>
+        <option value="2" ${currentSplitCount===2?'selected':''}>2 ท่าน (แยกจ่าย)</option>
+        <option value="3" ${currentSplitCount===3?'selected':''}>3 ท่าน (แยกจ่าย)</option>
+        <option value="4" ${currentSplitCount===4?'selected':''}>4 ท่าน (แยกจ่าย)</option>
+        <option value="5" ${currentSplitCount===5?'selected':''}>5 ท่าน (แยกจ่าย)</option>
+        <option value="6" ${currentSplitCount===6?'selected':''}>6 ท่าน (แยกจ่าย)</option>
+      </select>
+    </div>
+  `;
+
+  // 2. แสดงตะกร้าของแต่ละคนตามที่เลือกไว้
+  for(let i=0; i<currentSplitCount; i++) {
+     let payerTotal = 0;
+     let payerQty = 0;
+     let pkgButtonsHtml = '';
+     
+     CONFIG.packages.forEach(p => {
+        const cnt = cartByPayer[i][p.id] || 0;
+        if(cnt > 0) { payerTotal += p.price * cnt; payerQty += cnt; }
+        
+        const selectedCls = cnt > 0 ? 'selected' : '';
+        let badge = cnt > 0 ? `<div class="pkg-qty-ctrl"><div class="ctrl-minus" onclick="changeItemQty(${i}, '${p.id}', -1, event)">−</div><div class="ctrl-val">${cnt}</div><div class="ctrl-plus" onclick="changeItemQty(${i}, '${p.id}', 1, event)">+</div></div>` : '';
+        let clickAttr = cnt === 0 ? `onclick="changeItemQty(${i}, '${p.id}', 1, event)"` : '';
+        
+        pkgButtonsHtml += `
+          <div class="pkg-btn ${selectedCls}" data-id="${p.id}" ${clickAttr} style="min-height: 100px; margin-bottom: 8px;">
+            <span class="btn-name">${p.label}</span>
+            <span class="btn-reg">${fmt(p.regPrice)} ฿</span>
+            <span class="btn-price" style="font-size: clamp(14px, 2.5vw, 18px);">${fmt(p.price)} ฿</span>
+            ${badge}
+          </div>
+        `;
+     });
+
+     let payerDisc = exactDiscPerItem * payerQty;
+     let payerNet = payerTotal - payerDisc;
+     let showPayerNet = payerNet % 1 === 0 ? fmt(payerNet) : payerNet.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+     let titleText = currentSplitCount > 1 ? `👤 ลูกค้าท่านที่ ${i+1}` : `💡 เลือกลองจัดแพ็กเกจด้วยตัวคุณเอง`;
+
+     html += `
+        <div style="background:#fff; border-radius:16px; padding:16px; margin-bottom:16px; border:1px solid var(--border); box-shadow:0 4px 10px rgba(0,0,0,0.03);">
+           <h3 style="color:var(--accent2); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px; text-align:center;">${titleText}</h3>
+           <div class="pkg-grid">${pkgButtonsHtml}</div>
+           
+           ${payerQty > 0 && currentSplitCount > 1 ? `
+           <div style="background:var(--card2); border-radius:12px; padding:12px; margin-top:12px; border:1px solid #cbd5e1;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:14px; color:var(--muted); width:100%; align-items:center;">
+                 <span style="text-align:left;">รวมราคาหน้างาน:</span>
+                 <span style="text-align:right;">${fmt(payerTotal)} ฿</span>
+              </div>
+              ${payerDisc > 0 ? `
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:14px; color:var(--gold); font-weight:700; width:100%; align-items:center;">
+                 <span style="text-align:left;">ส่วนลด On-top หารเฉลี่ย:</span>
+                 <span style="text-align:right;">-${fmt(payerDisc)} ฿</span>
+              </div>` : ''}
+              <div style="display:flex; justify-content:space-between; font-weight:900; font-size:18px; color:var(--accent); margin-top:8px; border-top:1px dashed var(--border); padding-top:8px; width:100%; align-items:center;">
+                 <span style="text-align:left;">ยอดโอนของท่านที่ ${i+1}:</span>
+                 <span style="text-align:right;">${showPayerNet} ฿</span>
+              </div>
+           </div>
+           ` : ''}
+           ${payerQty > 0 && currentSplitCount === 1 ? `
+           <div style="display:flex; justify-content:flex-end; font-weight:bold; color:var(--accent); margin-top:8px; width:100%;">
+             <span style="text-align:right;">ยอดรวมก่อนลด: ${fmt(payerTotal)} ฿</span>
+           </div>
+           ` : ''}
+        </div>
+     `;
+  }
+
+  // 3. ถ้ายังไม่เลือกสักกล่อง ก็ไม่ต้องแสดงสรุปยอดข้างล่าง
+  if (totalQty === 0) {
+      html += `<div class="calc-empty" style="margin-top: 20px; font-size: 16px;">👆 แตะเลือกแพ็กเกจด้านบนเพื่อดูสรุปความคุ้มค่าครับ</div>`;
+      presWrap.innerHTML = html;
+      return;
+  }
+
+  // 4. สรุปความคุ้มค่าทั้งหมด (ถ้ามีสินค้า)
+  let giftHtml = '';
+  if (promo.gifts > 0 || promo.giftText) {
+    giftHtml = `<div style="background:var(--tag-std-bg); border:1px solid var(--tag-std); color:var(--accent); padding:16px; border-radius:12px; margin-top:16px; font-weight:800; text-align:center; font-size:clamp(16px, 2.5vw, 20px);">🎁 รับของแถมฟรี! ${promo.giftText}</div>`;
+  }
+
+  let breakdownHtml = `
+    <div style="background:#fff; border-radius:12px; padding:16px; margin:16px 0; border:1px solid var(--accent); box-shadow: 0 4px 10px rgba(5,150,105,0.05);">
+       <h4 style="color:var(--accent); margin-bottom:12px; text-align:center; font-size:16px;">💰 ยอดโอนสำหรับแยกจ่าย (ต่อชุด)</h4>
+       ${Object.entries(mergedCart).map(([id, cnt]) => {
+          const p = CONFIG.packages.find(x => x.id === id);
+          const netPerItem = p.price - exactDiscPerItem;
+          const showNet = netPerItem % 1 === 0 ? fmt(netPerItem) : netPerItem.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:15px; border-bottom:1px dashed var(--border); padding-bottom:8px; width: 100%;">
+                     <span style="color:var(--text); text-align:left;">${p.label} <span style="color:var(--muted); font-size:12px;">(x${cnt})</span></span>
+                     <span style="font-weight:900; color:var(--accent); font-size:18px; text-align:right;">${showNet} <span style="font-size:14px;">฿</span></span>
+                  </div>`;
+       }).join('')}
+       <div style="text-align:center; font-size:11px; color:var(--muted); margin-top:8px;">*ยอดสุทธิหลังหักส่วนลด On-Top เรียบร้อยแล้ว</div>
+    </div>
+  `;
 
   html += `
     <div class="pres-container">
@@ -975,186 +1250,774 @@ function renderPresentation() {
   presWrap.innerHTML = html;
 }
 
-function proceedToPOS() { switchTab('pos'); window.scrollTo({top:0,behavior:'smooth'}); }
+function proceedToPOS() {
+  switchTab('pos');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
+// ── NORMALIZER ──
 function normalizeOrder(order) {
-   if(order.itemsData&&order.payers&&order.payers[0]&&order.payers[0].date)return order;
-   let payers=order.payers||[{name:order.name||'ลูกค้า',contact:'',method:order.paymentMethod||'Bank Transfer',date:order.date,slip:order.slip||order.slipBase64||null,total:0,discount:0,net:order.amount}];
-   payers.forEach(p=>{if(!p.date)p.date=order.date;if(!p.contact)p.contact="";});
-   let itemsData=order.itemsData||[];
-   if(itemsData.length===0){Object.entries(order.items||{}).forEach(([id,cnt])=>{const p=CONFIG.packages.find(x=>x.id===id);if(!p)return;for(let i=0;i<cnt;i++)itemsData.push({payerIdx:0,pkgId:p.id,label:p.label,price:p.price,barcode:'',recipient:'',discount:0,net:p.price});});if(order.barcodes){order.barcodes.forEach((bc,idx)=>{if(itemsData[idx]){const colIdx=bc.indexOf(':');let rest=colIdx>-1?bc.substring(colIdx+1).trim():bc;let rec='';if(rest.includes('[')&&rest.endsWith(']')){const match=rest.match(/\[(.*?)\]$/);if(match){rec=match[1].trim();rest=rest.replace(/\[.*?\]$/,'').trim();}}itemsData[idx].barcode=rest;}});}}
-   let totalOriginal=0;itemsData.forEach(item=>totalOriginal+=item.price);let totalDisc=totalOriginal-(order.amount||0);let avgDisc=itemsData.length>0?totalDisc/itemsData.length:0;let usedDisc=0;
-   itemsData.forEach((item,idx)=>{let d=(idx===itemsData.length-1)?totalDisc-usedDisc:Math.round(avgDisc*100)/100;item.discount=d;item.net=item.price-d;usedDisc+=d;});
-   if(!order.payers){payers[0].total=totalOriginal;payers[0].discount=totalDisc;payers[0].net=order.amount||0;}
-   return{...order,payers,itemsData};
+   if (order.itemsData && order.payers && order.payers[0] && order.payers[0].date) return order; 
+
+   let payers = order.payers || [{
+      name: order.name || 'ลูกค้า',
+      contact: '',
+      method: order.paymentMethod || 'Bank Transfer',
+      date: order.date,
+      slip: order.slip || order.slipBase64 || null,
+      total: 0, discount: 0, net: order.amount
+   }];
+   
+   payers.forEach(p => {
+      if(!p.date) p.date = order.date;
+      if(!p.contact) p.contact = "";
+   });
+
+   let itemsData = order.itemsData || [];
+   if(itemsData.length === 0) {
+       Object.entries(order.items || {}).forEach(([id, cnt]) => {
+          const p = CONFIG.packages.find(x => x.id === id);
+          if(!p) return;
+          for(let i=0; i<cnt; i++) {
+             itemsData.push({ payerIdx: 0, pkgId: p.id, label: p.label, price: p.price, barcode: '', recipient: '', discount: 0, net: p.price });
+          }
+       });
+
+       if (order.barcodes) {
+          order.barcodes.forEach((bc, idx) => {
+             if (itemsData[idx]) {
+                const colIdx = bc.indexOf(':');
+                let rest = colIdx > -1 ? bc.substring(colIdx+1).trim() : bc;
+                let rec = '';
+                if(rest.includes('[') && rest.endsWith(']')) {
+                  const match = rest.match(/\[(.*?)\]$/);
+                  if(match) { rec = match[1].trim(); rest = rest.replace(/\[.*?\]$/, '').trim(); }
+                }
+                itemsData[idx].barcode = rest;
+             }
+          });
+       }
+   }
+
+   let totalOriginal = 0;
+   itemsData.forEach(item => totalOriginal += item.price);
+   let totalDisc = totalOriginal - (order.amount || 0);
+   let avgDisc = itemsData.length > 0 ? totalDisc / itemsData.length : 0;
+   let usedDisc = 0;
+   
+   itemsData.forEach((item, idx) => {
+      let d = (idx === itemsData.length - 1) ? totalDisc - usedDisc : Math.round(avgDisc * 100) / 100;
+      item.discount = d;
+      item.net = item.price - d;
+      usedDisc += d;
+   });
+   
+   if(!order.payers) {
+      payers[0].total = totalOriginal;
+      payers[0].discount = totalDisc;
+      payers[0].net = order.amount || 0;
+   }
+
+   return { ...order, payers, itemsData };
 }
 
 function buildExportRows(order) {
-  const rows=[]; const saleChannel=order.eventName?`Event POS - ${order.eventName}`:"Event POS";
-  const groupedItems={};
-  order.itemsData.forEach(item=>{const key=`${item.payerIdx}_${item.pkgId}`;if(!groupedItems[key])groupedItems[key]={payerIdx:item.payerIdx,label:item.label,qty:0,totalPrice:0,totalDiscount:0,totalNet:0,barcodes:[]};groupedItems[key].qty+=1;groupedItems[key].totalPrice=Math.round((groupedItems[key].totalPrice+item.price)*100)/100;groupedItems[key].totalDiscount=Math.round((groupedItems[key].totalDiscount+item.discount)*100)/100;groupedItems[key].totalNet=Math.round((groupedItems[key].totalNet+item.net)*100)/100;if(item.barcode)groupedItems[key].barcodes.push(item.barcode);});
-  Object.values(groupedItems).forEach(gItem=>{const payer=order.payers[gItem.payerIdx];let bNo=order.billNumber;if(order.payers.length>1)bNo+=`-${gItem.payerIdx+1}`;const dateOnly=payer.date?payer.date.split(' ')[0]:'';rows.push([bNo||order.id,payer.date,payer.name,"","","",saleChannel,payer.method,gItem.label,gItem.qty,gItem.totalPrice,gItem.totalDiscount>0?"Event On-Top":"",gItem.totalDiscount,0,gItem.totalNet,"THB",0,gItem.totalNet,payer.name,"รับหน้างาน","",payer.contact,dateOnly,"รับหน้างาน",gItem.barcodes.join(", ")]);});
+  const rows = [];
+  const saleChannel = order.eventName ? `Event POS - ${order.eventName}` : "Event POS";
+
+  const groupedItems = {};
+
+  order.itemsData.forEach((item) => {
+     const key = `${item.payerIdx}_${item.pkgId}`;
+     if (!groupedItems[key]) {
+        groupedItems[key] = {
+           payerIdx: item.payerIdx,
+           label: item.label,
+           qty: 0,
+           totalPrice: 0,
+           totalDiscount: 0,
+           totalNet: 0,
+           barcodes: []
+        };
+     }
+     groupedItems[key].qty += 1;
+     groupedItems[key].totalPrice = Math.round((groupedItems[key].totalPrice + item.price) * 100) / 100;
+     groupedItems[key].totalDiscount = Math.round((groupedItems[key].totalDiscount + item.discount) * 100) / 100;
+     groupedItems[key].totalNet = Math.round((groupedItems[key].totalNet + item.net) * 100) / 100;
+     
+     if (item.barcode) {
+         groupedItems[key].barcodes.push(item.barcode);
+     }
+  });
+
+  Object.values(groupedItems).forEach((gItem) => {
+     const payer = order.payers[gItem.payerIdx];
+     let bNo = order.billNumber;
+     if(order.payers.length > 1) bNo += `-${gItem.payerIdx + 1}`;
+     const dateOnly = payer.date ? payer.date.split(' ')[0] : '';
+
+     const row = [
+       bNo || order.id,
+       payer.date,
+       payer.name,
+       "", 
+       "", "", 
+       saleChannel, 
+       payer.method,
+       gItem.label,
+       gItem.qty, 
+       gItem.totalPrice,
+       gItem.totalDiscount > 0 ? "Event On-Top" : "", 
+       gItem.totalDiscount, 
+       0, 
+       gItem.totalNet, 
+       "THB",
+       0, 
+       gItem.totalNet, 
+       payer.name, 
+       "รับหน้างาน", "", 
+       payer.contact, 
+       dateOnly, "รับหน้างาน", 
+       gItem.barcodes.join(", ")
+     ];
+     rows.push(row);
+  });
+  
   return rows;
 }
 
+// ── CHECKOUT & CLOUD SYNC ──
 async function processCheckout() {
-  let splitCount=parseInt(document.getElementById('splitCount').value);
-  let payers=[],itemsData=[],barcodes=[],allScanned=true;
-  for(let i=0;i<splitCount;i++){
-     let name=document.getElementById(`payerName_${i}`).value.trim()||`ลูกค้าท่านที่ ${i+1}`;
-     let contact=document.getElementById(`payerContact_${i}`).value.trim();
-     let method=document.getElementById(`payerMethod_${i}`).value;
-     let dateStr=document.getElementById(`payerDate_${i}`).value;
-     let timeStr=document.getElementById(`payerTime_${i}`).value;
-     let slip=currentSlips[i]||null;
-     if(!dateStr||!timeStr){alert(`กรุณาระบุวันที่และเวลาให้ ลูกค้าท่านที่ ${i+1}`);return;}
-     const [y,m,d]=dateStr.split('-');const formattedDate=`${d}/${m}/${y} ${timeStr}`;
-     payers.push({name,contact,method,date:formattedDate,slip,total:0,discount:0,net:0});
-     const rows=document.querySelectorAll(`#barcodesContainer_${i} .barcode-row`);let rowIdx=0;
-     Object.entries(cartByPayer[i]).forEach(([pkgId,cnt])=>{const p=CONFIG.packages.find(x=>x.id===pkgId);for(let k=0;k<cnt;k++){const row=rows[rowIdx++];if(!row)continue;const code=row.querySelector('.pos-barcode').value.trim();if(!code)allScanned=false;itemsData.push({payerIdx:i,pkgId:p.id,label:p.label,price:p.price,barcode:code,recipient:'',discount:0,net:0});barcodes.push(`${p.label}: ${code}`);}});
+  let splitCount = parseInt(document.getElementById('splitCount').value);
+  let payers = [];
+  let itemsData = [];
+  let barcodes = [];
+  let allScanned = true;
+
+  for(let i=0; i<splitCount; i++) {
+     let name = document.getElementById(`payerName_${i}`).value.trim() || `ลูกค้าท่านที่ ${i+1}`;
+     let contact = document.getElementById(`payerContact_${i}`).value.trim();
+     let method = document.getElementById(`payerMethod_${i}`).value;
+     let dateStr = document.getElementById(`payerDate_${i}`).value;
+     let timeStr = document.getElementById(`payerTime_${i}`).value;
+     let slip = currentSlips[i] || null;
+     
+     if (!dateStr || !timeStr) { alert(`กรุณาระบุวันที่และเวลาให้ ลูกค้าท่านที่ ${i+1}`); return; }
+
+     const [y, m, d] = dateStr.split('-');
+     const formattedDate = `${d}/${m}/${y} ${timeStr}`;
+
+     payers.push({ name, contact, method, date: formattedDate, slip, total:0, discount:0, net:0 });
+
+     const rows = document.querySelectorAll(`#barcodesContainer_${i} .barcode-row`);
+     let rowIdx = 0;
+     Object.entries(cartByPayer[i]).forEach(([pkgId, cnt]) => {
+        const p = CONFIG.packages.find(x => x.id === pkgId);
+        for(let k=0; k<cnt; k++) {
+           const row = rows[rowIdx++];
+           if(!row) continue;
+           const code = row.querySelector('.pos-barcode').value.trim();
+           if(!code) allScanned = false;
+           
+           itemsData.push({ payerIdx: i, pkgId: p.id, label: p.label, price: p.price, barcode: code, recipient: '', discount:0, net:0 });
+           
+           let bVal = `${p.label}: ${code}`;
+           barcodes.push(bVal);
+        }
+     });
   }
-  if(itemsData.length===0){alert('กรุณาเลือกแพ็กเกจก่อนครับ');return;}
-  if(!allScanned){if(!confirm('สแกนบาร์โค้ดไม่ครบทุกชุด ต้องการดำเนินการต่อหรือไม่?'))return;}
-  const btn=document.querySelector('.btn-checkout');const originalText=btn.innerHTML;btn.innerHTML='กำลังบันทึกข้อมูล... ⏳';btn.disabled=true;
-  const orderId='ORD'+Date.now().toString().slice(-6);const globalDateObj=new Date();const globalDateStr=`${String(globalDateObj.getDate()).padStart(2,'0')}/${String(globalDateObj.getMonth()+1).padStart(2,'0')}/${globalDateObj.getFullYear()} ${String(globalDateObj.getHours()).padStart(2,'0')}:${String(globalDateObj.getMinutes()).padStart(2,'0')}`;
-  const prefix=(CONFIG.event&&CONFIG.event.prefix)?CONFIG.event.prefix.toUpperCase().substring(0,5):'INV';const yyyy=String(globalDateObj.getFullYear());const mm=String(globalDateObj.getMonth()+1).padStart(2,'0');const dd=String(globalDateObj.getDate()).padStart(2,'0');const todayPrefix=`${prefix}${yyyy.slice(-2)}${mm}${dd}`;
-  const todaysOrders=salesHistory.filter(o=>o.billNumber&&o.billNumber.startsWith(todayPrefix));const runNum=String(todaysOrders.length+1).padStart(3,'0');const autoBillNumber=`${todayPrefix}-${runNum}`;
-  let totalEventPrice=itemsData.reduce((s,item)=>s+item.price,0);const promo=calculatePromo(totalEventPrice,itemsData.length);const finalAmt=totalEventPrice-promo.disc;
-  let avgDisc=itemsData.length>0?promo.disc/itemsData.length:0;let usedDisc=0;
-  itemsData.forEach((item,idx)=>{let d=(idx===itemsData.length-1)?promo.disc-usedDisc:Math.round(avgDisc*100)/100;item.discount=d;item.net=item.price-d;usedDisc+=d;payers[item.payerIdx].total+=item.price;payers[item.payerIdx].discount+=item.discount;payers[item.payerIdx].net+=item.net;});
-  const payload={id:orderId,date:globalDateStr,payerCount:splitCount,payers,itemsData,amount:finalAmt,barcodes,billNumber:autoBillNumber,eventName:CONFIG.event?CONFIG.event.name:''};
+  
+  if (itemsData.length === 0) { alert('กรุณาเลือกแพ็กเกจก่อนครับ'); return; }
+  
+  if (!allScanned) {
+    if(!confirm('สแกนบาร์โค้ดไม่ครบทุกชุด ต้องการดำเนินการต่อหรือไม่?')) return;
+  }
+
+  const btn = document.querySelector('.btn-checkout');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = 'กำลังบันทึกข้อมูล... ⏳';
+  btn.disabled = true;
+
+  const orderId = 'ORD' + Date.now().toString().slice(-6);
+  const globalDateObj = new Date();
+  const globalDateStr = `${String(globalDateObj.getDate()).padStart(2,'0')}/${String(globalDateObj.getMonth()+1).padStart(2,'0')}/${globalDateObj.getFullYear()} ${String(globalDateObj.getHours()).padStart(2,'0')}:${String(globalDateObj.getMinutes()).padStart(2,'0')}`;
+
+  const prefix = (CONFIG.event && CONFIG.event.prefix) ? CONFIG.event.prefix.toUpperCase().substring(0,5) : 'INV';
+  const yyyy = String(globalDateObj.getFullYear());
+  const mm = String(globalDateObj.getMonth()+1).padStart(2,'0');
+  const dd = String(globalDateObj.getDate()).padStart(2,'0');
+  const todayPrefix = `${prefix}${yyyy.slice(-2)}${mm}${dd}`;
+  
+  const todaysOrders = salesHistory.filter(o => o.billNumber && o.billNumber.startsWith(todayPrefix));
+  const runNum = String(todaysOrders.length + 1).padStart(3, '0');
+  const autoBillNumber = `${todayPrefix}-${runNum}`;
+
+  let totalEventPrice = itemsData.reduce((s, item) => s + item.price, 0);
+  const promo = calculatePromo(totalEventPrice, itemsData.length);
+  const finalAmt = totalEventPrice - promo.disc;
+
+  let avgDisc = itemsData.length > 0 ? promo.disc / itemsData.length : 0;
+  let usedDisc = 0;
+
+  itemsData.forEach((item, idx) => {
+      let d = (idx === itemsData.length - 1) ? promo.disc - usedDisc : Math.round(avgDisc * 100) / 100;
+      item.discount = d;
+      item.net = item.price - d;
+      usedDisc += d;
+
+      payers[item.payerIdx].total += item.price;
+      payers[item.payerIdx].discount += item.discount;
+      payers[item.payerIdx].net += item.net;
+  });
+
+  const payload = {
+    id: orderId,
+    date: globalDateStr,
+    payerCount: splitCount,
+    payers: payers,
+    itemsData: itemsData,
+    amount: finalAmt,
+    barcodes: barcodes,
+    billNumber: autoBillNumber,
+    eventName: CONFIG.event ? CONFIG.event.name : ''
+  };
+
   try {
-    salesHistory.unshift(payload);
-    try{localStorage.setItem('geneus_pos_history',JSON.stringify(salesHistory));}catch(lsError){while(salesHistory.length>20){salesHistory.pop();try{localStorage.setItem('geneus_pos_history',JSON.stringify(salesHistory));break;}catch(e){}}}
-    payers.forEach((p,i)=>{if(p.slip){let bNo=autoBillNumber;if(splitCount>1)bNo+=`-${i+1}`;const link=document.createElement('a');link.download=`${bNo}.jpg`;link.href=p.slip;document.body.appendChild(link);link.click();document.body.removeChild(link);}});
-    if(CONFIG.googleSheetUrl){try{const syncData={action:'insert_order',id:orderId,orderData:payload,exportRows:buildExportRows(payload)};await fetch(CONFIG.googleSheetUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(syncData)});}catch(e){console.log(e);}}
+    salesHistory.unshift(payload); 
+    
+    try {
+      localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
+    } catch(lsError) {
+      console.warn("Local storage full, trying to free up space...");
+      while (salesHistory.length > 20) {
+         salesHistory.pop();
+         try {
+           localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
+           break;
+         } catch(e) {}
+      }
+    }
+    
+    // โหลดไฟล์สลิปลงเครื่องเป็น JPG ทันที
+    payers.forEach((p, i) => {
+       if (p.slip) {
+           let bNo = autoBillNumber;
+           if (splitCount > 1) bNo += `-${i + 1}`;
+           const link = document.createElement('a');
+           link.download = `${bNo}.jpg`;
+           link.href = p.slip;
+           document.body.appendChild(link);
+           link.click();
+           document.body.removeChild(link);
+       }
+    });
+    
+    // Sync Cloud Database
+    if (CONFIG.googleSheetUrl) {
+       try {
+         const syncData = {
+            action: 'insert_order',
+            id: orderId,
+            orderData: payload,
+            exportRows: buildExportRows(payload)
+         };
+         
+         await fetch(CONFIG.googleSheetUrl, {
+           method: 'POST',
+           mode: 'no-cors',
+           headers: { 'Content-Type': 'text/plain' },
+           body: JSON.stringify(syncData)
+         });
+       } catch (e) { console.log(e); }
+    }
+
     alert(`✅ บันทึกออเดอร์สำเร็จ!`);
-  } catch(error){alert('❌ ข้อมูลเครื่องเต็ม ไม่สามารถบันทึกลงประวัติเครื่องนี้ได้ โปรดล้างประวัติเก่า');}
-  finally{clearCalc();renderHistory();btn.innerHTML=originalText;btn.disabled=false;}
+  } catch (error) {
+    alert('❌ ข้อมูลเครื่องเต็ม ไม่สามารถบันทึกลงประวัติเครื่องนี้ได้ โปรดล้างประวัติเก่า');
+  } finally {
+    clearCalc();
+    renderHistory();
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
 }
 
 function renderHistory() {
-  const tbody=document.getElementById('historyBody');
-  if(salesHistory.length===0){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px;">กำลังโหลด... หรือยังไม่มีประวัติการขาย</td></tr>';return;}
-  tbody.innerHTML='';
-  salesHistory.forEach(rawOrder=>{
-    const order=normalizeOrder(rawOrder);
-    let pkgCount={};order.itemsData.forEach(item=>{pkgCount[item.pkgId]=(pkgCount[item.pkgId]||0)+1;});
-    const itemTags=Object.entries(pkgCount).map(([id,cnt])=>{const p=CONFIG.packages.find(x=>x.id===id)||{label:id,cls:''};return`<span class="pkg-tag ${p.cls}">${p.label} x${cnt}</span>`;}).join('');
-    const hasAnySlip=order.payers.some(p=>p.slip);
-    const slipBtn=hasAnySlip?`<button class="btn-view-slip" onclick="viewMultiSlip('${order.id}')">ดูสลิป</button>`:'';
-    const rcptBtn=`<button class="btn-view-slip" onclick="openReceiptModal('${order.id}')" style="border-color:var(--accent2);color:var(--accent2);">📄 ใบเสร็จ</button>`;
-    const editBtn=`<button class="btn-view-slip" onclick="openEditModal('${order.id}')" style="background:transparent;border:1px solid var(--accent);color:var(--accent);">✏️ แก้ไข</button>`;
-    const billDisp=order.billNumber?`<div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:4px;">🧾 ${order.billNumber}</div>`:`<div style="font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;">(ยังไม่ระบุบิล)</div>`;
-    const names=order.payers.map(p=>p.name).join(', ');const totalAmt=order.payers.reduce((s,p)=>s+p.net,0);
-    tbody.innerHTML+=`<tr><td><div class="h-date">${order.payers[0].date}</div><div class="h-name">${names}</div><div style="font-size:9px;color:var(--muted)">${order.id}</div>${billDisp}</td><td>${itemTags}</td><td class="h-price">${fmt(totalAmt)} ฿</td><td style="text-align:center;min-width:80px;vertical-align:top;">${slipBtn}${rcptBtn}${editBtn}</td></tr>`;
+  const tbody = document.getElementById('historyBody');
+  if (salesHistory.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted); padding:20px;">กำลังโหลด... หรือยังไม่มีประวัติการขาย</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = '';
+  salesHistory.forEach(rawOrder => {
+    const order = normalizeOrder(rawOrder);
+    
+    let pkgCount = {};
+    order.itemsData.forEach(item => { pkgCount[item.pkgId] = (pkgCount[item.pkgId]||0) + 1; });
+    const itemTags = Object.entries(pkgCount).map(([id, cnt]) => {
+      const p = CONFIG.packages.find(x => x.id === id) || {label: id, cls: ''};
+      return `<span class="pkg-tag ${p.cls}">${p.label} x${cnt}</span>`;
+    }).join('');
+
+    const hasAnySlip = order.payers.some(p => p.slip);
+    const slipBtn = hasAnySlip ? `<button class="btn-view-slip" onclick="viewMultiSlip('${order.id}')">ดูสลิป</button>` : '';
+    const rcptBtn = `<button class="btn-view-slip" onclick="openReceiptModal('${order.id}')" style="border-color:var(--accent2); color:var(--accent2);">📄 ใบเสร็จ</button>`;
+    const editBtn = `<button class="btn-view-slip" onclick="openEditModal('${order.id}')" style="background:transparent; border:1px solid var(--accent); color:var(--accent);">✏️ แก้ไข</button>`;
+    
+    const billDisp = order.billNumber 
+      ? `<div style="font-size:11px; color:var(--accent); font-weight:700; margin-top:4px;">🧾 ${order.billNumber}</div>` 
+      : `<div style="font-size:11px; color:var(--muted); margin-top:4px; font-style:italic;">(ยังไม่ระบุบิล)</div>`;
+
+    const names = order.payers.map(p => p.name).join(', ');
+    const totalAmt = order.payers.reduce((s,p) => s+p.net, 0);
+
+    tbody.innerHTML += `
+      <tr>
+        <td><div class="h-date">${order.payers[0].date}</div><div class="h-name">${names}</div><div style="font-size:9px;color:var(--muted)">${order.id}</div>${billDisp}</td>
+        <td>${itemTags}</td>
+        <td class="h-price">${fmt(totalAmt)} ฿</td>
+        <td style="text-align:center; min-width:80px; vertical-align: top;">${slipBtn}${rcptBtn}${editBtn}</td>
+      </tr>
+    `;
   });
 }
 
-function viewMultiSlip(orderId){const raw=salesHistory.find(o=>o.id===orderId);if(!raw)return;const order=normalizeOrder(raw);let html='';order.payers.forEach((p,i)=>{if(p.slip){let bNo=order.billNumber;if(order.payers.length>1)bNo+=`-${i+1}`;html+=`<div style="margin-bottom:12px;"><div style="font-size:12px;font-weight:700;color:var(--accent);text-align:left;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;"><span>สลิปของ: ${p.name}</span><a href="${p.slip}" download="${bNo}.jpg" style="background:var(--accent2);color:#fff;padding:4px 8px;border-radius:4px;text-decoration:none;font-size:11px;display:inline-block;">📥 โหลด JPG</a></div><img src="${p.slip}" style="max-width:100%;border-radius:8px;border:1px solid var(--border);"></div>`;} });document.getElementById('modalImageContainer').innerHTML=html;document.getElementById('slipModal').style.display='flex';}
-function closeModal(){document.getElementById('slipModal').style.display='none';}
-
-let currentReceiptOrder=null;
-function openReceiptModal(orderId){
-  const rawOrder=salesHistory.find(o=>o.id===orderId);if(!rawOrder)return;
-  currentReceiptOrder=normalizeOrder(rawOrder);
-  const selWrap=document.getElementById('rcptPayerSelectorWrap');const sel=document.getElementById('rcptPayerSelector');
-  if(currentReceiptOrder.payers.length>1){selWrap.style.display='block';let optionsHtml=`<option value="all">รวมทุกบิลเข้าด้วยกัน</option>`;optionsHtml+=currentReceiptOrder.payers.map((p,i)=>`<option value="${i}">บิลของ: ${p.name}</option>`).join('');sel.innerHTML=optionsHtml;}
-  else{selWrap.style.display='none';sel.innerHTML=`<option value="0"></option>`;}
-  renderReceiptForPayer(currentReceiptOrder.payers.length>1?'all':0);
-  document.getElementById('receiptModal').style.display='flex';
-  updateBtBadge();
+function clearHistory() {
+  if(confirm('🚨 คำเตือน: ข้อมูลในหน้านี้จะหายไป แต่ใน Cloud จะยังอยู่หากเคยอัปโหลดไว้ ต้องการดำเนินการหรือไม่?')) {
+    salesHistory = [];
+    localStorage.removeItem('geneus_pos_history');
+    renderHistory();
+  }
 }
 
-function renderReceiptForPayer(payerIdx){
-  const order=currentReceiptOrder;const isAll=payerIdx==='all';
-  const payer=isAll?{name:order.payers[0].name,date:order.date||order.payers[0].date}:order.payers[parseInt(payerIdx)];
-  document.getElementById('rcptId').innerText=order.id;
-  document.getElementById('rcptDate').innerText=payer.date;
-  document.getElementById('rcptName').innerText=payer.name;
-  if(order.eventName){document.getElementById('rcptEventName').innerText=order.eventName;document.getElementById('rcptEventWrap').style.display='block';}else{document.getElementById('rcptEventWrap').style.display='none';}
-  if(order.billNumber){let bNo=order.billNumber;if(!isAll&&order.payers.length>1)bNo+=`-${parseInt(payerIdx)+1}`;document.getElementById('rcptBill').innerText=bNo;document.getElementById('rcptBillWrap').style.display='block';}else{document.getElementById('rcptBillWrap').style.display='none';}
-  let itemsHtml='';
-  if(isAll){const combinedItems={};order.itemsData.forEach(item=>{if(!combinedItems[item.pkgId])combinedItems[item.pkgId]={label:item.label,price:item.price,cnt:0};combinedItems[item.pkgId].cnt+=1;});Object.values(combinedItems).forEach(item=>{itemsHtml+=`<tr style="border-bottom:1px dashed #cccccc;background:transparent;"><td style="padding:6px 0;color:#000000;text-align:left;"><strong>${item.label}</strong><br><span style="font-size:10px;color:#555;">(@${fmt(item.price)} ฿)</span></td><td style="text-align:center;padding:6px 0;color:#000000;">${item.cnt}</td><td style="text-align:right;padding:6px 0;color:#000000;">${fmt(item.price*item.cnt)} ฿</td></tr>`;});}
-  else{order.itemsData.forEach(item=>{if(item.payerIdx==parseInt(payerIdx))itemsHtml+=`<tr style="border-bottom:1px dashed #cccccc;background:transparent;"><td style="padding:6px 0;color:#000000;text-align:left;"><strong>${item.label}</strong><br><span style="font-size:10px;color:#555;">(@${fmt(item.price)} ฿)</span></td><td style="text-align:center;padding:6px 0;color:#000000;">1</td><td style="text-align:right;padding:6px 0;color:#000000;">${fmt(item.price)} ฿</td></tr>`;});}
-  document.getElementById('rcptItems').innerHTML=itemsHtml;
-  if(isAll){let gTotal=order.payers.reduce((s,p)=>s+p.total,0);let gDisc=order.payers.reduce((s,p)=>s+p.discount,0);let gNet=order.payers.reduce((s,p)=>s+p.net,0);document.getElementById('rcptTotal').innerHTML=`ยอดรวม (Subtotal): <strong>${fmt(gTotal)} ฿</strong>`;document.getElementById('rcptDiscount').innerHTML=gDisc>0?`ส่วนลดรวม (Discount): <strong>-${fmt(gDisc)} ฿</strong>`:'';document.getElementById('rcptNet').innerHTML=`ยอดชำระสุทธิ (Net): <strong style="font-size:16px;">${fmt(gNet)} ฿</strong>`;}
-  else{const p=order.payers[parseInt(payerIdx)];document.getElementById('rcptTotal').innerHTML=`ยอดรวม (Subtotal): <strong>${fmt(p.total)} ฿</strong>`;document.getElementById('rcptDiscount').innerHTML=p.discount>0?`ส่วนลดงานเฉลี่ย (Discount): <strong>-${fmt(p.discount)} ฿</strong>`:'';document.getElementById('rcptNet').innerHTML=`ยอดชำระสุทธิ (Net): <strong style="font-size:16px;">${fmt(p.net)} ฿</strong>`;}
+function viewMultiSlip(orderId) {
+  const raw = salesHistory.find(o => o.id === orderId);
+  if (!raw) return;
+  const order = normalizeOrder(raw);
+  
+  let html = '';
+  order.payers.forEach((p, i) => {
+     if(p.slip) {
+        let bNo = order.billNumber;
+        if (order.payers.length > 1) bNo += `-${i + 1}`;
+        html += `<div style="margin-bottom:12px;">
+                    <div style="font-size:12px; font-weight:700; color:var(--accent); text-align:left; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                       <span>สลิปของ: ${p.name}</span>
+                       <a href="${p.slip}" download="${bNo}.jpg" style="background:var(--accent2); color:#fff; padding:4px 8px; border-radius:4px; text-decoration:none; font-size:11px; display:inline-block;">📥 โหลด JPG</a>
+                    </div>
+                    <img src="${p.slip}" style="max-width:100%; border-radius:8px; border:1px solid var(--border);">
+                 </div>`;
+     }
+  });
+  
+  document.getElementById('modalImageContainer').innerHTML = html;
+  document.getElementById('slipModal').style.display = 'flex';
 }
 
-function closeReceiptModal(){document.getElementById('receiptModal').style.display='none';}
-function printReceipt(){window.print();}
-function downloadReceipt(){
-  const receiptElement=document.getElementById('receiptContent');const btnText=event.target;const origText=btnText.innerHTML;btnText.innerHTML='กำลังประมวลผล... ⏳';
-  html2canvas(receiptElement,{scale:2,backgroundColor:null}).then(canvas=>{const link=document.createElement('a');link.download=`Geneus_Receipt_${document.getElementById('rcptBill').innerText||Date.now()}.png`;link.href=canvas.toDataURL('image/png');link.click();btnText.innerHTML=origText;}).catch(err=>{alert('เกิดข้อผิดพลาดในการสร้างรูปภาพครับ');btnText.innerHTML=origText;});
+function closeModal() { document.getElementById('slipModal').style.display = 'none'; }
+
+// ── RECEIPT ──
+let currentReceiptOrder = null;
+
+function openReceiptModal(orderId) {
+  const rawOrder = salesHistory.find(o => o.id === orderId);
+  if (!rawOrder) return;
+  currentReceiptOrder = normalizeOrder(rawOrder);
+
+  const selWrap = document.getElementById('rcptPayerSelectorWrap');
+  const sel = document.getElementById('rcptPayerSelector');
+  if(currentReceiptOrder.payers.length > 1) {
+     selWrap.style.display = 'block';
+     
+     let optionsHtml = `<option value="all">รวมทุกบิลเข้าด้วยกัน</option>`;
+     optionsHtml += currentReceiptOrder.payers.map((p, i) => `<option value="${i}">บิลของ: ${p.name}</option>`).join('');
+     sel.innerHTML = optionsHtml;
+  } else {
+     selWrap.style.display = 'none';
+     sel.innerHTML = `<option value="0"></option>`;
+  }
+
+  // Default to full combined receipt if multiple, otherwise 0
+  renderReceiptForPayer(currentReceiptOrder.payers.length > 1 ? 'all' : 0);
+  document.getElementById('receiptModal').style.display = 'flex';
 }
 
-function exportCSV(){
-  if(salesHistory.length===0){alert('ยังไม่มีประวัติการขายให้ Export ครับ');return;}
-  const headers=["Tax Invoice/Order","Date/Time Paid","Customer Name","Contact Channel","Lead Channel","Lead Nation","Sale Channel","Payment Method","Package","Quantity","Original Price","Coupon Code","Coupon Discount","Coin Discount","Paid Amount","Currency","Shipping Fee","Total Amount","Recipient Name","Shipping Address","Shipping Province","Phone No","วันที่ส่งชุดตรวจ","Tracking No","Kit IDs"];
-  let csvContent="\uFEFF"+headers.join(",")+"\n";
-  salesHistory.forEach(rawOrder=>{const rows=buildExportRows(normalizeOrder(rawOrder));rows.forEach(row=>{const escapedRow=row.map(val=>{const str=String(val);if(str.includes(',')||str.includes('"')||str.includes('\n'))return`"${str.replace(/"/g,'""')}"`;return str;});csvContent+=escapedRow.join(",")+"\n";});});
-  const blob=new Blob([csvContent],{type:'text/csv;charset=utf-8;'});const link=document.createElement("a");const url=URL.createObjectURL(blob);link.setAttribute("href",url);link.setAttribute("download",`Geneus_POS_Export_${new Date().getTime()}.csv`);document.body.appendChild(link);link.click();document.body.removeChild(link);
+function renderReceiptForPayer(payerIdx) {
+  const order = currentReceiptOrder;
+
+  if (payerIdx === 'all') {
+    // --- Render ใบเสร็จแบบรวม (Combined) ---
+    document.getElementById('rcptId').innerText = order.id;
+    document.getElementById('rcptDate').innerText = order.date || order.payers[0].date;
+    
+    // หาคนที่ซื้อชุดตรวจเยอะที่สุดเพื่อแสดงเป็นชื่อผู้ชำระในบิลรวม
+    let payerItemCounts = {};
+    order.itemsData.forEach(item => {
+       payerItemCounts[item.payerIdx] = (payerItemCounts[item.payerIdx] || 0) + 1;
+    });
+    let maxItems = -1;
+    let topPayerIdx = 0;
+    for (let pIdx in payerItemCounts) {
+       if (payerItemCounts[pIdx] > maxItems) {
+          maxItems = payerItemCounts[pIdx];
+          topPayerIdx = pIdx;
+       }
+    }
+    document.getElementById('rcptName').innerText = order.payers[topPayerIdx]?.name || 'ลูกค้า';
+
+    if (order.eventName) {
+      document.getElementById('rcptEventName').innerText = order.eventName;
+      document.getElementById('rcptEventWrap').style.display = 'flex';
+    } else {
+      document.getElementById('rcptEventWrap').style.display = 'none';
+    }
+
+    if (order.billNumber) {
+      document.getElementById('rcptBill').innerText = order.billNumber;
+      document.getElementById('rcptBillWrap').style.display = 'flex';
+    } else {
+      document.getElementById('rcptBillWrap').style.display = 'none';
+    }
+
+    let itemsHtml = '';
+    // รวมรายการแพ็กเกจชนิดเดียวกัน
+    const combinedItems = {};
+    order.itemsData.forEach(item => {
+       if (!combinedItems[item.pkgId]) combinedItems[item.pkgId] = { label: item.label, price: item.price, cnt: 0 };
+       combinedItems[item.pkgId].cnt += 1;
+    });
+    
+    Object.values(combinedItems).forEach(item => {
+      itemsHtml += `
+        <tr style="border-bottom: 1px dashed #cccccc; background: transparent;">
+          <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${item.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(item.price)} ฿)</span></td>
+          <td style="text-align:center; padding: 6px 0; color:#000000;">${item.cnt}</td>
+          <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(item.price * item.cnt)} ฿</td>
+        </tr>`;
+    });
+    
+    document.getElementById('rcptItems').innerHTML = itemsHtml;
+    
+    let grandTotal = order.payers.reduce((s, p) => s + p.total, 0);
+    let grandDiscount = order.payers.reduce((s, p) => s + p.discount, 0);
+    let grandNet = order.payers.reduce((s, p) => s + p.net, 0);
+
+    document.getElementById('rcptTotalVal').innerText = `${fmt(grandTotal)} ฿`;
+    if (grandDiscount > 0) {
+      document.getElementById('rcptDiscount').innerHTML = `<span style="text-align:left;">ส่วนลดรวม (Discount):</span> <strong style="text-align:right;">-${fmt(grandDiscount)} ฿</strong>`;
+    } else {
+      document.getElementById('rcptDiscount').innerHTML = '';
+    }
+    document.getElementById('rcptNetVal').innerText = `${fmt(grandNet)} ฿`;
+
+  } else {
+    // --- Render ใบเสร็จเฉพาะคน (Individual) ---
+    const payer = order.payers[payerIdx];
+
+    document.getElementById('rcptId').innerText = order.id;
+    document.getElementById('rcptDate').innerText = payer.date;
+    document.getElementById('rcptName').innerText = payer.name;
+
+    if (order.eventName) {
+      document.getElementById('rcptEventName').innerText = order.eventName;
+      document.getElementById('rcptEventWrap').style.display = 'flex';
+    } else {
+      document.getElementById('rcptEventWrap').style.display = 'none';
+    }
+
+    if (order.billNumber) {
+      let bNo = order.billNumber;
+      if (order.payers.length > 1) bNo += `-${parseInt(payerIdx)+1}`;
+      document.getElementById('rcptBill').innerText = bNo;
+      document.getElementById('rcptBillWrap').style.display = 'flex';
+    } else {
+      document.getElementById('rcptBillWrap').style.display = 'none';
+    }
+
+    let itemsHtml = '';
+    order.itemsData.forEach(item => {
+      if(item.payerIdx == payerIdx) {
+        itemsHtml += `
+          <tr style="border-bottom: 1px dashed #cccccc; background: transparent;">
+            <td style="padding: 6px 0; color:#000000; text-align: left;"><strong>${item.label}</strong><br><span style="font-size:10px; color:#555;">(@${fmt(item.price)} ฿)</span></td>
+            <td style="text-align:center; padding: 6px 0; color:#000000;">1</td>
+            <td style="text-align:right; padding: 6px 0; color:#000000;">${fmt(item.price)} ฿</td>
+          </tr>`;
+      }
+    });
+    
+    document.getElementById('rcptItems').innerHTML = itemsHtml;
+    document.getElementById('rcptTotalVal').innerText = `${fmt(payer.total)} ฿`;
+
+    if (payer.discount > 0) {
+      document.getElementById('rcptDiscount').innerHTML = `<span style="text-align:left;">ส่วนลดเฉลี่ย (Discount):</span> <strong style="text-align:right;">-${fmt(payer.discount)} ฿</strong>`;
+    } else {
+      document.getElementById('rcptDiscount').innerHTML = '';
+    }
+
+    document.getElementById('rcptNetVal').innerText = `${fmt(payer.net)} ฿`;
+  }
 }
 
-let editingOrderId=null;
-function openEditModal(orderId){
-  const rawOrder=salesHistory.find(o=>o.id===orderId);if(!rawOrder)return;const order=normalizeOrder(rawOrder);editingOrderId=order.id;
-  let html='';
-  order.payers.forEach((payer,pIdx)=>{let dateVal='',timeVal='';if(payer.date){const parts=payer.date.split(' ');const dmy=parts[0].split('/');if(dmy.length===3)dateVal=`${dmy[2]}-${dmy[1]}-${dmy[0]}`;timeVal=parts[1]||'';}
-  html+=`<div style="background:var(--card2);padding:12px;border-radius:8px;margin-bottom:16px;border:1px solid var(--border);"><h4 style="font-size:14px;color:var(--accent);margin-bottom:12px;border-bottom:1px dashed var(--border);padding-bottom:8px;">👤 ข้อมูลลูกค้าท่านที่ ${pIdx+1}</h4><div class="form-row-2"><div class="form-group"><label>ชื่อลูกค้า</label><input type="text" class="form-input edit-p-name" data-pidx="${pIdx}" value="${payer.name}"></div><div class="form-group"><label>เบอร์โทร</label><input type="text" class="form-input edit-p-contact" data-pidx="${pIdx}" value="${payer.contact}"></div></div><div class="form-row-2"><div class="form-group"><label>วันที่ชำระ</label><input type="date" class="form-input edit-p-date" data-pidx="${pIdx}" value="${dateVal}"></div><div class="form-group"><label>เวลา</label><input type="time" class="form-input edit-p-time" data-pidx="${pIdx}" value="${timeVal}"></div></div><div class="form-group"><label>วิธีชำระเงิน</label><select class="form-input edit-p-method" data-pidx="${pIdx}"><option value="Bank Transfer" ${payer.method==='Bank Transfer'?'selected':''}>โอนเงิน</option><option value="Credit Card" ${payer.method==='Credit Card'?'selected':''}>บัตรเครดิต</option><option value="Cash" ${payer.method==='Cash'?'selected':''}>เงินสด</option><option value="Installment" ${payer.method==='Installment'?'selected':''}>ผ่อนชำระ</option></select></div></div>`;});
-  html+=`<h4 style="font-size:14px;color:var(--text);margin-bottom:8px;">📸 แก้ไขบาร์โค้ดชุดตรวจ</h4>`;
-  order.itemsData.forEach((item,idx)=>{const key=`edit_${idx}`;html+=`<div class="barcode-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--border);"><div class="b-label" style="width:100%;color:var(--accent2);font-size:13px;">${item.label} <span style="color:var(--muted);font-weight:normal;">(กล่องของท่านที่ ${item.payerIdx+1})</span></div><div style="display:flex;gap:8px;width:100%;"><input type="text" class="form-input edit-barcode" style="flex:1;" value="${item.barcode}" data-key="${key}" data-idx="${idx}"><button type="button" class="btn-scan" onclick="openScanner('${key}')">📷 สแกน</button></div></div>`;});
-  document.getElementById('editFormContainer').innerHTML=html;document.getElementById('editModal').style.display='flex';
+function closeReceiptModal() { document.getElementById('receiptModal').style.display = 'none'; }
+function printReceipt() { window.print(); }
+function downloadReceipt() {
+  const receiptElement = document.getElementById('receiptContent');
+  const btnText = event.target;
+  const origText = btnText.innerHTML;
+  btnText.innerHTML = 'กำลังประมวลผล... ⏳';
+  html2canvas(receiptElement, { scale: 2, backgroundColor: null }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `Geneus_Receipt_${document.getElementById('rcptBill').innerText || Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btnText.innerHTML = origText;
+  }).catch(err => {
+    alert('เกิดข้อผิดพลาดในการสร้างรูปภาพครับ');
+    btnText.innerHTML = origText;
+  });
 }
 
-function closeEditModal(){document.getElementById('editModal').style.display='none';editingOrderId=null;}
-
-async function saveEditedOrder(){
-  const idxOrder=salesHistory.findIndex(o=>o.id===editingOrderId);if(idxOrder===-1)return;
-  let order=normalizeOrder(salesHistory[idxOrder]);
-  document.querySelectorAll('.edit-p-name').forEach(input=>{order.payers[input.dataset.pidx].name=input.value.trim();});
-  document.querySelectorAll('.edit-p-contact').forEach(input=>{order.payers[input.dataset.pidx].contact=input.value.trim();});
-  document.querySelectorAll('.edit-p-method').forEach(input=>{order.payers[input.dataset.pidx].method=input.value;});
-  const dates={},times={};
-  document.querySelectorAll('.edit-p-date').forEach(input=>{dates[input.dataset.pidx]=input.value;});
-  document.querySelectorAll('.edit-p-time').forEach(input=>{times[input.dataset.pidx]=input.value;});
-  order.payers.forEach((payer,pIdx)=>{if(dates[pIdx]&&times[pIdx]){const [y,m,d]=dates[pIdx].split('-');payer.date=`${d}/${m}/${y} ${times[pIdx]}`;}});
-  document.querySelectorAll('.edit-barcode').forEach(input=>{order.itemsData[input.dataset.idx].barcode=input.value.trim();});
-  const btn=document.getElementById('btn-save-edit');const origText=btn.innerHTML;btn.innerHTML='กำลังบันทึก... ⏳';btn.disabled=true;
-  try{salesHistory[idxOrder]=order;localStorage.setItem('geneus_pos_history',JSON.stringify(salesHistory));
-    if(CONFIG.googleSheetUrl){try{await fetch(CONFIG.googleSheetUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'update_order',id:order.id,orderData:order,exportRows:buildExportRows(order)})});}catch(e){}}
-    alert('✅ บันทึกการแก้ไขเรียบร้อย');closeEditModal();renderHistory();
-  }catch(e){alert('❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล');closeEditModal();}
-  finally{btn.innerHTML=origText;btn.disabled=false;}
+// ── EXPORT CSV ──
+function exportCSV() {
+  if (salesHistory.length === 0) { alert('ยังไม่มีประวัติการขายให้ Export ครับ'); return; }
+  const headers = [
+    "Tax Invoice/Order", "Date/Time Paid", "Customer Name", "Contact Channel",
+    "Lead Channel", "Lead Nation", "Sale Channel", "Payment Method",
+    "Package", "Quantity", "Original Price", "Coupon Code",
+    "Coupon Discount", "Coin Discount", "Paid Amount", "Currency",
+    "Shipping Fee", "Total Amount", "Recipient Name", "Shipping Address",
+    "Shipping Province", "Phone No", "วันที่ส่งชุดตรวจ", "Tracking No", "Kit IDs"
+  ];
+  let csvContent = "\uFEFF" + headers.join(",") + "\n";
+  
+  salesHistory.forEach(rawOrder => {
+    const rows = buildExportRows(normalizeOrder(rawOrder));
+    rows.forEach(row => {
+       const escapedRow = row.map(val => {
+         const str = String(val);
+         if (str.includes(',') || str.includes('"') || str.includes('\n')) return `"${str.replace(/"/g, '""')}"`;
+         return str;
+       });
+       csvContent += escapedRow.join(",") + "\n";
+    });
+  });
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `Geneus_POS_Export_${new Date().getTime()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
-function togglePromoFields(type){const cb=document.getElementById(`cfg-${type}-active`);const fields=document.getElementById(`cfg-${type}-fields`);if(fields)fields.style.display=cb.checked?'grid':'none';}
+// ── EDIT MODAL ──
+let editingOrderId = null;
+function openEditModal(orderId) {
+  const rawOrder = salesHistory.find(o => o.id === orderId);
+  if (!rawOrder) return;
+  const order = normalizeOrder(rawOrder);
+  editingOrderId = order.id;
 
-function populateSettingsUI(){
-  document.getElementById('cfg-sheet-url').value=CONFIG.googleSheetUrl||'';
-  document.getElementById('cfg-event-name').value=CONFIG.event?CONFIG.event.name:'';
-  document.getElementById('cfg-event-prefix').value=CONFIG.event?CONFIG.event.prefix:'INV';
-  document.getElementById('cfg-amt-active').checked=CONFIG.promo.amtActive;document.getElementById('cfg-amt-req').value=CONFIG.promo.amtStepReq;document.getElementById('cfg-amt-disc').value=CONFIG.promo.amtStepDisc;
-  document.getElementById('cfg-qty-active').checked=CONFIG.promo.qtyActive;document.getElementById('cfg-qty-req').value=CONFIG.promo.qtyStepReq;document.getElementById('cfg-qty-disc').value=CONFIG.promo.qtyStepDisc;
-  document.getElementById('cfg-gift-active').checked=CONFIG.promo.giftActive;document.getElementById('cfg-gift-req').value=CONFIG.promo.giftReq;document.getElementById('cfg-gift-name').value=CONFIG.promo.giftName;
-  togglePromoFields('amt');togglePromoFields('qty');togglePromoFields('gift');
-  const wrap=document.getElementById('settings-packages');wrap.innerHTML='';
-  CONFIG.packages.forEach((p,idx)=>{wrap.innerHTML+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;border-bottom:1px solid rgba(42,58,85,0.4);padding-bottom:8px;"><label style="grid-column:span 2;color:var(--accent2);font-weight:700;">${p.label}</label><div><span style="font-size:11px;color:var(--muted)">ราคาโปร</span><input type="number" id="cfg-p-${idx}-price" class="form-input" value="${p.price}"></div><div><span style="font-size:11px;color:var(--muted)">ราคาปกติ</span><input type="number" id="cfg-p-${idx}-reg" class="form-input" value="${p.regPrice}"></div></div>`;});
+  let html = '';
+  
+  order.payers.forEach((payer, pIdx) => {
+      let dateVal = '', timeVal = '';
+      if(payer.date) {
+          const parts = payer.date.split(' ');
+          const dmy = parts[0].split('/'); 
+          if(dmy.length === 3) dateVal = `${dmy[2]}-${dmy[1]}-${dmy[0]}`;
+          timeVal = parts[1] || '';
+      }
+      
+      html += `
+      <div style="background:var(--card2); padding:12px; border-radius:8px; margin-bottom:16px; border:1px solid var(--border);">
+         <h4 style="font-size:14px; color:var(--accent); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">👤 ข้อมูลลูกค้าท่านที่ ${pIdx+1}</h4>
+         
+         <div class="form-row-2">
+           <div class="form-group"><label>ชื่อลูกค้า</label><input type="text" class="form-input edit-p-name" data-pidx="${pIdx}" value="${payer.name}"></div>
+           <div class="form-group"><label>เบอร์โทร</label><input type="text" class="form-input edit-p-contact" data-pidx="${pIdx}" value="${payer.contact}"></div>
+         </div>
+         
+         <div class="form-row-2">
+           <div class="form-group"><label>วันที่ชำระ</label><input type="date" class="form-input edit-p-date" data-pidx="${pIdx}" value="${dateVal}"></div>
+           <div class="form-group"><label>เวลา</label><input type="time" class="form-input edit-p-time" data-pidx="${pIdx}" value="${timeVal}"></div>
+         </div>
+         
+         <div class="form-group">
+           <label>วิธีชำระเงิน</label>
+           <select class="form-input edit-p-method" data-pidx="${pIdx}">
+             <option value="Bank Transfer" ${payer.method==='Bank Transfer'?'selected':''}>โอนเงิน</option>
+             <option value="Credit Card" ${payer.method==='Credit Card'?'selected':''}>บัตรเครดิต</option>
+             <option value="Cash" ${payer.method==='Cash'?'selected':''}>เงินสด</option>
+             <option value="Installment" ${payer.method==='Installment'?'selected':''}>ผ่อนชำระ</option>
+           </select>
+         </div>
+      </div>
+      `;
+  });
+
+  html += `<h4 style="font-size:14px; color:var(--text); margin-bottom:8px;">📸 แก้ไขบาร์โค้ดชุดตรวจ</h4>`;
+  order.itemsData.forEach((item, idx) => {
+    const key = `edit_${idx}`;
+    html += `
+      <div class="barcode-row" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px dashed var(--border);">
+        <div class="b-label" style="width:100%; color:var(--accent2); font-size:13px;">${item.label} <span style="color:var(--muted); font-weight:normal;">(กล่องของท่านที่ ${item.payerIdx+1})</span></div>
+        <div style="display:flex; gap:8px; width:100%;">
+          <input type="text" class="form-input edit-barcode" style="flex:1;" value="${item.barcode}" data-key="${key}" data-idx="${idx}">
+          <button type="button" class="btn-scan" onclick="openScanner('${key}')">📷 สแกน</button>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById('editFormContainer').innerHTML = html;
+  document.getElementById('editModal').style.display = 'flex';
 }
 
-function saveSettings(silent=false){
-  CONFIG.googleSheetUrl=document.getElementById('cfg-sheet-url').value.trim();
-  if(!CONFIG.event)CONFIG.event={};CONFIG.event.name=document.getElementById('cfg-event-name').value;CONFIG.event.prefix=document.getElementById('cfg-event-prefix').value||'INV';
-  CONFIG.promo.amtActive=document.getElementById('cfg-amt-active').checked;CONFIG.promo.amtStepReq=Number(document.getElementById('cfg-amt-req').value)||0;CONFIG.promo.amtStepDisc=Number(document.getElementById('cfg-amt-disc').value)||0;
-  CONFIG.promo.qtyActive=document.getElementById('cfg-qty-active').checked;CONFIG.promo.qtyStepReq=Number(document.getElementById('cfg-qty-req').value)||0;CONFIG.promo.qtyStepDisc=Number(document.getElementById('cfg-qty-disc').value)||0;
-  CONFIG.promo.giftActive=document.getElementById('cfg-gift-active').checked;CONFIG.promo.giftReq=Number(document.getElementById('cfg-gift-req').value)||0;CONFIG.promo.giftName=document.getElementById('cfg-gift-name').value||'';
-  CONFIG.packages.forEach((p,idx)=>{p.price=Number(document.getElementById(`cfg-p-${idx}-price`).value)||0;p.regPrice=Number(document.getElementById(`cfg-p-${idx}-reg`).value)||0;});
-  localStorage.setItem('geneus_pos_config',JSON.stringify(CONFIG));
-  if(!silent){alert('บันทึกการตั้งค่าลงอุปกรณ์เรียบร้อย!');clearCalc();applyConfig();switchTab('presentation');}
+function closeEditModal() { document.getElementById('editModal').style.display = 'none'; editingOrderId = null; }
+
+async function saveEditedOrder() {
+  const idxOrder = salesHistory.findIndex(o => o.id === editingOrderId);
+  if (idxOrder === -1) return;
+  
+  let order = normalizeOrder(salesHistory[idxOrder]);
+  document.querySelectorAll('.edit-p-name').forEach(input => { order.payers[input.dataset.pidx].name = input.value.trim(); });
+  document.querySelectorAll('.edit-p-contact').forEach(input => { order.payers[input.dataset.pidx].contact = input.value.trim(); });
+  document.querySelectorAll('.edit-p-method').forEach(input => { order.payers[input.dataset.pidx].method = input.value; });
+  
+  const dates = {}, times = {};
+  document.querySelectorAll('.edit-p-date').forEach(input => { dates[input.dataset.pidx] = input.value; });
+  document.querySelectorAll('.edit-p-time').forEach(input => { times[input.dataset.pidx] = input.value; });
+  
+  order.payers.forEach((payer, pIdx) => {
+      if(dates[pIdx] && times[pIdx]) {
+          const [y, m, d] = dates[pIdx].split('-');
+          payer.date = `${d}/${m}/${y} ${times[pIdx]}`;
+      }
+  });
+
+  document.querySelectorAll('.edit-barcode').forEach(input => {
+    order.itemsData[input.dataset.idx].barcode = input.value.trim();
+  });
+
+  const btn = document.getElementById('btn-save-edit');
+  const origText = btn.innerHTML;
+  btn.innerHTML = 'กำลังบันทึกข้อมูลและอัปเดต Cloud... ⏳';
+  btn.disabled = true;
+
+  try {
+    salesHistory[idxOrder] = order; 
+    localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
+    
+    if (CONFIG.googleSheetUrl) {
+       try {
+         const syncData = {
+            action: 'update_order',
+            id: order.id,
+            orderData: order,
+            exportRows: buildExportRows(order)
+         };
+         await fetch(CONFIG.googleSheetUrl, {
+           method: 'POST',
+           mode: 'no-cors',
+           headers: { 'Content-Type': 'text/plain' },
+           body: JSON.stringify(syncData)
+         });
+       } catch (e) { console.log(e); }
+    }
+
+    alert('✅ บันทึกการแก้ไขเรียบร้อย ระบบได้อัปเดตข้อมูลบน Cloud แล้ว');
+    closeEditModal();
+    renderHistory();
+  } catch(e) {
+    alert('❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+    closeEditModal();
+  } finally {
+    btn.innerHTML = origText;
+    btn.disabled = false;
+  }
 }
 
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+// ── SETTINGS ──
+function togglePromoFields(type) {
+  const cb = document.getElementById(`cfg-${type}-active`);
+  const fields = document.getElementById(`cfg-${type}-fields`);
+  if (fields) { fields.style.display = cb.checked ? 'grid' : 'none'; }
+}
+
+function populateSettingsUI() {
+  document.getElementById('cfg-sheet-url').value = CONFIG.googleSheetUrl || '';
+  document.getElementById('cfg-event-name').value = CONFIG.event ? CONFIG.event.name : '';
+  document.getElementById('cfg-event-prefix').value = CONFIG.event ? CONFIG.event.prefix : 'INV';
+  
+  document.getElementById('cfg-amt-active').checked = CONFIG.promo.amtActive;
+  document.getElementById('cfg-amt-req').value = CONFIG.promo.amtStepReq;
+  document.getElementById('cfg-amt-disc').value = CONFIG.promo.amtStepDisc;
+  
+  document.getElementById('cfg-qty-active').checked = CONFIG.promo.qtyActive;
+  document.getElementById('cfg-qty-req').value = CONFIG.promo.qtyStepReq;
+  document.getElementById('cfg-qty-disc').value = CONFIG.promo.qtyStepDisc;
+  
+  document.getElementById('cfg-gift-active').checked = CONFIG.promo.giftActive;
+  document.getElementById('cfg-gift-req').value = CONFIG.promo.giftReq;
+  document.getElementById('cfg-gift-name').value = CONFIG.promo.giftName;
+  
+  togglePromoFields('amt');
+  togglePromoFields('qty');
+  togglePromoFields('gift');
+
+  const wrap = document.getElementById('settings-packages');
+  wrap.innerHTML = '';
+  CONFIG.packages.forEach((p, idx) => {
+    wrap.innerHTML += `
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px; border-bottom:1px solid rgba(42,58,85,0.4); padding-bottom:8px;">
+        <label style="grid-column: span 2; color:var(--accent2); font-weight:700;">${p.label}</label>
+        <div><span style="font-size:11px;color:var(--muted)">ราคาโปร</span><input type="number" id="cfg-p-${idx}-price" class="form-input" value="${p.price}"></div>
+        <div><span style="font-size:11px;color:var(--muted)">ราคาปกติ</span><input type="number" id="cfg-p-${idx}-reg" class="form-input" value="${p.regPrice}"></div>
+      </div>
+    `;
+  });
+}
+
+function saveSettings(silent = false) {
+  CONFIG.googleSheetUrl = document.getElementById('cfg-sheet-url').value.trim();
+  if (!CONFIG.event) CONFIG.event = {};
+  CONFIG.event.name = document.getElementById('cfg-event-name').value;
+  CONFIG.event.prefix = document.getElementById('cfg-event-prefix').value || 'INV';
+  
+  CONFIG.promo.amtActive = document.getElementById('cfg-amt-active').checked;
+  CONFIG.promo.amtStepReq = Number(document.getElementById('cfg-amt-req').value) || 0;
+  CONFIG.promo.amtStepDisc = Number(document.getElementById('cfg-amt-disc').value) || 0;
+  
+  CONFIG.promo.qtyActive = document.getElementById('cfg-qty-active').checked;
+  CONFIG.promo.qtyStepReq = Number(document.getElementById('cfg-qty-req').value) || 0;
+  CONFIG.promo.qtyStepDisc = Number(document.getElementById('cfg-qty-disc').value) || 0;
+  
+  CONFIG.promo.giftActive = document.getElementById('cfg-gift-active').checked;
+  CONFIG.promo.giftReq = Number(document.getElementById('cfg-gift-req').value) || 0;
+  CONFIG.promo.giftName = document.getElementById('cfg-gift-name').value || '';
+
+  CONFIG.packages.forEach((p, idx) => {
+    p.price = Number(document.getElementById(`cfg-p-${idx}-price`).value) || 0;
+    p.regPrice = Number(document.getElementById(`cfg-p-${idx}-reg`).value) || 0;
+  });
+
+  localStorage.setItem('geneus_pos_config', JSON.stringify(CONFIG));
+  if(!silent) {
+     alert('บันทึกการตั้งค่าลงอุปกรณ์เรียบร้อย!');
+     clearCalc(); applyConfig(); switchTab('presentation');
+  }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
 </script>
 </body>
 </html>
