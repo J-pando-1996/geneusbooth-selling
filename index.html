@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -31,6 +31,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-s
 
 .header { text-align: center; padding: 12px 16px; background: var(--card); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
 .header-logo-text { font-size: 26px; font-weight: 900; color: var(--accent); margin: 0; letter-spacing: 0.5px; }
+.header img.logo { max-height: 45px; width: auto; display: block; margin: 0 auto; }
 .header p { color: var(--muted); margin-top: 4px; font-size: 11px; font-weight: 700; }
 
 .tab-container { display: flex; background: var(--card); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
@@ -143,7 +144,7 @@ td { padding: 12px; vertical-align: middle; }
 /* PRINT STYLES */
 @media print {
   body { background: #fff; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .header, .tab-container, .content, #slipModal, #editModal, #scannerModal, #btPreviewModal { display: none !important; }
+  .header, .tab-container, .content, #slipModal, #editModal, #scannerModal { display: none !important; }
   #receiptModal { position: absolute; left: 0; top: 0; display: block !important; background: transparent; width: 100%; height: auto; padding: 0; }
   .modal-content { max-width: 100%; margin: 0; padding: 0; box-shadow: none; border: none; }
   
@@ -166,7 +167,7 @@ td { padding: 12px; vertical-align: middle; }
 </div>
 
 <div class="header">
-  <h1 class="header-logo-text">GeneusDNA</h1>
+  <img src="Logo_Geneus DNA Unlock-the-power_Horizontal.png" alt="Geneus DNA Logo" class="logo">
   <p>Cloud Synchronized POS</p>
 </div>
 
@@ -247,7 +248,7 @@ td { padding: 12px; vertical-align: middle; }
     <p style="font-size:11px; color:var(--muted); margin-top:10px; line-height:1.6;">
       * ใช้ได้กับ <strong>Android + Chrome</strong> หรือ PC<br>
       * จับคู่ครั้งเดียว ครั้งต่อไปเชื่อมต่อได้เลย<br>
-      * รองรับ Printer ขนาด <strong>58mm</strong>
+      * รองรับ Printer ขนาด <strong>58mm</strong> (พิมพ์แบบข้อความภาษาอังกฤษ)
     </p>
   </div>
 
@@ -348,20 +349,20 @@ td { padding: 12px; vertical-align: middle; }
   <div class="modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
     
     <div id="rcptPayerSelectorWrap" class="print-hide" style="background:#fff; padding:12px; border-radius:12px; margin-bottom:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:none;">
-      <label style="font-size:14px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">🧾 เลือกใบเสร็จของผู้ชำระเงิน:</label>
+      <label style="font-size:14px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">🧾 Select Receipt:</label>
       <select id="rcptPayerSelector" class="form-input" onchange="renderReceiptForPayer(this.value)"></select>
     </div>
 
-    <!-- ส่วนที่จะถูกจับภาพ (แคปจอ) - ปรับขนาดให้เหมาะกับ A6 หรือ 58mm printer -->
+    <!-- ส่วนที่ใช้แสดงบนหน้าจอเพื่อโหลดหรือแคป -->
     <div id="receiptContent" style="background: #ffffff; padding: 24px; color: #000000; font-family: 'Sarabun', sans-serif; width: 100mm; max-width: 100%; margin: 0 auto; box-sizing: border-box; position: relative; overflow: hidden; border: 1px solid #eee;">
       <div style="text-align:center; margin-bottom: 12px;">
-         <div style="font-size: 32px; font-weight: 900; color: #000; letter-spacing: 1px;">GeneusDNA</div>
+         <div style="font-size: 32px; font-weight: 900; color: #000; letter-spacing: 1px; font-family: 'Montserrat', sans-serif;">GeneusDNA</div>
       </div>
       
       <div style="text-align:center; font-size: 12px; color: #333333; line-height: 1.4; margin-bottom: 16px;">
-        <strong>บริษัท จีเนียส เจเนติกส์ จำกัด (สำนักงานใหญ่)</strong><br>
-        เลขที่ 22/5 ชั้น 4 ซอยชิดลม แขวงลุมพินี<br>เขตปทุมวัน กรุงเทพมหานคร 10330<br>
-        ทะเบียนนิติบุคคล 0105561207945
+        <strong>Geneus Genetics Co., Ltd. (HQ)</strong><br>
+        22/5 4th Floor, Soi Chidlom, Lumpini,<br>Pathumwan, Bangkok 10330<br>
+        TAX ID: 0105561207945
       </div>
 
       <div style="text-align:center; font-size: 14px; color: #333333; border-bottom: 1px dashed #000000; padding-bottom: 10px; margin-bottom: 16px; font-weight: 700;">
@@ -530,7 +531,9 @@ async function printBluetoothText() {
     const dateStr = document.getElementById('rcptDate').innerText;
     parts.push(enc.encode(alignLeftRight('Date/Time:', dateStr) + '\n'));
     
+    // Transliterate or limit Thai customer name, or print as is (some printers don't support Thai, so we print whatever is in the field. English recommended)
     let cusName = document.getElementById('rcptName').innerText;
+    // To prevent text overflow, cut if too long
     if(cusName.length > 20) cusName = cusName.substring(0, 18) + '..';
     parts.push(enc.encode(alignLeftRight('Customer:', cusName) + '\n'));
     
@@ -544,7 +547,7 @@ async function printBluetoothText() {
        const cols = row.querySelectorAll('td');
        if(cols.length === 3) {
            let itemName = cols[0].querySelector('strong').innerText;
-           let itemPrice = cols[0].querySelector('span').innerText.replace(/[()]/g, '').trim(); 
+           let itemPrice = cols[0].querySelector('span').innerText.replace(/[()]/g, '').trim(); // e.g. @4,500 THB
            let qty = cols[1].innerText.trim();
            let total = cols[2].innerText.replace('฿', '').trim() + ' THB';
            
@@ -559,17 +562,17 @@ async function printBluetoothText() {
     
     parts.push(enc.encode('--------------------------------\n'));
     
-    const subTotal = document.getElementById('rcptTotalVal').innerText.replace('฿', 'THB').replace(/,/g, '');
+    const subTotal = document.getElementById('rcptTotalVal').innerText.replace('฿', 'THB');
     parts.push(enc.encode(alignLeftRight('Subtotal:', subTotal) + '\n'));
     
     const discountEl = document.getElementById('rcptDiscount');
     if(discountEl.innerText.trim() !== "") {
-       const discVal = discountEl.querySelector('strong').innerText.replace('฿', 'THB').replace(/,/g, '');
+       const discVal = discountEl.querySelector('strong').innerText.replace('฿', 'THB');
        parts.push(enc.encode(alignLeftRight('Discount:', discVal) + '\n'));
     }
     
     parts.push(enc.encode('--------------------------------\n'));
-    const netTotal = document.getElementById('rcptNetVal').innerText.replace('฿', 'THB').replace(/,/g, '');
+    const netTotal = document.getElementById('rcptNetVal').innerText.replace('฿', 'THB');
     parts.push(new Uint8Array([ESC, 0x21, 0x08])); // Bold text for total
     parts.push(enc.encode(alignLeftRight('NET AMOUNT:', netTotal) + '\n'));
     parts.push(new Uint8Array([ESC, 0x21, 0x00])); // Normal text
@@ -613,10 +616,10 @@ async function testBluetoothPrint() {
     const parts = [
       new Uint8Array([ESC, 0x40]),
       new Uint8Array([ESC, 0x61, 0x01]),
-      enc.encode('Geneus DNA POS\n'),
+      enc.encode('GeneusDNA POS\n'),
       enc.encode('Bluetooth Test OK!\n'),
       enc.encode('58mm Thermal Printer\n'),
-      enc.encode('------------------------\n'),
+      enc.encode('--------------------------------\n'),
       new Uint8Array([ESC, 0x64, 0x04]),
       new Uint8Array([GS, 0x56, 0x41, 0x03]),
     ];
@@ -659,14 +662,14 @@ let currentScanTarget = null;
 // Global lock state สำหรับป้องกันการกดซ้ำซ้อน
 let isProcessingCheckout = false;
 let isProcessingEdit = false;
-let tempEditSlips = {}; 
+let tempEditSlips = {}; // สำหรับเก็บสลิปที่ถูกอัปโหลดใหม่ในหน้า Edit
 
 // --- UTILS ---
-function showLoader(text) { document.getElementById('loaderText').innerText = text || 'กำลังโหลด...'; document.getElementById('globalLoader').style.display = 'flex'; }
+function showLoader(text) { document.getElementById('loaderText').innerText = text || 'Loading...'; document.getElementById('globalLoader').style.display = 'flex'; }
 function hideLoader() { document.getElementById('globalLoader').style.display = 'none'; }
 
 function fmt(n) {
-  return Math.round(Number(n) || 0).toLocaleString('en-US'); // เปลี่ยนคอมม่าใช้ US format 
+  return Math.round(Number(n) || 0).toLocaleString('en-US');
 }
 
 // --- INITIALIZE ---
@@ -1455,6 +1458,7 @@ function buildExportRows(order) {
 
 // ── CHECKOUT & CLOUD SYNC ──
 async function processCheckout() {
+  // ระบบ Lock ป้องกันการกดเบิ้ล
   if (isProcessingCheckout) return;
   isProcessingCheckout = true;
 
@@ -1466,6 +1470,7 @@ async function processCheckout() {
     btn.disabled = true;
   }
 
+  // หน่วงเวลา 150ms เพื่อให้ UI เปลี่ยนและป้องกันการกดรัวๆ
   await new Promise(resolve => setTimeout(resolve, 150));
 
   const unlock = () => {
@@ -1533,9 +1538,17 @@ async function processCheckout() {
       }
     }
 
+    if (btn) btn.innerHTML = 'กำลังบันทึกข้อมูล... ⏳';
+
     const globalDateObj = new Date();
     const globalDateStr = `${String(globalDateObj.getDate()).padStart(2,'0')}/${String(globalDateObj.getMonth()+1).padStart(2,'0')}/${globalDateObj.getFullYear()} ${String(globalDateObj.getHours()).padStart(2,'0')}:${String(globalDateObj.getMinutes()).padStart(2,'0')}`;
+
     const prefix = (CONFIG.event && CONFIG.event.prefix) ? CONFIG.event.prefix.toUpperCase().substring(0,5) : 'INV';
+    
+    // รันเลขตาม prefix ของงาน (ไม่ต้องใส่วันที่แล้วเพื่อให้สั้นลง)
+    const eventOrders = salesHistory.filter(o => o.id && o.id.startsWith(prefix));
+    const runNum = String(eventOrders.length + 1).padStart(3, '0'); // รัน 001, 002...
+    const orderId = `${prefix}${runNum}`;
 
     let totalEventPrice = itemsData.reduce((s, item) => s + item.price, 0);
     const promo = calculatePromo(totalEventPrice, itemsData.length);
@@ -1555,11 +1568,8 @@ async function processCheckout() {
         payers[item.payerIdx].net += item.net;
     });
 
-    // ใช้ Placeholder ไปก่อน
-    let tempOrderId = "___ORDER_ID___";
-    
     const payload = {
-      id: tempOrderId,
+      id: orderId,
       date: globalDateStr,
       payerCount: splitCount,
       payers: payers,
@@ -1569,58 +1579,12 @@ async function processCheckout() {
       eventName: CONFIG.event ? CONFIG.event.name : ''
     };
 
-    let finalOrderId = "";
-    let isCloudSuccess = false;
-
-    // ---- ขอเลขบิลจากส่วนกลาง (Google Sheets) ----
-    if (CONFIG.googleSheetUrl) {
-       if (btn) btn.innerHTML = 'กำลังออกเลขบิลจากส่วนกลาง... ⏳';
-       try {
-         const syncData = {
-            action: 'insert_order_auto_id',
-            prefix: prefix,
-            orderData: payload,
-            exportRows: buildExportRows(payload)
-         };
-         
-         const res = await fetch(CONFIG.googleSheetUrl, {
-           method: 'POST',
-           headers: { 'Content-Type': 'text/plain' },
-           body: JSON.stringify(syncData)
-         });
-         
-         const result = await res.json();
-         if (result && result.status === 'success' && result.orderId) {
-             finalOrderId = result.orderId;
-             isCloudSuccess = true;
-         } else {
-             throw new Error("Invalid response format");
-         }
-       } catch (e) { 
-         console.warn("Cloud Sync Failed:", e); 
-       }
-    }
-
-    // ---- ระบบสำรอง (Fallback) หากเชื่อมส่วนกลางไม่ได้ ----
-    if (!isCloudSuccess) {
-       const eventOrders = salesHistory.filter(o => o.id && o.id.startsWith(prefix));
-       const runNum = String(eventOrders.length + 1).padStart(3, '0');
-       finalOrderId = `${prefix}${runNum}`;
-       if (CONFIG.googleSheetUrl) finalOrderId += `-OFF`; // เติม -OFF เพื่อให้รู้ว่าออกเลขออฟไลน์
-       
-       if (CONFIG.googleSheetUrl) {
-          alert(`⚠️ เชื่อมต่อส่วนกลางไม่สำเร็จ ระบบได้ออกเลขบิลสำรองออฟไลน์ให้แทน (${finalOrderId})`);
-       }
-    }
-
-    // เอาเลขที่ได้จริงมาอัปเดตใส่ Payload
-    payload.id = finalOrderId;
-
-    // บันทึกลงเครื่อง
     salesHistory.unshift(payload); 
+    
     try {
       localStorage.setItem('geneus_pos_history', JSON.stringify(salesHistory));
     } catch(lsError) {
+      console.warn("Local storage full, trying to free up space...");
       while (salesHistory.length > 20) {
          salesHistory.pop();
          try {
@@ -1630,25 +1594,28 @@ async function processCheckout() {
       }
     }
     
-    // หากออกเลขออฟไลน์ ให้พยายามยิงออเดอร์เข้าไปเก็บไว้ในส่วนกลางแบบ Fire-and-Forget
-    if (!isCloudSuccess && CONFIG.googleSheetUrl) {
-       const syncDataFallback = {
-          action: 'insert_order',
-          id: finalOrderId,
-          orderData: payload,
-          exportRows: buildExportRows(payload)
-       };
-       fetch(CONFIG.googleSheetUrl, {
-         method: 'POST',
-         mode: 'no-cors',
-         headers: { 'Content-Type': 'text/plain' },
-         body: JSON.stringify(syncDataFallback)
-       }).catch(e => e);
+    // Sync Cloud Database
+    if (CONFIG.googleSheetUrl) {
+       try {
+         const syncData = {
+            action: 'insert_order',
+            id: orderId,
+            orderData: payload,
+            exportRows: buildExportRows(payload)
+         };
+         
+         fetch(CONFIG.googleSheetUrl, {
+           method: 'POST',
+           mode: 'no-cors',
+           headers: { 'Content-Type': 'text/plain' },
+           body: JSON.stringify(syncData)
+         }).catch(e => console.log(e));
+       } catch (e) { console.log(e); }
     }
 
     alert(`✅ บันทึกออเดอร์สำเร็จ!`);
   } catch (error) {
-    alert('❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+    alert('❌ ข้อมูลเครื่องเต็ม ไม่สามารถบันทึกลงประวัติเครื่องนี้ได้ โปรดล้างประวัติเก่า');
   } finally {
     clearCalc();
     renderHistory();
