@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -31,7 +31,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-s
 
 .header { text-align: center; padding: 12px 16px; background: var(--card); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
 .header-logo-text { font-size: 26px; font-weight: 900; color: var(--accent); margin: 0; letter-spacing: 0.5px; }
-.header img.logo { max-height: 45px; width: auto; display: block; margin: 0 auto; }
 .header p { color: var(--muted); margin-top: 4px; font-size: 11px; font-weight: 700; }
 
 .tab-container { display: flex; background: var(--card); border-bottom: 1px solid var(--border); overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
@@ -91,11 +90,6 @@ input:checked + .slider:before { transform: translateX(16px); }
 .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
 .form-input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Sarabun', sans-serif; font-size: 14px; outline: none; transition: 0.2s; color-scheme: light; }
 .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(5,150,105,0.2); }
-
-.file-upload-wrapper { position: relative; width: 100%; height: 50px; border: 2px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f8fafc; cursor: pointer; overflow: hidden; }
-.file-upload-wrapper:hover { border-color: var(--accent); background: #ecfdf5; }
-.file-upload-wrapper input[type="file"] { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.file-upload-text { font-size: 13px; font-weight: 600; color: var(--muted); pointer-events: none; }
 
 .btn-checkout { width: 100%; background: var(--accent); color: #ffffff; padding: 14px; border-radius: 10px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 16px; font-weight: 900; border: none; box-shadow: 0 4px 15px rgba(5,150,105,0.25); transition: 0.2s; margin-top: 16px; }
 .btn-checkout:disabled { background: var(--muted); cursor: not-allowed; box-shadow: none; }
@@ -167,7 +161,7 @@ td { padding: 12px; vertical-align: middle; }
 </div>
 
 <div class="header">
-  <img src="Logo_Geneus DNA Unlock-the-power_Horizontal.png" alt="Geneus DNA Logo" class="logo">
+  <h1 class="header-logo-text">GeneusDNA</h1>
   <p>Cloud Synchronized POS</p>
 </div>
 
@@ -209,7 +203,7 @@ td { padding: 12px; vertical-align: middle; }
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
     <h3 style="color:var(--accent);">ประวัติการขายล่าสุด (Cloud)</h3>
     <div>
-      <button onclick="fetchHistoryFromCloud()" style="background:#10b981; border:none; color:#fff; font-size:12px; font-family:'Sarabun'; padding:6px 12px; border-radius:6px; cursor:pointer; margin-right: 8px;">🔄 โหลดข้อมูลใหม่</button>
+      <button id="btnRefreshHistory" onclick="fetchHistoryFromCloud()" style="background:#10b981; border:none; color:#fff; font-size:12px; font-family:'Sarabun'; padding:6px 12px; border-radius:6px; cursor:pointer; margin-right: 8px;">🔄 โหลดข้อมูลใหม่</button>
       <button onclick="exportCSV()" style="background:var(--accent2); border:none; color:#fff; font-size:12px; font-family:'Sarabun'; padding:6px 12px; border-radius:6px; cursor:pointer;">📥 Export CSV</button>
     </div>
   </div>
@@ -248,7 +242,7 @@ td { padding: 12px; vertical-align: middle; }
     <p style="font-size:11px; color:var(--muted); margin-top:10px; line-height:1.6;">
       * ใช้ได้กับ <strong>Android + Chrome</strong> หรือ PC<br>
       * จับคู่ครั้งเดียว ครั้งต่อไปเชื่อมต่อได้เลย<br>
-      * รองรับ Printer ขนาด <strong>58mm</strong> (พิมพ์แบบข้อความภาษาอังกฤษ)
+      * รองรับ Printer ขนาด <strong>58mm</strong>
     </p>
   </div>
 
@@ -349,20 +343,20 @@ td { padding: 12px; vertical-align: middle; }
   <div class="modal-content" style="background: transparent; border: none; box-shadow: none; padding: 0;">
     
     <div id="rcptPayerSelectorWrap" class="print-hide" style="background:#fff; padding:12px; border-radius:12px; margin-bottom:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); display:none;">
-      <label style="font-size:14px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">🧾 Select Receipt:</label>
+      <label style="font-size:14px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">🧾 เลือกใบเสร็จของผู้ชำระเงิน:</label>
       <select id="rcptPayerSelector" class="form-input" onchange="renderReceiptForPayer(this.value)"></select>
     </div>
 
-    <!-- ส่วนที่ใช้แสดงบนหน้าจอเพื่อโหลดหรือแคป -->
+    <!-- ส่วนที่จะถูกจับภาพ (แคปจอ) - ปรับขนาดให้เหมาะกับ A6 หรือ 58mm printer -->
     <div id="receiptContent" style="background: #ffffff; padding: 24px; color: #000000; font-family: 'Sarabun', sans-serif; width: 100mm; max-width: 100%; margin: 0 auto; box-sizing: border-box; position: relative; overflow: hidden; border: 1px solid #eee;">
       <div style="text-align:center; margin-bottom: 12px;">
-         <div style="font-size: 32px; font-weight: 900; color: #000; letter-spacing: 1px; font-family: 'Montserrat', sans-serif;">GeneusDNA</div>
+         <div style="font-size: 32px; font-weight: 900; color: #000; letter-spacing: 1px;">GeneusDNA</div>
       </div>
       
       <div style="text-align:center; font-size: 12px; color: #333333; line-height: 1.4; margin-bottom: 16px;">
-        <strong>Geneus Genetics Co., Ltd. (HQ)</strong><br>
-        22/5 4th Floor, Soi Chidlom, Lumpini,<br>Pathumwan, Bangkok 10330<br>
-        TAX ID: 0105561207945
+        <strong>บริษัท จีเนียส เจเนติกส์ จำกัด (สำนักงานใหญ่)</strong><br>
+        เลขที่ 22/5 ชั้น 4 ซอยชิดลม แขวงลุมพินี<br>เขตปทุมวัน กรุงเทพมหานคร 10330<br>
+        ทะเบียนนิติบุคคล 0105561207945
       </div>
 
       <div style="text-align:center; font-size: 14px; color: #333333; border-bottom: 1px dashed #000000; padding-bottom: 10px; margin-bottom: 16px; font-weight: 700;">
@@ -375,7 +369,7 @@ td { padding: 12px; vertical-align: middle; }
          </div>
          <div style="display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">Order ID:</span> <strong id="rcptId" style="text-align:right;"></strong></div>
          <div style="display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">Date/Time:</span> <strong id="rcptDate" style="text-align:right;"></strong></div>
-         <div style="display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">Customer:</span> <strong id="rcptName" style="text-align:right;"></strong></div>
+         <div style="display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">Customer Name:</span> <strong id="rcptName" style="text-align:right;"></strong></div>
       </div>
       
       <table style="width: 100%; min-width: 0; font-size: 14px; border-collapse: collapse; margin-bottom: 16px; color: #000000;">
@@ -402,7 +396,7 @@ td { padding: 12px; vertical-align: middle; }
     </div>
     
     <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;" class="print-hide">
-      <button onclick="printBluetoothText()" id="btnBtPrint" style="flex: 1; min-width: 120px; background: #1d4ed8; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(29,78,216,0.3);">🖨️ ปริ้น Bluetooth</button>
+      <button onclick="printViaBluetoothESC()" id="btnBtPrint" style="flex: 1; min-width: 120px; background: #1d4ed8; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(29,78,216,0.3);">🖨️ ปริ้น Bluetooth</button>
       <button onclick="downloadReceipt()" style="flex: 1; min-width: 100px; background: #059669; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(5,150,105,0.3);">📥 บันทึกรูป</button>
       <button onclick="closeReceiptModal()" style="flex: 1; min-width: 100px; background: #dc2626; color: #fff; border: none; padding: 12px; border-radius: 8px; font-family: 'Sarabun'; font-weight: 700; cursor: pointer;">✕ ปิด</button>
     </div>
@@ -480,112 +474,107 @@ async function sendBytesToPrinter(data) {
   }
 }
 
-// Helper: Align text left & right on 32 chars width (58mm printer)
-function alignLeftRight(left, right, width = 32) {
-  let space = width - left.length - right.length;
-  if (space < 1) space = 1;
-  return left + " ".repeat(space) + right;
+function removeThaiChars(str) {
+  return str.replace(/[\u0E00-\u0E7F]/g, '');
 }
 
-// Print Text instead of Image
-async function printBluetoothText() {
+async function printViaBluetoothESC() {
   if (!btCharacteristic) {
     if(confirm('ยังไม่ได้เชื่อมต่อ Bluetooth Printer\nไปตั้งค่าจับคู่ไหมครับ?')) { closeReceiptModal(); switchTab('settings'); }
     return;
   }
-  
   const btn = document.getElementById('btnBtPrint');
   const orig = btn.innerHTML;
-  btn.innerHTML = '🖨️ กำลังส่งปริ้น...';
+  btn.innerHTML = '⏳ กำลังประมวลผลและส่งปริ้น...';
   btn.disabled = true;
-  
+
   try {
-    const ESC = 0x1B, GS = 0x1D;
+    const ESC = 0x1B;
+    const GS = 0x1D;
     const enc = new TextEncoder();
     const parts = [];
-    
-    // Init printer
+
+    // Initialize
     parts.push(new Uint8Array([ESC, 0x40]));
     
-    // Header
-    parts.push(new Uint8Array([ESC, 0x61, 0x01])); // Align Center
-    parts.push(new Uint8Array([ESC, 0x21, 0x10])); // Double height text for GENEUSDNA
-    parts.push(enc.encode('GeneusDNA\n'));
-    parts.push(new Uint8Array([ESC, 0x21, 0x00])); // Normal text
-    parts.push(enc.encode('Geneus Genetics Co., Ltd. (HQ)\n'));
-    parts.push(enc.encode('22/5 4th Fl., Soi Chidlom\nLumpini, Pathumwan, BKK 10330\n'));
-    parts.push(enc.encode('TAX ID: 0105561207945\n'));
-    parts.push(enc.encode('--------------------------------\n'));
-    parts.push(enc.encode('ORDER SUMMARY\n'));
-    parts.push(enc.encode('--------------------------------\n'));
+    // Center Align
+    parts.push(new Uint8Array([ESC, 0x61, 0x01]));
     
-    // Data (Read from modal variables directly)
-    parts.push(new Uint8Array([ESC, 0x61, 0x00])); // Align Left
+    // Bold on & Double width/height
+    parts.push(new Uint8Array([ESC, 0x45, 0x01]));
+    parts.push(new Uint8Array([GS, 0x21, 0x11]));
+    parts.push(enc.encode("GeneusDNA\n\n"));
     
-    const eventName = document.getElementById('rcptEventName').innerText;
-    if(eventName) parts.push(enc.encode(alignLeftRight('Event:', eventName) + '\n'));
+    // Reset formatting
+    parts.push(new Uint8Array([ESC, 0x45, 0x00]));
+    parts.push(new Uint8Array([GS, 0x21, 0x00]));
     
-    const orderId = document.getElementById('rcptId').innerText;
-    parts.push(enc.encode(alignLeftRight('Order ID:', orderId) + '\n'));
+    parts.push(enc.encode("Geneus Genetics Co.,Ltd.\n"));
+    parts.push(enc.encode("22/5 4th Fl., Soi Chidlom\n"));
+    parts.push(enc.encode("Lumpini, Pathumwan, Bangkok 10330\n"));
+    parts.push(enc.encode("Tax ID: 0105561207945\n\n"));
     
-    const dateStr = document.getElementById('rcptDate').innerText;
-    parts.push(enc.encode(alignLeftRight('Date/Time:', dateStr) + '\n'));
+    // Left Align
+    parts.push(new Uint8Array([ESC, 0x61, 0x00]));
+    parts.push(enc.encode("--------------------------------\n"));
+    parts.push(new Uint8Array([ESC, 0x61, 0x01]));
+    parts.push(enc.encode("ORDER SUMMARY\n"));
+    parts.push(new Uint8Array([ESC, 0x61, 0x00]));
+    parts.push(enc.encode("--------------------------------\n"));
     
-    // Transliterate or limit Thai customer name, or print as is (some printers don't support Thai, so we print whatever is in the field. English recommended)
-    let cusName = document.getElementById('rcptName').innerText;
-    // To prevent text overflow, cut if too long
-    if(cusName.length > 20) cusName = cusName.substring(0, 18) + '..';
-    parts.push(enc.encode(alignLeftRight('Customer:', cusName) + '\n'));
+    // Data
+    const rId = document.getElementById('rcptId').innerText;
+    const rDate = document.getElementById('rcptDate').innerText;
+    const rName = removeThaiChars(document.getElementById('rcptName').innerText).trim() || "Customer";
+    const rEvent = removeThaiChars(document.getElementById('rcptEventName').innerText).trim();
     
-    parts.push(enc.encode('--------------------------------\n'));
-    parts.push(enc.encode(alignLeftRight('Item                 Qty', 'Total') + '\n'));
-    parts.push(enc.encode('--------------------------------\n'));
+    if(rEvent) parts.push(enc.encode(`Event: ${rEvent}\n`));
+    parts.push(enc.encode(`Order ID: ${rId}\n`));
+    parts.push(enc.encode(`Date: ${rDate}\n`));
+    parts.push(enc.encode(`Customer: ${rName}\n`));
+    parts.push(enc.encode("--------------------------------\n"));
     
-    // Loop through rendered table items
-    const rows = document.querySelectorAll('#rcptItems tr');
-    rows.forEach(row => {
-       const cols = row.querySelectorAll('td');
-       if(cols.length === 3) {
-           let itemName = cols[0].querySelector('strong').innerText;
-           let itemPrice = cols[0].querySelector('span').innerText.replace(/[()]/g, '').trim(); // e.g. @4,500 THB
-           let qty = cols[1].innerText.trim();
-           let total = cols[2].innerText.replace('฿', '').trim() + ' THB';
-           
-           if(itemName.length > 18) itemName = itemName.substring(0,18);
-           
-           let line1 = alignLeftRight(itemName, '');
-           parts.push(enc.encode(line1 + '\n'));
-           let line2 = alignLeftRight('   ' + qty + 'x ' + itemPrice, total);
-           parts.push(enc.encode(line2 + '\n'));
+    // Items
+    const itemsTable = document.getElementById('rcptItems').querySelectorAll('tr');
+    itemsTable.forEach(row => {
+       const cells = row.querySelectorAll('td');
+       if(cells.length === 3) {
+          let itemText = cells[0].querySelector('strong').innerText;
+          itemText = removeThaiChars(itemText).trim();
+          let qty = cells[1].innerText;
+          let total = cells[2].innerText.replace('฿','').trim();
+          parts.push(enc.encode(`${itemText} x${qty}\n`));
+          parts.push(new Uint8Array([ESC, 0x61, 0x02])); // Right align
+          parts.push(enc.encode(`${total} THB\n`));
+          parts.push(new Uint8Array([ESC, 0x61, 0x00])); // Left align
        }
     });
     
-    parts.push(enc.encode('--------------------------------\n'));
+    parts.push(enc.encode("--------------------------------\n"));
     
-    const subTotal = document.getElementById('rcptTotalVal').innerText.replace('฿', 'THB');
-    parts.push(enc.encode(alignLeftRight('Subtotal:', subTotal) + '\n'));
+    // Totals
+    const subVal = document.getElementById('rcptTotalVal').innerText.replace('฿','').trim();
+    parts.push(new Uint8Array([ESC, 0x61, 0x02]));
+    parts.push(enc.encode(`Subtotal: ${subVal} THB\n`));
     
-    const discountEl = document.getElementById('rcptDiscount');
-    if(discountEl.innerText.trim() !== "") {
-       const discVal = discountEl.querySelector('strong').innerText.replace('฿', 'THB');
-       parts.push(enc.encode(alignLeftRight('Discount:', discVal) + '\n'));
+    const discEl = document.getElementById('rcptDiscount');
+    if(discEl && discEl.innerText.trim() !== '') {
+       let discStr = discEl.querySelector('strong').innerText.replace('฿','').trim();
+       parts.push(enc.encode(`Discount: ${discStr} THB\n`));
     }
     
-    parts.push(enc.encode('--------------------------------\n'));
-    const netTotal = document.getElementById('rcptNetVal').innerText.replace('฿', 'THB');
-    parts.push(new Uint8Array([ESC, 0x21, 0x08])); // Bold text for total
-    parts.push(enc.encode(alignLeftRight('NET AMOUNT:', netTotal) + '\n'));
-    parts.push(new Uint8Array([ESC, 0x21, 0x00])); // Normal text
-    parts.push(enc.encode('--------------------------------\n'));
+    const netVal = document.getElementById('rcptNetVal').innerText.replace('฿','').trim();
+    parts.push(new Uint8Array([ESC, 0x45, 0x01])); // Bold
+    parts.push(enc.encode(`NET: ${netVal} THB\n`));
+    parts.push(new Uint8Array([ESC, 0x45, 0x00]));
     
-    // Footer
-    parts.push(new Uint8Array([ESC, 0x61, 0x01])); // Align Center
-    parts.push(enc.encode('Thank you for choosing\nGeneus DNA\n'));
-    parts.push(enc.encode('www.geneusdna.com\n'));
+    parts.push(new Uint8Array([ESC, 0x61, 0x01])); // Center
+    parts.push(enc.encode("\nThank you for choosing\nGeneus DNA\n"));
+    parts.push(enc.encode("www.geneusdna.com\n\n\n"));
     
-    // Feed and Cut
-    parts.push(new Uint8Array([ESC, 0x64, 0x05])); // Feed 5 lines
-    parts.push(new Uint8Array([GS, 0x56, 0x41, 0x03])); // Cut
+    // Cut/Feed
+    parts.push(new Uint8Array([ESC, 0x64, 0x04]));
+    parts.push(new Uint8Array([GS, 0x56, 0x41, 0x03]));
     
     const totalLen = parts.reduce((acc, p) => acc + p.length, 0);
     const payload = new Uint8Array(totalLen);
@@ -593,8 +582,8 @@ async function printBluetoothText() {
     for (let p of parts) { payload.set(p, offset); offset += p.length; }
     
     await sendBytesToPrinter(payload);
-    
-    setTimeout(() => closeReceiptModal(), 1000);
+    setTimeout(() => closeReceiptModal(), 500);
+
   } catch (err) {
     console.error(err);
     if (err.message.includes('disconnected') || err.message.includes('GATT')) {
@@ -616,10 +605,10 @@ async function testBluetoothPrint() {
     const parts = [
       new Uint8Array([ESC, 0x40]),
       new Uint8Array([ESC, 0x61, 0x01]),
-      enc.encode('GeneusDNA POS\n'),
+      enc.encode('Geneus DNA POS\n'),
       enc.encode('Bluetooth Test OK!\n'),
       enc.encode('58mm Thermal Printer\n'),
-      enc.encode('--------------------------------\n'),
+      enc.encode('------------------------\n'),
       new Uint8Array([ESC, 0x64, 0x04]),
       new Uint8Array([GS, 0x56, 0x41, 0x03]),
     ];
@@ -665,11 +654,11 @@ let isProcessingEdit = false;
 let tempEditSlips = {}; // สำหรับเก็บสลิปที่ถูกอัปโหลดใหม่ในหน้า Edit
 
 // --- UTILS ---
-function showLoader(text) { document.getElementById('loaderText').innerText = text || 'Loading...'; document.getElementById('globalLoader').style.display = 'flex'; }
+function showLoader(text) { document.getElementById('loaderText').innerText = text || 'กำลังโหลด...'; document.getElementById('globalLoader').style.display = 'flex'; }
 function hideLoader() { document.getElementById('globalLoader').style.display = 'none'; }
 
 function fmt(n) {
-  return Math.round(Number(n) || 0).toLocaleString('en-US');
+  return Math.round(Number(n) || 0).toLocaleString('th-TH');
 }
 
 // --- INITIALIZE ---
@@ -724,6 +713,14 @@ function switchTab(tabId) {
   document.getElementById(`btn-${tabId}`).classList.add('active');
   if(tabId === 'presentation') {
       renderPresentation();
+  } else if (tabId === 'history') {
+      if (CONFIG.googleSheetUrl && CONFIG.googleSheetUrl !== "") {
+          const btnRefresh = document.getElementById('btnRefreshHistory');
+          if(btnRefresh) btnRefresh.innerHTML = '⏳ ซิงค์ข้อมูล...';
+          fetchHistoryFromCloud(true).finally(() => {
+              if(btnRefresh) btnRefresh.innerHTML = '🔄 โหลดข้อมูลใหม่';
+          });
+      }
   }
 }
 
@@ -1020,7 +1017,7 @@ function updateGlobalTotals() {
            ${Object.entries(mergedCart).map(([id, cnt]) => {
               const p = CONFIG.packages.find(x => x.id === id);
               const netPerItem = p.price - exactDiscPerItem;
-              const showNet = netPerItem % 1 === 0 ? fmt(netPerItem) : netPerItem.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+              const showNet = netPerItem % 1 === 0 ? fmt(netPerItem) : netPerItem.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
               return `<div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; margin-bottom:4px; padding-bottom:4px; border-bottom:1px solid #f1f5f9; width: 100%;">
                          <span style="color:var(--text); text-align:left;">${p.label} <span style="font-size:11px; color:var(--muted);">(x${cnt})</span></span>
                          <span style="font-weight:800; color:var(--accent2); text-align:right;">${showNet} ฿/ชุด</span>
@@ -1045,7 +1042,7 @@ function updateGlobalTotals() {
        let pQty = 0;
        Object.values(cartByPayer[i]).forEach(c => pQty += c);
        let pNet = payerSubtotals[i] - (exactDiscPerItem * pQty);
-       let showPNet = pNet % 1 === 0 ? fmt(pNet) : pNet.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+       let showPNet = pNet % 1 === 0 ? fmt(pNet) : pNet.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
        subLabel.innerHTML = `รวม <span style="color:var(--accent);">${showPNet} ฿</span>`;
     }
   }
@@ -1211,7 +1208,7 @@ function renderPresentation() {
 
      let payerDisc = exactDiscPerItem * payerQty;
      let payerNet = payerTotal - payerDisc;
-     let showPayerNet = payerNet % 1 === 0 ? fmt(payerNet) : payerNet.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+     let showPayerNet = payerNet % 1 === 0 ? fmt(payerNet) : payerNet.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
      let titleText = currentSplitCount > 1 ? `👤 ลูกค้าท่านที่ ${i+1}` : `💡 เลือกลองจัดแพ็กเกจด้วยตัวคุณเอง`;
 
@@ -1265,7 +1262,7 @@ function renderPresentation() {
        ${Object.entries(mergedCart).map(([id, cnt]) => {
           const p = CONFIG.packages.find(x => x.id === id);
           const netPerItem = p.price - exactDiscPerItem;
-          const showNet = netPerItem % 1 === 0 ? fmt(netPerItem) : netPerItem.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          const showNet = netPerItem % 1 === 0 ? fmt(netPerItem) : netPerItem.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
           return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:15px; border-bottom:1px dashed var(--border); padding-bottom:8px; width: 100%;">
                      <span style="color:var(--text); text-align:left;">${p.label} <span style="color:var(--muted); font-size:12px;">(x${cnt})</span></span>
                      <span style="font-weight:900; color:var(--accent); font-size:18px; text-align:right;">${showNet} <span style="font-size:14px;">฿</span></span>
@@ -1466,7 +1463,7 @@ async function processCheckout() {
   const originalText = btn ? btn.innerHTML : '✅ ยืนยันออเดอร์ (Checkout)';
   
   if (btn) {
-    btn.innerHTML = 'กำลังประมวลผล... ⏳';
+    btn.innerHTML = 'กำลังขอรหัสคิวจาก Cloud... ⏳';
     btn.disabled = true;
   }
 
@@ -1538,17 +1535,8 @@ async function processCheckout() {
       }
     }
 
-    if (btn) btn.innerHTML = 'กำลังบันทึกข้อมูล... ⏳';
-
     const globalDateObj = new Date();
     const globalDateStr = `${String(globalDateObj.getDate()).padStart(2,'0')}/${String(globalDateObj.getMonth()+1).padStart(2,'0')}/${globalDateObj.getFullYear()} ${String(globalDateObj.getHours()).padStart(2,'0')}:${String(globalDateObj.getMinutes()).padStart(2,'0')}`;
-
-    const prefix = (CONFIG.event && CONFIG.event.prefix) ? CONFIG.event.prefix.toUpperCase().substring(0,5) : 'INV';
-    
-    // รันเลขตาม prefix ของงาน (ไม่ต้องใส่วันที่แล้วเพื่อให้สั้นลง)
-    const eventOrders = salesHistory.filter(o => o.id && o.id.startsWith(prefix));
-    const runNum = String(eventOrders.length + 1).padStart(3, '0'); // รัน 001, 002...
-    const orderId = `${prefix}${runNum}`;
 
     let totalEventPrice = itemsData.reduce((s, item) => s + item.price, 0);
     const promo = calculatePromo(totalEventPrice, itemsData.length);
@@ -1568,6 +1556,9 @@ async function processCheckout() {
         payers[item.payerIdx].net += item.net;
     });
 
+    const prefix = (CONFIG.event && CONFIG.event.prefix) ? CONFIG.event.prefix.toUpperCase().substring(0,5) : 'INV';
+    let orderId = "___ORDER_ID___"; // Placeholder สำหรับรอ Cloud เปลี่ยนให้
+
     const payload = {
       id: orderId,
       date: globalDateStr,
@@ -1578,6 +1569,52 @@ async function processCheckout() {
       barcodes: barcodes,
       eventName: CONFIG.event ? CONFIG.event.name : ''
     };
+
+    let syncSuccess = false;
+
+    // ติดต่อ Cloud เพื่อขอเลขบิลและบันทึก
+    if (CONFIG.googleSheetUrl) {
+       try {
+         const syncData = {
+            action: 'insert_order_auto_id',
+            prefix: prefix,
+            orderData: payload,
+            exportRows: buildExportRows(payload)
+         };
+         
+         const response = await fetch(CONFIG.googleSheetUrl, {
+           method: 'POST',
+           body: JSON.stringify(syncData)
+         });
+
+         const result = await response.json();
+         if (result.status === "success" && result.orderId) {
+             orderId = result.orderId;
+             payload.id = orderId;
+             
+             // แก้ไข Order ID ใน exportRows ที่เป็น Placeholder ด้วย
+             const newExportRows = buildExportRows(payload);
+             syncSuccess = true;
+         } else {
+             throw new Error("Cloud did not return order ID");
+         }
+       } catch (e) { 
+         console.warn("Cloud Sync Error (Auto ID):", e); 
+         // หากเน็ตหลุด ให้รันเลข Offline ป้องกันไม่ให้แคชเชียร์ขายของไม่ได้
+         const eventOrders = salesHistory.filter(o => o.id && o.id.startsWith(prefix));
+         const runNum = String(eventOrders.length + 1).padStart(3, '0');
+         orderId = `${prefix}${runNum}-OFF`; // เติม -OFF เพื่อให้รู้ว่าบันทึกตอนออฟไลน์
+         payload.id = orderId;
+       }
+    } else {
+       // ไม่ได้ตั้งค่า Cloud
+       const eventOrders = salesHistory.filter(o => o.id && o.id.startsWith(prefix));
+       const runNum = String(eventOrders.length + 1).padStart(3, '0');
+       orderId = `${prefix}${runNum}`;
+       payload.id = orderId;
+    }
+
+    if (btn) btn.innerHTML = 'กำลังบันทึกลงเครื่อง... ⏳';
 
     salesHistory.unshift(payload); 
     
@@ -1593,29 +1630,15 @@ async function processCheckout() {
          } catch(e) {}
       }
     }
-    
-    // Sync Cloud Database
-    if (CONFIG.googleSheetUrl) {
-       try {
-         const syncData = {
-            action: 'insert_order',
-            id: orderId,
-            orderData: payload,
-            exportRows: buildExportRows(payload)
-         };
-         
-         fetch(CONFIG.googleSheetUrl, {
-           method: 'POST',
-           mode: 'no-cors',
-           headers: { 'Content-Type': 'text/plain' },
-           body: JSON.stringify(syncData)
-         }).catch(e => console.log(e));
-       } catch (e) { console.log(e); }
+
+    if (syncSuccess) {
+      alert(`✅ บันทึกออเดอร์สำเร็จ!\nเลขบิลของคุณคือ: ${orderId}`);
+    } else {
+      alert(`⚠️ บันทึกออเดอร์ลงเครื่องสำเร็จ (Offline Mode)\nเลขบิลชั่วคราว: ${orderId}\nระบบติดต่อ Cloud ไม่ได้ โปรดเช็คอินเทอร์เน็ต!`);
     }
 
-    alert(`✅ บันทึกออเดอร์สำเร็จ!`);
   } catch (error) {
-    alert('❌ ข้อมูลเครื่องเต็ม ไม่สามารถบันทึกลงประวัติเครื่องนี้ได้ โปรดล้างประวัติเก่า');
+    alert('❌ ข้อมูลเครื่องเต็ม หรือระบบมีปัญหา ไม่สามารถบันทึกได้');
   } finally {
     clearCalc();
     renderHistory();
