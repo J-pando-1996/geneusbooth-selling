@@ -353,18 +353,18 @@ td { padding: 12px; vertical-align: middle; }
          <div style="font-size: 32px; font-weight: 900; color: #000; letter-spacing: 1px;">GeneusDNA</div>
       </div>
       
-      <div style="text-align:center; font-size: 12px; color: #333333; line-height: 1.4; margin-bottom: 16px;">
-        <strong>บริษัท จีเนียส เจเนติกส์ จำกัด (สำนักงานใหญ่)</strong><br>
-        เลขที่ 22/5 ชั้น 4 ซอยชิดลม แขวงลุมพินี<br>เขตปทุมวัน กรุงเทพมหานคร 10330<br>
-        ทะเบียนนิติบุคคล 0105561207945
+      <div style="text-align:center; font-size: 12px; color: #000000; line-height: 1.4; margin-bottom: 16px;">
+        <strong>Geneus Genetics Co.,Ltd. (Head Office)</strong><br>
+        22/5, 4th floor, Soi Chidlom, Lumphini<br>Pathum Wan, Bangkok 10330<br>
+        Tax ID : 0105561207945
       </div>
 
-      <div style="text-align:center; font-size: 14px; color: #333333; border-bottom: 1px dashed #000000; padding-bottom: 10px; margin-bottom: 16px; font-weight: 700;">
+      <div style="text-align:center; font-size: 14px; color: #000000; border-bottom: 1px dashed #000000; padding-bottom: 10px; margin-bottom: 16px; font-weight: 700;">
          Order Summary
       </div>
       
       <div style="font-size: 14px; margin-bottom: 16px; line-height: 1.6; color: #000000;">
-         <div id="rcptEventWrap" style="display:none; color:#059669; font-weight:700; border-bottom:1px solid #f1f5f9; padding-bottom:6px; margin-bottom:6px; display:flex; justify-content:space-between; width:100%;">
+         <div id="rcptEventWrap" style="display:none; color:#000000; font-weight:700; border-bottom:1px solid #000000; padding-bottom:6px; margin-bottom:6px; display:flex; justify-content:space-between; width:100%;">
             <span style="text-align:left;">Event Name:</span> <span id="rcptEventName" style="text-align:right;"></span>
          </div>
          <div style="display:flex; justify-content:space-between; width:100%;"><span style="text-align:left;">Order ID:</span> <strong id="rcptId" style="text-align:right;"></strong></div>
@@ -391,6 +391,7 @@ td { padding: 12px; vertical-align: middle; }
       
       <div style="text-align:center; margin-top: 30px; font-size: 12px; color: #333333;">
          Thank you for choosing Geneus DNA<br>
+         <span style="font-family:'Montserrat', sans-serif;">LINE ID: @geneus</span><br>
          <span style="font-family:'Montserrat', sans-serif;">www.geneusdna.com</span>
       </div>
     </div>
@@ -570,6 +571,7 @@ async function printViaBluetoothESC() {
     
     parts.push(new Uint8Array([ESC, 0x61, 0x01])); // Center
     parts.push(enc.encode("\nThank you for choosing\nGeneus DNA\n"));
+    parts.push(enc.encode("LINE ID: @geneus\n"));
     parts.push(enc.encode("www.geneusdna.com\n\n\n"));
     
     // Cut/Feed
